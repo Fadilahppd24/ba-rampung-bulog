@@ -178,14 +178,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div>
-                    <label class="label">Status PBP</label>
-                    <select name="status_pbp" class="input">
-                        @foreach (\App\Models\BaRampung::STATUS_PBP as $val => $label)
-                            <option value="{{ $val }}" @selected(old('status_pbp') === $val)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                
             </div>
         </div>
 
@@ -206,7 +199,34 @@
                     <input type="text" name="jabatan_penandatangan" value="{{ old('jabatan_penandatangan', 'Pengelola Gudang') }}" required class="input">
                 </div>
 
-                <h3 class="font-semibold text-gray-900 pt-2">👔 5. Mengetahui</h3>
+                <h3 class="font-semibold text-gray-900 pt-2">
+    ✍️ 5. Penandatanganan Pihak Kedua (Mitra Pengolahan)
+</h3>
+<div>
+    <label class="label">Nama Penandatangan Pihak Kedua</label>
+    <input
+        type="text"
+        name="nama_penandatangan_pihak_kedua"
+        value="{{ old('nama_penandatangan_pihak_kedua') }}"
+        required
+        class="input"
+        placeholder="Masukkan nama penandatangan mitra"
+    >
+</div>
+
+<div>
+    <label class="label">Jabatan Pihak Kedua</label>
+    <input
+        type="text"
+        name="jabatan_penandatangan_pihak_kedua"
+        value="{{ old('jabatan_penandatangan_pihak_kedua') }}"
+        required
+        class="input"
+        placeholder="Masukkan jabatan"
+    >
+</div>
+
+                <h3 class="font-semibold text-gray-900 pt-2">👔 6. Mengetahui</h3>
                 <div>
                     <label class="label">Pimpinan Cabang BULOG</label>
                     <select name="pimpinan_cabang_id" required class="input">

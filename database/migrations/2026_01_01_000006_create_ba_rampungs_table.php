@@ -22,13 +22,13 @@ return new class extends Migration
             $table->foreignId('mitra_pengolahan_id')->constrained('mitra_pengolahans')->restrictOnDelete();
 
             $table->string('nama_penandatangan')->nullable();
-            $table->string('jabatan_penandatangan')->nullable();
-            $table->foreignId('pimpinan_cabang_id')->nullable()->constrained('pimpinan_cabangs')->nullOnDelete();
+$table->string('jabatan_penandatangan')->nullable();
+$table->string('nama_penandatangan_pihak_kedua')->nullable();
+$table->string('jabatan_penandatangan_pihak_kedua')->nullable();
+$table->foreignId('pimpinan_cabang_id')->nullable()->constrained('pimpinan_cabangs')->nullOnDelete();
 
             $table->enum('status', ['draft', 'menunggu_verifikasi', 'terverifikasi', 'ditolak', 'selesai'])
                 ->default('draft');
-            $table->enum('status_pbp', ['normal', 'perwakilan_satu_kk', 'pengganti', 'perwakilan_beda_kk'])
-                ->default('normal');
             $table->text('catatan')->nullable();
             $table->text('alasan_penolakan')->nullable();
 

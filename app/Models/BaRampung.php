@@ -25,12 +25,7 @@ class BaRampung extends Model
         self::STATUS_SELESAI => 'Selesai',
     ];
 
-    public const STATUS_PBP = [
-        'normal' => 'Normal',
-        'perwakilan_satu_kk' => 'Perwakilan (Satu KK)',
-        'pengganti' => 'Pengganti',
-        'perwakilan_beda_kk' => 'Perwakilan (Beda KK)',
-    ];
+    
 
     protected $fillable = [
         'nomor_ba',
@@ -44,9 +39,10 @@ class BaRampung extends Model
         'mitra_pengolahan_id',
         'nama_penandatangan',
         'jabatan_penandatangan',
+        'nama_penandatangan_pihak_kedua',
+        'jabatan_penandatangan_pihak_kedua',
         'pimpinan_cabang_id',
         'status',
-        'status_pbp',
         'catatan',
         'alasan_penolakan',
         'created_by',
@@ -97,10 +93,6 @@ class BaRampung extends Model
         return self::STATUSES[$this->status] ?? $this->status;
     }
 
-    public function statusPbpLabel(): string
-    {
-        return self::STATUS_PBP[$this->status_pbp] ?? $this->status_pbp;
-    }
 
     public function statusBadgeColor(): string
     {

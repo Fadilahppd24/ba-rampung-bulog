@@ -23,6 +23,8 @@ class StoreBaRampungRequest extends FormRequest
             'gudang_id' => ['required', 'exists:gudangs,id'],
             'mitra_pengolahan_id' => ['required', 'exists:mitra_pengolahans,id'],
             'nama_penandatangan' => ['required', 'string', 'max:150'],
+            'nama_penandatangan_pihak_kedua' => ['required', 'string', 'max:150'],
+'jabatan_penandatangan_pihak_kedua' => ['required', 'string', 'max:150'],
             'jabatan_penandatangan' => ['required', 'string', 'max:150'],
             'pimpinan_cabang_id' => ['required', 'exists:pimpinan_cabangs,id'],
 
@@ -31,7 +33,7 @@ class StoreBaRampungRequest extends FormRequest
 'kuantum_menir' => ['nullable', 'integer', 'min:0'],
 'kuantum_bekatul' => ['nullable', 'integer', 'min:0'],
 
-            'status_pbp' => ['nullable', 'in:normal,perwakilan_satu_kk,pengganti,perwakilan_beda_kk'],
+            
             'catatan' => ['nullable', 'string', 'max:1000'],
 
             'action' => ['required', 'in:draft,submit'],

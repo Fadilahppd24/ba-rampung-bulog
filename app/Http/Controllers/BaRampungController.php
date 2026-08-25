@@ -116,13 +116,14 @@ class BaRampungController extends Controller
     'gudang_id' => $data['gudang_id'],
     'mitra_pengolahan_id' => $data['mitra_pengolahan_id'],
     'nama_penandatangan' => $data['nama_penandatangan'],
-    'jabatan_penandatangan' => $data['jabatan_penandatangan'],
-    'pimpinan_cabang_id' => $data['pimpinan_cabang_id'],
-    'status' => $data['action'] === 'submit'
-        ? BaRampung::STATUS_MENUNGGU_VERIFIKASI
-        : BaRampung::STATUS_DRAFT,
-    'status_pbp' => $data['status_pbp'] ?? 'normal',
-    'catatan' => $data['catatan'] ?? null,
+'jabatan_penandatangan' => $data['jabatan_penandatangan'],
+'nama_penandatangan_pihak_kedua' => $data['nama_penandatangan_pihak_kedua'],
+'jabatan_penandatangan_pihak_kedua' => $data['jabatan_penandatangan_pihak_kedua'],
+'pimpinan_cabang_id' => $data['pimpinan_cabang_id'],
+'status' => $data['action'] === 'submit'
+    ? BaRampung::STATUS_MENUNGGU_VERIFIKASI
+    : BaRampung::STATUS_DRAFT,
+'catatan' => $data['catatan'] ?? null,
     'created_by' => $request->user()->id,
 ]);
 
@@ -175,9 +176,10 @@ class BaRampungController extends Controller
                 'mitra_pengolahan_id' => $data['mitra_pengolahan_id'],
                 'nama_penandatangan' => $data['nama_penandatangan'],
                 'jabatan_penandatangan' => $data['jabatan_penandatangan'],
+                'nama_penandatangan_pihak_kedua' => $data['nama_penandatangan_pihak_kedua'],
+'jabatan_penandatangan_pihak_kedua' => $data['jabatan_penandatangan_pihak_kedua'],
                 'pimpinan_cabang_id' => $data['pimpinan_cabang_id'],
                 'status' => $data['action'] === 'submit' ? BaRampung::STATUS_MENUNGGU_VERIFIKASI : BaRampung::STATUS_DRAFT,
-                'status_pbp' => $data['status_pbp'] ?? 'normal',
                 'catatan' => $data['catatan'] ?? null,
             ]);
 
