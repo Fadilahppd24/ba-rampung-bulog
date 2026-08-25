@@ -99,23 +99,32 @@ class BaRampungController extends Controller
 
         $ba = DB::transaction(function () use ($data, $tanggal, $request) {
             $ba = BaRampung::create([
-                'nomor_ba' => BaRampung::generateNomorBa($tanggal),
-                'tanggal_ba' => $tanggal,
-                'hari' => $tanggal->translatedFormat('l'),
-                'bulan' => $tanggal->translatedFormat('F'),
-                'tahun' => $tanggal->year,
-                'nomor_mo' => $data['nomor_mo'],
-                'nomor_po' => $data['nomor_po'],
-                'gudang_id' => $data['gudang_id'],
-                'mitra_pengolahan_id' => $data['mitra_pengolahan_id'],
-                'nama_penandatangan' => $data['nama_penandatangan'],
-                'jabatan_penandatangan' => $data['jabatan_penandatangan'],
-                'pimpinan_cabang_id' => $data['pimpinan_cabang_id'],
-                'status' => $data['action'] === 'submit' ? BaRampung::STATUS_MENUNGGU_VERIFIKASI : BaRampung::STATUS_DRAFT,
-                'status_pbp' => $data['status_pbp'] ?? 'normal',
-                'catatan' => $data['catatan'] ?? null,
-                'created_by' => $request->user()->id,
-            ]);
+    'nomor_ba' => 'BA - '
+        . ($data['nomor_ba_1'] ?? '')
+        . ' / '
+        . ($data['nomor_ba_2'] ?? '')
+        . ' / '
+        . ($data['tahun_ba'] ?? $tanggal->year)
+        . ' / 10040 / GKP',
+
+    'tanggal_ba' => $tanggal,
+    'hari' => $tanggal->translatedFormat('l'),
+    'bulan' => $tanggal->translatedFormat('F'),
+    'tahun' => $tanggal->year,
+    'nomor_mo' => $data['nomor_mo'],
+    'nomor_po' => $data['nomor_po'],
+    'gudang_id' => $data['gudang_id'],
+    'mitra_pengolahan_id' => $data['mitra_pengolahan_id'],
+    'nama_penandatangan' => $data['nama_penandatangan'],
+    'jabatan_penandatangan' => $data['jabatan_penandatangan'],
+    'pimpinan_cabang_id' => $data['pimpinan_cabang_id'],
+    'status' => $data['action'] === 'submit'
+        ? BaRampung::STATUS_MENUNGGU_VERIFIKASI
+        : BaRampung::STATUS_DRAFT,
+    'status_pbp' => $data['status_pbp'] ?? 'normal',
+    'catatan' => $data['catatan'] ?? null,
+    'created_by' => $request->user()->id,
+]);
 
             $this->simpanProduksi($ba, $data);
 

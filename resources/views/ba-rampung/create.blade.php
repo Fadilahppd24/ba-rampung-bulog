@@ -12,31 +12,97 @@
     <div class="card p-6">
         <h3 class="font-semibold text-gray-900 mb-5">📄 1. Data BA Rampung</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-                <label class="label">Nomor BA (Otomatis)</label>
-                <input type="text" disabled value="Akan dibuat otomatis oleh sistem setelah disimpan" class="input bg-gray-50 text-gray-400 italic text-xs">
-            </div>
-            <div class="grid grid-cols-3 gap-3">
-                <div>
-                    <label class="label">Hari</label>
-                    <input type="text" :value="hariNama" disabled class="input bg-gray-50 text-gray-500">
-                </div>
-                <div>
-                    <label class="label">Tanggal BA</label>
-                    <input type="date" name="tanggal_ba" x-model="tanggal" required class="input">
-                </div>
-                <div>
-                    <label class="label">Tahun</label>
-                    <input type="text" :value="tahunNama" disabled class="input bg-gray-50 text-gray-500">
-                </div>
-            </div>
+<div>
+    <label class="label">Nomor BA</label>
+
+    <div class="flex items-center gap-2">
+        <span class="text-sm font-medium whitespace-nowrap">BA -</span>
+
+        <input
+            type="text"
+            name="nomor_ba_1"
+            value="{{ old('nomor_ba_1') }}"
+            class="input"
+            placeholder="Nomor"
+        >
+
+        <span>/</span>
+
+        <input
+            type="text"
+            name="nomor_ba_2"
+            value="{{ old('nomor_ba_2') }}"
+            class="input"
+            placeholder="Nomor"
+        >
+
+        <span>/</span>
+
+        <select name="tahun_ba" class="input">
+            @for ($tahun = date('Y') - 2; $tahun <= date('Y') + 2; $tahun++)
+                <option value="{{ $tahun }}"
+                    @selected(old('tahun_ba', date('Y')) == $tahun)>
+                    {{ $tahun }}
+                </option>
+            @endfor
+        </select>
+
+        <span>/ 10040 / GKP</span>
+    </div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+
+    <div>
+        <label class="label">Hari</label>
+        <input
+            type="text"
+            :value="hariNama"
+            disabled
+            class="input bg-gray-50 text-gray-500"
+        >
+    </div>
+
+    <div>
+        <label class="label">Tanggal BA</label>
+        <input
+            type="date"
+            name="tanggal_ba"
+            x-model="tanggal"
+            required
+            class="input"
+        >
+    </div>
+
+    <div>
+        <label class="label">Bulan & Tahun</label>
+        <input
+            type="text"
+            :value="bulanTahunNama"
+            disabled
+            class="input bg-gray-50 text-gray-500"
+        >
+    </div>
+
+</div>
             <div>
                 <label class="label">Nomor Manufacturing Order (MO)</label>
-                <input type="text" name="nomor_mo" value="{{ old('nomor_mo') }}" required class="input" placeholder="Masukkan nomor MO">
+                <input
+    type="text"
+    name="nomor_mo"
+    value="{{ old('nomor_mo') }}"
+    class="input"
+    placeholder="Masukkan nomor MO"
+>
             </div>
             <div>
                 <label class="label">Nomor Purchase Order (PO)</label>
-                <input type="text" name="nomor_po" value="{{ old('nomor_po') }}" required class="input" placeholder="Masukkan nomor PO">
+                <input
+    type="text"
+    name="nomor_po"
+    value="{{ old('nomor_po') }}"
+    class="input"
+    placeholder="Masukkan nomor PO"
+>
             </div>
         </div>
     </div>
@@ -58,11 +124,11 @@
                     <tr>
                         <td class="px-4 py-3 font-medium text-gray-700">Gabah (GKP)</td>
                         <td class="px-4 py-3 w-40">
-                            <input type="number" step="0.01" min="0.01" name="kuantum_gabah" x-model.number="gabah" required class="input" placeholder="0.00">
+                            <input type="number" step="1" min="1" name="kuantum_gabah" x-model.number="gabah" required class="input" placeholder="Masukkan KG">
                         </td>
                         <td class="px-4 py-3 font-medium text-gray-700">Beras (HGL)</td>
                         <td class="px-4 py-3 w-40">
-                            <input type="number" step="0.01" min="0" name="kuantum_beras" x-model.number="beras" required class="input" placeholder="0.00">
+                            <input type="number" step="1" min="0" name="kuantum_beras" x-model.number="beras" required class="input" placeholder="Masukkan KG">
                         </td>
                         <td class="px-4 py-3 text-gray-500" x-text="rendemen(beras) + ' %'"></td>
                     </tr>
@@ -71,7 +137,7 @@
                         <td class="px-4 py-3"></td>
                         <td class="px-4 py-3 font-medium text-gray-700">Menir</td>
                         <td class="px-4 py-3 w-40">
-                            <input type="number" step="0.01" min="0" name="kuantum_menir" x-model.number="menir" class="input" placeholder="0.00">
+                            <input type="number" step="1" min="0" name="kuantum_menir" x-model.number="menir" class="input" placeholder="Masukkan KG">
                         </td>
                         <td class="px-4 py-3 text-gray-500" x-text="rendemen(menir) + ' %'"></td>
                     </tr>
@@ -80,7 +146,7 @@
                         <td class="px-4 py-3"></td>
                         <td class="px-4 py-3 font-medium text-gray-700">Bekatul</td>
                         <td class="px-4 py-3 w-40">
-                            <input type="number" step="0.01" min="0" name="kuantum_bekatul" x-model.number="bekatul" class="input" placeholder="0.00">
+                            <input type="number" step="1" min="0" name="kuantum_bekatul" x-model.number="bekatul" class="input" placeholder="Masukkan KG">
                         </td>
                         <td class="px-4 py-3 text-gray-500" x-text="rendemen(bekatul) + ' %'"></td>
                     </tr>
