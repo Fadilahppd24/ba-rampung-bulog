@@ -76,7 +76,6 @@
                     <th class="px-5 py-3 font-medium">Gudang</th>
                     <th class="px-5 py-3 font-medium">Mitra Pengolahan</th>
                     <th class="px-5 py-3 font-medium">Status Verifikasi</th>
-                    <th class="px-5 py-3 font-medium">Status PBP</th>
                     <th class="px-5 py-3 font-medium text-right">Aksi</th>
                 </tr>
             </thead>
@@ -89,7 +88,6 @@
                         <td class="px-5 py-3 text-gray-600">{{ $ba->gudang->nama_gudang }}</td>
                         <td class="px-5 py-3 text-gray-600">{{ $ba->mitraPengolahan->nama_mitra }}</td>
                         <td class="px-5 py-3"><x-status-badge :color="$ba->statusBadgeColor()" :label="$ba->statusLabel()" /></td>
-                        <td class="px-5 py-3 text-gray-600">{{ $ba->statusPbpLabel() }}</td>
                         <td class="px-5 py-3">
                             <div class="flex justify-end gap-3 text-xs">
                                 <a href="{{ route('ba-rampung.show', $ba) }}" class="text-bulog-700 hover:underline">Lihat</a>

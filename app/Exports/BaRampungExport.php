@@ -111,7 +111,6 @@ class BaRampungExport implements
             'Rendemen Bekatul (%)',
 
             'Status Verifikasi',
-            'Status PBP',
             'Catatan',
         ];
     }
@@ -198,9 +197,6 @@ class BaRampungExport implements
 
             $ba->statusLabel(),
 
-            $ba->statusPbpLabel(),
-
-            $ba->catatan ?? '-',
         ];
     }
 
