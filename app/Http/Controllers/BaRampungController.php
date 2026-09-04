@@ -816,46 +816,74 @@ class BaRampungController extends Controller
             $templatePath
         );
 
-        // =====================================================
-        // DATA BA
-        // =====================================================
+// =====================================================
+// DATA BA
+// =====================================================
 
-        $template->setValue(
-            'nomor_ba',
-            $baRampung->nomor_ba ?? '-'
-        );
+$nomorBa = $baRampung->nomor_ba ?? '';
 
-        $template->setValue(
-            'hari',
-            $baRampung->hari ?? '-'
-        );
+$nomorBaBagian = '-';
 
-        $template->setValue(
-            'tanggal',
-            $baRampung->tanggal_ba
-                ? $baRampung->tanggal_ba->format('d')
-                : '-'
-        );
+if (preg_match('/BA\s*-\s*(\d+)/', $nomorBa, $match)) {
+    $nomorBaBagian = $match[1];
+}
 
-        $template->setValue(
-            'bulan',
-            $baRampung->bulan ?? '-'
-        );
+$template->setValue(
+    'nomor_ba_bagian',
+    $nomorBaBagian
+);
 
-        $template->setValue(
-            'tahun',
-            $baRampung->tahun ?? '-'
-        );
+$template->setValue(
+    'nomor_ba_bulan',
+    $baRampung->tanggal_ba
+        ? $baRampung->tanggal_ba->format('m')
+        : '-'
+);
 
-        $template->setValue(
-            'nomor_mo',
-            $baRampung->nomor_mo ?? '-'
-        );
+$template->setValue(
+    'nomor_ba_tahun',
+    $baRampung->tanggal_ba
+        ? $baRampung->tanggal_ba->format('Y')
+        : '-'
+);
 
-        $template->setValue(
-            'nomor_po',
-            $baRampung->nomor_po ?? '-'
-        );
+$template->setValue(
+    'hari',
+    $baRampung->tanggal_ba
+        ? $baRampung->tanggal_ba->locale('id')->translatedFormat('l')
+        : '-'
+);
+
+$template->setValue(
+    'tanggal',
+    $baRampung->tanggal_ba
+        ? $baRampung->tanggal_ba->format('d')
+        : '-'
+);
+
+$template->setValue(
+    'bulan',
+    $baRampung->tanggal_ba
+        ? $baRampung->tanggal_ba->locale('id')->translatedFormat('F')
+        : '-'
+);
+
+$template->setValue(
+    'tahun',
+    $baRampung->tahun ?? '-'
+);
+
+$template->setValue(
+    'nomor_mo',
+    $baRampung->nomor_mo ?? '-'
+);
+
+$template->setValue(
+    'nomor_po',
+    $baRampung->nomor_po ?? '-'
+);
+
+// =====================================================
 
         // =====================================================
         // GUDANG
@@ -889,113 +917,86 @@ class BaRampungController extends Controller
         // PRODUKSI
         // =====================================================
 
-        $template->setValue(
-            'gabah',
-            number_format(
-                $gabah,
-                2,
-                '.',
-                ','
-            )
-        );
+ $template->setValue(
+    'kuantum_gabah',
+    number_format($gabah, 0, ',', '.')
+);
 
-        $template->setValue(
-            'beras',
-            number_format(
-                $kuantumBeras,
-                2,
-                '.',
-                ','
-            )
-        );
+$template->setValue(
+    'kuantum_beras',
+    number_format($kuantumBeras, 0, ',', '.')
+);
 
-        $template->setValue(
-            'menir',
-            number_format(
-                $kuantumMenir,
-                2,
-                '.',
-                ','
-            )
-        );
+$template->setValue(
+    'kuantum_menir',
+    number_format($kuantumMenir, 0, ',', '.')
+);
 
-        $template->setValue(
-            'bekatul',
-            number_format(
-                $kuantumBekatul,
-                2,
-                '.',
-                ','
-            )
-        );
+$template->setValue(
+    'kuantum_bekatul',
+    number_format($kuantumBekatul, 0, ',', '.')
+);
 
         // =====================================================
         // RENDEMEN
         // =====================================================
+$template->setValue(
+    'rendemen_beras',
+    number_format(
+        (float) ($beras->rendemen ?? 0),
+        2,
+        ',',
+        '.'
+    )
+);
 
-        $template->setValue(
-            'rendemen_beras',
-            number_format(
-                (float) (
-                    $beras->rendemen ?? 0
-                ),
-                2,
-                '.',
-                ','
-            )
-        );
+$template->setValue(
+    'rendemen_menir',
+    number_format(
+        (float) ($menir->rendemen ?? 0),
+        2,
+        ',',
+        '.'
+    )
+);
 
-        $template->setValue(
-            'rendemen_menir',
-            number_format(
-                (float) (
-                    $menir->rendemen ?? 0
-                ),
-                2,
-                '.',
-                ','
-            )
-        );
-
-        $template->setValue(
-            'rendemen_bekatul',
-            number_format(
-                (float) (
-                    $bekatul->rendemen ?? 0
-                ),
-                2,
-                '.',
-                ','
-            )
-        );
+$template->setValue(
+    'rendemen_bekatul',
+    number_format(
+        (float) ($bekatul->rendemen ?? 0),
+        2,
+        ',',
+        '.'
+    )
+);
 
         // =====================================================
-        // PIHAK KESATU
-        // =====================================================
+// PIHAK KESATU - GUDANG
+// =====================================================
 
-        $template->setValue(
-            'nama_pihak_kesatu',
-            $baRampung->nama_penandatangan ?? '-'
-        );
+$template->setValue(
+    'nama_penandatangan',
+    $baRampung->nama_penandatangan ?? '-'
+);
 
-        $template->setValue(
-            'jabatan_pihak_kesatu',
-            $baRampung->jabatan_penandatangan ?? ''
-        );
+$template->setValue(
+    'jabatan_penandatangan',
+    $baRampung->jabatan_penandatangan ?? '-'
+);
 
-        // =====================================================
-        // PIHAK KEDUA
-        // =====================================================
+// =====================================================
+// PIHAK KEDUA - MITRA PENGOLAHAN
+// =====================================================
 
-        $template->setValue(
-            'nama_pihak_kedua',
-            $baRampung->nama_penandatangan_pihak_kedua ?? '-'
-        );
+$template->setValue(
+    'nama_penandatangan_pihak_kedua',
+    $baRampung->nama_penandatangan_pihak_kedua ?? '-'
+);
 
-        $template->setValue(
-            'jabatan_pihak_kedua',
-            $baRampung->jabatan_penandatangan_pihak_kedua ?? ''
-        );
+$template->setValue(
+    'jabatan_penandatangan_pihak_kedua',
+    $baRampung->jabatan_penandatangan_pihak_kedua ?? '-'
+);
 
         // =====================================================
         // PIMPINAN CABANG
@@ -1026,11 +1027,25 @@ class BaRampungController extends Controller
         // =====================================================
 
         $template->setValue(
-            'tanggal_ttd',
-            $baRampung->tanggal_ba
-                ? $baRampung->tanggal_ba->format('d / m / Y')
-                : now()->format('d / m / Y')
-        );
+    'tanggal_ttd_hari',
+    $baRampung->tanggal_ba
+        ? $baRampung->tanggal_ba->format('d')
+        : now()->format('d')
+);
+
+$template->setValue(
+    'tanggal_ttd_bulan',
+    $baRampung->tanggal_ba
+        ? $baRampung->tanggal_ba->format('m')
+        : now()->format('m')
+);
+
+$template->setValue(
+    'tanggal_ttd_tahun',
+    $baRampung->tanggal_ba
+        ? $baRampung->tanggal_ba->format('Y')
+        : now()->format('Y')
+);
 
         // =====================================================
         // SIMPAN DOCX
