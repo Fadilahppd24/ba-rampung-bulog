@@ -52,12 +52,16 @@
             <span>📄</span> Laporan
         </a>
 
-        @role('admin_sistem')
-            <div class="pt-4 pb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">Administrasi</div>
-            <a href="{{ route('pengaturan.umum') }}" class="sidebar-link {{ request()->routeIs('pengaturan.*') ? 'active' : '' }}">
-                <span>⚙️</span> Pengaturan
-            </a>
-        @endrole
+        @role('admin_kantor')
+    <div class="pt-4 pb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+        Administrasi
+    </div>
+
+    <a href="{{ route('pengaturan.umum') }}"
+       class="sidebar-link {{ request()->routeIs('pengaturan.*') ? 'active' : '' }}">
+        <span>⚙️</span> Pengaturan
+    </a>
+@endrole
     </nav>
 </aside>
 

@@ -9,22 +9,23 @@ class BaRampungPolicy
 {
     public function viewAny(User $user): bool
     {
-        return true; // all authenticated + active roles can see the list, scoped by controller
+        return true;
     }
 
     public function view(User $user, BaRampung $ba): bool
     {
-        if ($user->isAdminSistem() || $user->isPimpinanCabang()) {
+        // Admin Kantor dan Pimpinan Cabang bisa melihat semua BA
+        if ($user->isAdminKantor() || $user->isPimpinanCabang()) {
             return true;
         }
 
-        // Admin Gudang only sees BA belonging to their own gudang
+        // Admin Gudang hanya bisa melihat BA dari gudangnya sendiri
         return $user->gudang_id === $ba->gudang_id;
     }
 
     public function create(User $user): bool
     {
-        return $user->isAdminGudang() || $user->isAdminSistem();
+        return $user->isAdminGudang() || $user->isAdminKantor();
     }
 
     public function update(User $user, BaRampung $ba): bool
@@ -33,17 +34,29 @@ class BaRampungPolicy
             return false;
         }
 
-        // Cannot edit once verified or completed
-        return in_array($ba->status, [BaRampung::STATUS_DRAFT, BaRampung::STATUS_MENUNGGU_VERIFIKASI], true)
-            && ($user->isAdminGudang() || $user->isAdminSistem());
+        // Hanya bisa edit saat draft atau menunggu verifikasi
+        return in_array(
+            $ba->status,
+            [
+                BaRampung::STATUS_DRAFT,
+                BaRampung::STATUS_MENUNGGU_VERIFIKASI
+            ],
+            true
+        ) && (
+            $user->isAdminGudang() ||
+            $user->isAdminKantor()
+        );
     }
 
     public function delete(User $user, BaRampung $ba): bool
     {
-        if ($user->isAdminSistem()) {
+        // Admin Kantor bisa menghapus semua BA
+        if ($user->isAdminKantor()) {
             return true;
         }
 
+        // Admin Gudang hanya bisa menghapus BA draft
+        // milik gudangnya sendiri
         return $user->isAdminGudang()
             && $user->gudang_id === $ba->gudang_id
             && $ba->status === BaRampung::STATUS_DRAFT;
@@ -51,7 +64,7 @@ class BaRampungPolicy
 
     public function verify(User $user, BaRampung $ba): bool
     {
-        return ($user->isPimpinanCabang() || $user->isAdminSistem())
+        return $user->isAdminKantor()
             && $ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI;
     }
 }

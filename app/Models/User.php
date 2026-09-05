@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -14,7 +13,7 @@ class User extends Authenticatable
 
     public const ROLE_ADMIN_GUDANG = 'admin_gudang';
     public const ROLE_PIMPINAN_CABANG = 'pimpinan_cabang';
-    public const ROLE_ADMIN_SISTEM = 'admin_sistem';
+    public const ROLE_ADMIN_KANTOR = 'admin_kantor';
 
     protected $fillable = [
         'name',
@@ -44,9 +43,9 @@ class User extends Authenticatable
         return $this->belongsTo(Gudang::class);
     }
 
-    public function isAdminSistem(): bool
+    public function isAdminKantor(): bool
     {
-        return $this->role === self::ROLE_ADMIN_SISTEM;
+        return $this->role === self::ROLE_ADMIN_KANTOR;
     }
 
     public function isPimpinanCabang(): bool
@@ -64,7 +63,7 @@ class User extends Authenticatable
         return match ($this->role) {
             self::ROLE_ADMIN_GUDANG => 'Admin Gudang',
             self::ROLE_PIMPINAN_CABANG => 'Pimpinan Cabang',
-            self::ROLE_ADMIN_SISTEM => 'Admin Sistem',
+            self::ROLE_ADMIN_KANTOR => 'Admin Kantor',
             default => $this->role,
         };
     }
