@@ -8,10 +8,11 @@ class StoreMitraPengolahanRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return in_array($this->user()?->role, [
-            'admin_gudang',
-            'admin_kantor',
-        ], true);
+        return in_array(
+            $this->user()?->role,
+            ['admin_gudang', 'admin_kantor'],
+            true
+        );
     }
 
     public function rules(): array
@@ -34,12 +35,6 @@ class StoreMitraPengolahanRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:100',
-            ],
-
-            'penanggung_jawab' => [
-                'nullable',
-                'string',
-                'max:150',
             ],
 
             'alamat' => [
@@ -72,6 +67,12 @@ class StoreMitraPengolahanRequest extends FormRequest
                 'max:150',
             ],
 
+            'penanggung_jawab' => [
+                'nullable',
+                'string',
+                'max:150',
+            ],
+
             'status' => [
                 'required',
                 'in:aktif,nonaktif',
@@ -87,7 +88,6 @@ class StoreMitraPengolahanRequest extends FormRequest
             'nama_mitra.required' => 'Nama Mitra wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'status.required' => 'Status wajib dipilih.',
-            'status.in' => 'Status harus Aktif atau Nonaktif.',
         ];
     }
 }
