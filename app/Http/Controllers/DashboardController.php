@@ -15,29 +15,103 @@ class DashboardController extends Controller
     public function index(Request $request): View
     {
         $user = $request->user();
+
         $tahun = (int) $request->input('tahun', now()->year);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Query BA Rampung
+        |--------------------------------------------------------------------------
+        | Admin Gudang hanya melihat BA milik gudangnya sendiri.
+        | Admin Kantor melihat seluruh BA.
+        */
         $baQuery = BaRampung::query();
+
         if ($user->isAdminGudang() && $user->gudang_id) {
             $baQuery->where('gudang_id', $user->gudang_id);
         }
 
-        $kpi = [
-            'total_ba' => (clone $baQuery)->count(),
-            'gudang_aktif' => Gudang::aktif()->count(),
-            'mitra_pengolahan' => MitraPengolahan::aktif()->count(),
-            'penyaluran_berjalan' => (clone $baQuery)->where('status', BaRampung::STATUS_MENUNGGU_VERIFIKASI)->count(),
-        ];
 
-        // BA per bulan for the selected year (real aggregation, not hardcoded)
+        /*
+        |--------------------------------------------------------------------------
+        | KPI
+        |--------------------------------------------------------------------------
+        */
+
+        if ($user->isAdminGudang()) {
+
+            // KPI khusus Admin Gudang
+            $kpi = [
+                'total_ba' => (clone $baQuery)->count(),
+
+                'menunggu_verifikasi' => (clone $baQuery)
+                    ->where(
+                        'status',
+                        BaRampung::STATUS_MENUNGGU_VERIFIKASI
+                    )
+                    ->count(),
+
+                'selesai' => (clone $baQuery)
+                    ->where('status', 'selesai')
+                    ->count(),
+
+                'ditolak' => (clone $baQuery)
+                    ->where('status', 'ditolak')
+                    ->count(),
+            ];
+
+        } else {
+
+            // KPI Admin Kantor
+            $kpi = [
+                'total_ba' => (clone $baQuery)->count(),
+
+                'gudang_aktif' => Gudang::aktif()->count(),
+
+                'mitra_pengolahan' => MitraPengolahan::aktif()->count(),
+
+                'penyaluran_berjalan' => (clone $baQuery)
+                    ->where(
+                        'status',
+                        BaRampung::STATUS_MENUNGGU_VERIFIKASI
+                    )
+                    ->count(),
+            ];
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Rekap BA Rampung per Bulan
+        |--------------------------------------------------------------------------
+        */
+
         $perBulanRaw = (clone $baQuery)
             ->whereYear('tanggal_ba', $tahun)
-            ->select(DB::raw('MONTH(tanggal_ba) as bulan'), DB::raw('COUNT(*) as jumlah'))
+            ->select(
+                DB::raw('MONTH(tanggal_ba) as bulan'),
+                DB::raw('COUNT(*) as jumlah')
+            )
             ->groupBy(DB::raw('MONTH(tanggal_ba)'))
             ->pluck('jumlah', 'bulan');
 
-        $namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        $namaBulan = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'Mei',
+            'Jun',
+            'Jul',
+            'Agu',
+            'Sep',
+            'Okt',
+            'Nov',
+            'Des',
+        ];
+
         $perBulan = [];
+
         foreach ($namaBulan as $i => $nama) {
             $perBulan[] = [
                 'bulan' => $nama,
@@ -45,24 +119,67 @@ class DashboardController extends Controller
             ];
         }
 
-        // Distribusi per gudang
-        $distribusiGudang = (clone $baQuery)
-            ->join('gudangs', 'gudangs.id', '=', 'ba_rampungs.gudang_id')
-            ->select('gudangs.nama_gudang', DB::raw('COUNT(*) as jumlah'))
-            ->groupBy('gudangs.nama_gudang')
-            ->orderByDesc('jumlah')
-            ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Distribusi Pergudangan
+        |--------------------------------------------------------------------------
+        | Hanya diperlukan untuk Admin Kantor.
+        */
+
+        $distribusiGudang = collect();
+
+        if ($user->isAdminKantor()) {
+            $distribusiGudang = (clone $baQuery)
+                ->join(
+                    'gudangs',
+                    'gudangs.id',
+                    '=',
+                    'ba_rampungs.gudang_id'
+                )
+                ->select(
+                    'gudangs.nama_gudang',
+                    DB::raw('COUNT(*) as jumlah')
+                )
+                ->groupBy('gudangs.nama_gudang')
+                ->orderByDesc('jumlah')
+                ->get();
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | BA Rampung Terbaru
+        |--------------------------------------------------------------------------
+        */
 
         $baTerbaru = (clone $baQuery)
-            ->with(['gudang', 'mitraPengolahan'])
+            ->with([
+                'gudang',
+                'mitraPengolahan',
+            ])
             ->latest('tanggal_ba')
             ->limit(5)
             ->get();
 
-        $aktivitasTerbaru = AktivitasLog::with('user')
-            ->latest('created_at')
-            ->limit(6)
-            ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Aktivitas Terbaru
+        |--------------------------------------------------------------------------
+        | Admin Kantor melihat aktivitas sistem.
+        | Admin Gudang tidak menampilkan aktivitas sistem global.
+        */
+
+        $aktivitasTerbaru = collect();
+
+        if ($user->isAdminKantor()) {
+            $aktivitasTerbaru = AktivitasLog::with('user')
+                ->latest('created_at')
+                ->limit(6)
+                ->get();
+        }
+
 
         return view('dashboard.index', compact(
             'kpi',
