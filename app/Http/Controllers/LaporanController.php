@@ -22,6 +22,9 @@ class LaporanController extends Controller
         'catatan' => 'Laporan Catatan',
     ];
 
+    /**
+     * Halaman laporan.
+     */
     public function index(Request $request): View
     {
         $user = Auth::user();
@@ -47,13 +50,20 @@ class LaporanController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Admin Gudang hanya boleh melihat gudangnya sendiri
+        | ADMIN GUDANG
+        | Selalu dikunci ke gudangnya sendiri.
         |--------------------------------------------------------------------------
         */
 
         if ($user?->isAdminGudang()) {
             $filters['gudang_id'] = $user->gudang_id;
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tampilkan laporan
+        |--------------------------------------------------------------------------
+        */
 
         $sudahFilter = $request->filled('tampilkan');
 
@@ -63,33 +73,52 @@ class LaporanController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Data dropdown
+        | Dropdown Gudang
         |--------------------------------------------------------------------------
         */
 
         if ($user?->isAdminGudang()) {
+
+            // Admin Gudang hanya melihat gudangnya sendiri.
             $gudangs = Gudang::whereKey($user->gudang_id)
                 ->orderBy('nama_gudang')
                 ->get();
+
         } else {
+
+            // Admin Kantor dapat melihat semua gudang.
             $gudangs = Gudang::orderBy('nama_gudang')->get();
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dropdown Mitra
+        |--------------------------------------------------------------------------
+        */
 
         $mitras = MitraPengolahan::orderBy('nama_mitra')->get();
 
         return view('laporan.index', [
             'jenisList' => self::JENIS_LABEL,
             'jenis' => $jenis,
+
             'headings' => $headings,
             'rows' => $rows,
+
             'gudangs' => $gudangs,
             'mitras' => $mitras,
+
             'sudahFilter' => $sudahFilter,
+
             'isAdminGudang' => $user?->isAdminGudang() ?? false,
+
             'gudangUser' => $user?->gudang,
         ]);
     }
 
+    /**
+     * Export laporan ke Excel.
+     */
     public function exportExcel(Request $request)
     {
         $user = Auth::user();
@@ -100,6 +129,12 @@ class LaporanController extends Controller
             $jenis = 'ba_rampung';
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Filter
+        |--------------------------------------------------------------------------
+        */
+
         $filters = $request->only([
             'gudang_id',
             'mitra_pengolahan_id',
@@ -109,7 +144,8 @@ class LaporanController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Admin Gudang tetap dikunci ke gudangnya sendiri
+        | ADMIN GUDANG
+        | Tidak boleh export gudang lain.
         |--------------------------------------------------------------------------
         */
 
@@ -146,6 +182,9 @@ class LaporanController extends Controller
         );
     }
 
+    /**
+     * Export laporan ke PDF.
+     */
     public function exportPdf(Request $request)
     {
         $user = Auth::user();
@@ -156,6 +195,12 @@ class LaporanController extends Controller
             $jenis = 'ba_rampung';
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Filter
+        |--------------------------------------------------------------------------
+        */
+
         $filters = $request->only([
             'gudang_id',
             'mitra_pengolahan_id',
@@ -165,7 +210,8 @@ class LaporanController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Admin Gudang tetap dikunci ke gudangnya sendiri
+        | ADMIN GUDANG
+        | Tidak boleh export gudang lain.
         |--------------------------------------------------------------------------
         */
 
@@ -203,22 +249,30 @@ class LaporanController extends Controller
     private function buildData(string $jenis, array $filters): array
     {
         return match ($jenis) {
+
             'per_gudang' => $this->laporanPerGudang($filters),
+
             'per_mitra' => $this->laporanPerMitra($filters),
+
             'catatan' => $this->laporanCatatan($filters),
+
             default => $this->laporanBaRampung($filters),
         };
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Filter utama
+    | Filter Utama
     |--------------------------------------------------------------------------
     */
 
-    private function applyFilters(Builder $query, array $filters): Builder
-    {
+    private function applyFilters(
+        Builder $query,
+        array $filters
+    ): Builder {
+
         if (!empty($filters['gudang_id'])) {
+
             $query->where(
                 'ba_rampungs.gudang_id',
                 $filters['gudang_id']
@@ -226,6 +280,7 @@ class LaporanController extends Controller
         }
 
         if (!empty($filters['mitra_pengolahan_id'])) {
+
             $query->where(
                 'ba_rampungs.mitra_pengolahan_id',
                 $filters['mitra_pengolahan_id']
@@ -233,6 +288,7 @@ class LaporanController extends Controller
         }
 
         if (!empty($filters['bulan'])) {
+
             $query->whereMonth(
                 'ba_rampungs.tanggal_ba',
                 $filters['bulan']
@@ -240,6 +296,7 @@ class LaporanController extends Controller
         }
 
         if (!empty($filters['tahun'])) {
+
             $query->whereYear(
                 'ba_rampungs.tanggal_ba',
                 $filters['tahun']
@@ -271,41 +328,59 @@ class LaporanController extends Controller
         $rows = $bas->values()->map(function ($ba, $index) {
 
             $gabah = $ba->produksis
-                ->firstWhere('produk_sebelum', 'Gabah (GKP)');
+                ->firstWhere(
+                    'produk_sebelum',
+                    'Gabah (GKP)'
+                );
 
             $beras = $ba->produksis
-                ->firstWhere('produk_sesudah', 'Beras (HGL)');
+                ->firstWhere(
+                    'produk_sesudah',
+                    'Beras (HGL)'
+                );
 
             $kuantumGabah = $gabah?->kuantum_sebelum ?? 0;
+
             $kuantumBeras = $beras?->kuantum_sesudah ?? 0;
+
             $rendemenBeras = $beras?->rendemen ?? 0;
 
             return [
                 $index + 1,
+
                 $ba->nomor_ba,
+
                 $ba->tanggal_ba?->format('d/m/Y'),
+
                 $ba->gudang?->nama_gudang ?? '-',
+
                 $ba->mitraPengolahan?->nama_mitra ?? '-',
+
                 $ba->nomor_po ?? '-',
+
                 $ba->nomor_mo ?? '-',
+
                 number_format(
                     (float) $kuantumGabah,
                     0,
                     ',',
                     '.'
                 ),
+
                 number_format(
                     (float) $kuantumBeras,
                     0,
                     ',',
                     '.'
                 ),
+
                 number_format(
                     (float) $rendemenBeras,
                     2,
                     ',',
                     '.'
                 ),
+
                 $ba->statusLabel(),
             ];
         });
@@ -324,13 +399,14 @@ class LaporanController extends Controller
                 'Rendemen (%)',
                 'Status',
             ],
+
             $rows,
         ];
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Laporan per Gudang
+    | Laporan Per Gudang
     |--------------------------------------------------------------------------
     */
 
@@ -368,13 +444,14 @@ class LaporanController extends Controller
                 'Gudang',
                 'Total BA',
             ],
+
             $rows,
         ];
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Laporan per Mitra
+    | Laporan Per Mitra
     |--------------------------------------------------------------------------
     */
 
@@ -412,6 +489,7 @@ class LaporanController extends Controller
                 'Mitra Pengolahan',
                 'Total BA',
             ],
+
             $rows,
         ];
     }
@@ -437,12 +515,18 @@ class LaporanController extends Controller
             ->get()
             ->values()
             ->map(function ($ba, $index) {
+
                 return [
                     $index + 1,
+
                     $ba->nomor_ba,
+
                     $ba->tanggal_ba?->format('d/m/Y'),
+
                     $ba->gudang?->nama_gudang ?? '-',
+
                     $ba->mitraPengolahan?->nama_mitra ?? '-',
+
                     $ba->catatan,
                 ];
             });
@@ -456,6 +540,7 @@ class LaporanController extends Controller
                 'Mitra Pengolahan',
                 'Catatan',
             ],
+
             $rows,
         ];
     }

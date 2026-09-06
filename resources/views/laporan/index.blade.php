@@ -83,6 +83,10 @@
 
                 @foreach ($jenisList as $val => $label)
 
+                    @if ($isAdminGudang && $val === 'per_gudang')
+                        @continue
+                    @endif
+
                     @php
                         $icon = match ($val) {
                             'ba_rampung' => '📄',
@@ -664,8 +668,13 @@
                     </p>
 
                     <p class="mt-1 text-xs leading-5 text-gray-500">
-                        Pilih laporan BA Rampung, per Mitra,
-                        per Gudang, atau Catatan.
+                        @if ($isAdminGudang)
+                            Pilih laporan BA Rampung, per Mitra,
+                            atau Catatan.
+                        @else
+                            Pilih laporan BA Rampung, per Mitra,
+                            per Gudang, atau Catatan.
+                        @endif
                     </p>
 
                 </div>
