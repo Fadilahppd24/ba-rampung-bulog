@@ -18,11 +18,17 @@ class Pegawai extends Model
         'nomor_telepon',
         'email',
         'status',
+        'user_id',
     ];
 
     public function gudang(): BelongsTo
     {
         return $this->belongsTo(Gudang::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function scopeAktif($query)

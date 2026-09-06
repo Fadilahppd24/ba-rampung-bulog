@@ -3,16 +3,13 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePegawaiRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return in_array(
-            $this->user()?->role,
-            ['admin_gudang', 'admin_kantor'],
-            true
-        );
+        return $this->user()?->isAdminKantor() === true;
     }
 
     public function rules(): array
@@ -48,6 +45,29 @@ class StorePegawaiRequest extends FormRequest
                 'max:30',
             ],
 
+            'email' => [
+                'required',
+                'email',
+                'max:150',
+                'unique:users,email',
+            ],
+
+            'role' => [
+                'required',
+                Rule::in([
+                    'admin_gudang',
+                    'admin_kantor',
+                    'pimpinan_cabang',
+                ]),
+            ],
+
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+            ],
+
             'status' => [
                 'required',
                 'in:aktif,nonaktif',
@@ -60,9 +80,24 @@ class StorePegawaiRequest extends FormRequest
         return [
             'nip.required' => 'NIP wajib diisi.',
             'nip.unique' => 'NIP sudah digunakan.',
+
             'nama.required' => 'Nama pegawai wajib diisi.',
+
             'jabatan.required' => 'Jabatan wajib diisi.',
+
             'gudang_id.exists' => 'Gudang yang dipilih tidak valid.',
+
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan oleh akun lain.',
+
+            'role.required' => 'Role akun wajib dipilih.',
+            'role.in' => 'Role akun tidak valid.',
+
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+
             'status.required' => 'Status wajib dipilih.',
         ];
     }
