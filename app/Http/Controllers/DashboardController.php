@@ -22,9 +22,10 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         | Query BA Rampung
         |--------------------------------------------------------------------------
-        | Admin Gudang hanya melihat BA milik gudangnya sendiri.
+        | Admin Gudang hanya melihat BA dari gudangnya sendiri.
         | Admin Kantor melihat seluruh BA.
         */
+
         $baQuery = BaRampung::query();
 
         if ($user->isAdminGudang() && $user->gudang_id) {
@@ -60,9 +61,9 @@ class DashboardController extends Controller
                     ->count(),
             ];
 
-        } else {
+        } elseif ($user->isAdminKantor()) {
 
-            // KPI Admin Kantor
+            // KPI khusus Admin Kantor
             $kpi = [
                 'total_ba' => (clone $baQuery)->count(),
 
@@ -76,6 +77,19 @@ class DashboardController extends Controller
                         BaRampung::STATUS_MENUNGGU_VERIFIKASI
                     )
                     ->count(),
+            ];
+
+        } else {
+
+            // Default untuk role lain
+            $kpi = [
+                'total_ba' => (clone $baQuery)->count(),
+
+                'gudang_aktif' => 0,
+
+                'mitra_pengolahan' => 0,
+
+                'penyaluran_berjalan' => 0,
             ];
         }
 
@@ -122,14 +136,15 @@ class DashboardController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Distribusi Pergudangan
+        | Distribusi BA per Gudang
         |--------------------------------------------------------------------------
-        | Hanya diperlukan untuk Admin Kantor.
+        | Hanya ditampilkan pada Dashboard Admin Kantor.
         */
 
         $distribusiGudang = collect();
 
         if ($user->isAdminKantor()) {
+
             $distribusiGudang = (clone $baQuery)
                 ->join(
                     'gudangs',
@@ -165,21 +180,27 @@ class DashboardController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Aktivitas Terbaru
+        | Aktivitas Sistem Terbaru
         |--------------------------------------------------------------------------
-        | Admin Kantor melihat aktivitas sistem.
-        | Admin Gudang tidak menampilkan aktivitas sistem global.
+        | Hanya Admin Kantor yang melihat aktivitas sistem global.
         */
 
         $aktivitasTerbaru = collect();
 
         if ($user->isAdminKantor()) {
+
             $aktivitasTerbaru = AktivitasLog::with('user')
                 ->latest('created_at')
                 ->limit(6)
                 ->get();
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Kirim Data ke Dashboard
+        |--------------------------------------------------------------------------
+        */
 
         return view('dashboard.index', compact(
             'kpi',
