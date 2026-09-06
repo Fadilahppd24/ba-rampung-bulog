@@ -36,15 +36,26 @@ class BaRampungController extends Controller
             'mitraPengolahan',
         ]);
 
-        // Admin Gudang hanya melihat BA gudangnya sendiri
-        if ($user->isAdminGudang() && $user->gudang_id) {
-            $query->where(
-                'gudang_id',
-                $user->gudang_id
-            );
+        // =====================================================
+        // ADMIN GUDANG
+        // Hanya boleh melihat BA dari gudangnya sendiri
+        // =====================================================
+
+        if ($user->isAdminGudang()) {
+            if (! $user->gudang_id) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->where(
+                    'gudang_id',
+                    $user->gudang_id
+                );
+            }
         }
 
-        // Search
+        // =====================================================
+        // SEARCH
+        // =====================================================
+
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
 
@@ -72,7 +83,10 @@ class BaRampungController extends Controller
             });
         }
 
-        // Filter status
+        // =====================================================
+        // FILTER STATUS
+        // =====================================================
+
         if ($status = $request->input('status')) {
             $query->where(
                 'status',
@@ -80,15 +94,24 @@ class BaRampungController extends Controller
             );
         }
 
-        // Filter gudang
-        if ($gudangId = $request->input('gudang_id')) {
+        // =====================================================
+        // FILTER GUDANG
+        // =====================================================
+
+        if (
+            ! $user->isAdminGudang()
+            && ($gudangId = $request->input('gudang_id'))
+        ) {
             $query->where(
                 'gudang_id',
                 $gudangId
             );
         }
 
-        // Filter mitra
+        // =====================================================
+        // FILTER MITRA
+        // =====================================================
+
         if ($mitraId = $request->input('mitra_pengolahan_id')) {
             $query->where(
                 'mitra_pengolahan_id',
@@ -96,7 +119,10 @@ class BaRampungController extends Controller
             );
         }
 
-        // Filter bulan
+        // =====================================================
+        // FILTER BULAN
+        // =====================================================
+
         if ($bulan = $request->input('bulan')) {
             $query->whereMonth(
                 'tanggal_ba',
@@ -104,13 +130,20 @@ class BaRampungController extends Controller
             );
         }
 
-        // Filter tahun
+        // =====================================================
+        // FILTER TAHUN
+        // =====================================================
+
         if ($tahun = $request->input('tahun')) {
             $query->whereYear(
                 'tanggal_ba',
                 $tahun
             );
         }
+
+        // =====================================================
+        // DATA BA
+        // =====================================================
 
         $baList = $query
             ->latest('tanggal_ba')
@@ -123,22 +156,30 @@ class BaRampungController extends Controller
 
         $kpiBase = BaRampung::query();
 
-        if ($user->isAdminGudang() && $user->gudang_id) {
-            $kpiBase->where(
-                'gudang_id',
-                $user->gudang_id
-            );
+        if ($user->isAdminGudang()) {
+            if (! $user->gudang_id) {
+                $kpiBase->whereRaw('1 = 0');
+            } else {
+                $kpiBase->where(
+                    'gudang_id',
+                    $user->gudang_id
+                );
+            }
         }
 
         $kpi = [
 
-            'total' => (clone $kpiBase)->count(),
+            'total' => (clone $kpiBase)
+                ->count(),
 
             'terverifikasi' => (clone $kpiBase)
-                ->whereIn('status', [
-                    BaRampung::STATUS_TERVERIFIKASI,
-                    BaRampung::STATUS_SELESAI,
-                ])
+                ->whereIn(
+                    'status',
+                    [
+                        BaRampung::STATUS_TERVERIFIKASI,
+                        BaRampung::STATUS_SELESAI,
+                    ]
+                )
                 ->count(),
 
             'belum_serah' => (clone $kpiBase)
@@ -158,9 +199,30 @@ class BaRampungController extends Controller
             'mitra' => MitraPengolahan::aktif()->count(),
         ];
 
-        $gudangs = Gudang::aktif()
-            ->orderBy('nama_gudang')
-            ->get();
+        // =====================================================
+        // DATA GUDANG
+        // =====================================================
+
+        if ($user->isAdminGudang()) {
+
+            $gudangs = Gudang::aktif()
+                ->where(
+                    'id',
+                    $user->gudang_id
+                )
+                ->orderBy('nama_gudang')
+                ->get();
+
+        } else {
+
+            $gudangs = Gudang::aktif()
+                ->orderBy('nama_gudang')
+                ->get();
+        }
+
+        // =====================================================
+        // DATA MITRA
+        // =====================================================
 
         $mitras = MitraPengolahan::aktif()
             ->orderBy('nama_mitra')
@@ -189,9 +251,32 @@ class BaRampungController extends Controller
             BaRampung::class
         );
 
-        $gudangs = Gudang::aktif()
-            ->orderBy('nama_gudang')
-            ->get();
+        $user = request()->user();
+
+        // Admin Gudang hanya melihat gudangnya sendiri
+        if ($user->isAdminGudang()) {
+
+            if (! $user->gudang_id) {
+                abort(
+                    403,
+                    'Akun Admin Gudang belum memiliki gudang.'
+                );
+            }
+
+            $gudangs = Gudang::aktif()
+                ->where(
+                    'id',
+                    $user->gudang_id
+                )
+                ->orderBy('nama_gudang')
+                ->get();
+
+        } else {
+
+            $gudangs = Gudang::aktif()
+                ->orderBy('nama_gudang')
+                ->get();
+        }
 
         $mitras = MitraPengolahan::aktif()
             ->orderBy('nama_mitra')
@@ -227,6 +312,25 @@ class BaRampungController extends Controller
 
         $data = $request->validated();
 
+        $user = $request->user();
+
+        // =====================================================
+        // ADMIN GUDANG
+        // Gudang BA otomatis mengikuti gudang akun login
+        // =====================================================
+
+        if ($user->isAdminGudang()) {
+
+            if (! $user->gudang_id) {
+                abort(
+                    403,
+                    'Akun Admin Gudang belum memiliki gudang.'
+                );
+            }
+
+            $data['gudang_id'] = $user->gudang_id;
+        }
+
         $tanggal = \Carbon\Carbon::parse(
             $data['tanggal_ba']
         );
@@ -238,28 +342,43 @@ class BaRampungController extends Controller
                 $request
             ) {
 
-                // Nomor BA dibuat otomatis
+                // =================================================
+                // NOMOR BA OTOMATIS
+                // =================================================
+
                 $nomorBa = BaRampung::generateNomorBa(
                     $tanggal
                 );
 
+                // =================================================
+                // SIMPAN BA
+                // =================================================
+
                 $ba = BaRampung::create([
 
-                    'nomor_ba' => $nomorBa,
+                    'nomor_ba' =>
+                        $nomorBa,
 
-                    'tanggal_ba' => $tanggal,
+                    'tanggal_ba' =>
+                        $tanggal,
 
-                    'hari' => $tanggal->translatedFormat('l'),
+                    'hari' =>
+                        $tanggal->translatedFormat('l'),
 
-                    'bulan' => $tanggal->translatedFormat('F'),
+                    'bulan' =>
+                        $tanggal->translatedFormat('F'),
 
-                    'tahun' => $tanggal->year,
+                    'tahun' =>
+                        $tanggal->year,
 
-                    'nomor_mo' => $data['nomor_mo'] ?? null,
+                    'nomor_mo' =>
+                        $data['nomor_mo'] ?? null,
 
-                    'nomor_po' => $data['nomor_po'] ?? null,
+                    'nomor_po' =>
+                        $data['nomor_po'] ?? null,
 
-                    'gudang_id' => $data['gudang_id'],
+                    'gudang_id' =>
+                        $data['gudang_id'],
 
                     'mitra_pengolahan_id' =>
                         $data['mitra_pengolahan_id'],
@@ -282,6 +401,7 @@ class BaRampungController extends Controller
                     'pimpinan_cabang_id' =>
                         $data['pimpinan_cabang_id'],
 
+                    // Status
                     'status' =>
                         $data['action'] === 'submit'
                             ? BaRampung::STATUS_MENUNGGU_VERIFIKASI
@@ -294,6 +414,10 @@ class BaRampungController extends Controller
                         $request->user()->id,
                 ]);
 
+                // =================================================
+                // SIMPAN PRODUKSI
+                // =================================================
+
                 $this->simpanProduksi(
                     $ba,
                     $data
@@ -302,6 +426,10 @@ class BaRampungController extends Controller
                 return $ba;
             }
         );
+
+        // =====================================================
+        // LOG AKTIVITAS
+        // =====================================================
 
         ActivityLogger::log(
             'Membuat BA Rampung',
@@ -368,9 +496,46 @@ class BaRampungController extends Controller
             'produksis'
         );
 
-        $gudangs = Gudang::aktif()
-            ->orderBy('nama_gudang')
-            ->get();
+        $user = request()->user();
+
+        // =====================================================
+        // ADMIN GUDANG
+        // Hanya gudang sendiri
+        // =====================================================
+
+        if ($user->isAdminGudang()) {
+
+            if (! $user->gudang_id) {
+                abort(
+                    403,
+                    'Akun Admin Gudang belum memiliki gudang.'
+                );
+            }
+
+            if (
+                $baRampung->gudang_id
+                !== $user->gudang_id
+            ) {
+                abort(
+                    403,
+                    'Anda tidak memiliki akses ke BA Rampung ini.'
+                );
+            }
+
+            $gudangs = Gudang::aktif()
+                ->where(
+                    'id',
+                    $user->gudang_id
+                )
+                ->orderBy('nama_gudang')
+                ->get();
+
+        } else {
+
+            $gudangs = Gudang::aktif()
+                ->orderBy('nama_gudang')
+                ->get();
+        }
 
         $mitras = MitraPengolahan::aktif()
             ->orderBy('nama_mitra')
@@ -408,6 +573,37 @@ class BaRampungController extends Controller
 
         $data = $request->validated();
 
+        $user = $request->user();
+
+        // =====================================================
+        // ADMIN GUDANG
+        // =====================================================
+
+        if ($user->isAdminGudang()) {
+
+            if (! $user->gudang_id) {
+                abort(
+                    403,
+                    'Akun Admin Gudang belum memiliki gudang.'
+                );
+            }
+
+            // Pastikan BA memang milik gudangnya
+            if (
+                $baRampung->gudang_id
+                !== $user->gudang_id
+            ) {
+                abort(
+                    403,
+                    'Anda tidak memiliki akses ke BA Rampung ini.'
+                );
+            }
+
+            // Gudang tidak boleh dipindahkan
+            $data['gudang_id'] =
+                $user->gudang_id;
+        }
+
         $tanggal = \Carbon\Carbon::parse(
             $data['tanggal_ba']
         );
@@ -421,7 +617,8 @@ class BaRampungController extends Controller
 
                 $baRampung->update([
 
-                    'tanggal_ba' => $tanggal,
+                    'tanggal_ba' =>
+                        $tanggal,
 
                     'hari' =>
                         $tanggal->translatedFormat('l'),
@@ -462,6 +659,7 @@ class BaRampungController extends Controller
                     'pimpinan_cabang_id' =>
                         $data['pimpinan_cabang_id'],
 
+                    // Status
                     'status' =>
                         $data['action'] === 'submit'
                             ? BaRampung::STATUS_MENUNGGU_VERIFIKASI
@@ -471,12 +669,18 @@ class BaRampungController extends Controller
                         $data['catatan'] ?? null,
                 ]);
 
-                // Hapus produksi lama
+                // =================================================
+                // HAPUS PRODUKSI LAMA
+                // =================================================
+
                 $baRampung
                     ->produksis()
                     ->delete();
 
-                // Simpan produksi baru
+                // =================================================
+                // SIMPAN PRODUKSI BARU
+                // =================================================
+
                 $this->simpanProduksi(
                     $baRampung,
                     $data
@@ -516,8 +720,11 @@ class BaRampungController extends Controller
             $baRampung
         );
 
-        $nomor = $baRampung->nomor_ba;
-        $id = $baRampung->id;
+        $nomor =
+            $baRampung->nomor_ba;
+
+        $id =
+            $baRampung->id;
 
         $baRampung->delete();
 
@@ -529,7 +736,9 @@ class BaRampungController extends Controller
         );
 
         return redirect()
-            ->route('ba-rampung.index')
+            ->route(
+                'ba-rampung.index'
+            )
             ->with(
                 'success',
                 "BA Rampung {$nomor} berhasil dihapus."
@@ -546,9 +755,18 @@ class BaRampungController extends Controller
         BaRampung $baRampung
     ): RedirectResponse {
 
-        $data = $request->validated();
+        Gate::authorize(
+            'verify',
+            $baRampung
+        );
 
-        if ($data['keputusan'] === 'terima') {
+        $data =
+            $request->validated();
+
+        if (
+            $data['keputusan']
+            === 'terima'
+        ) {
 
             $baRampung->update([
 
@@ -619,28 +837,42 @@ class BaRampungController extends Controller
     // EXPORT EXCEL
     // =========================================================
 
-    public function export(Request $request)
-    {
+    public function export(
+        Request $request
+    ) {
+
         Gate::authorize(
             'viewAny',
             BaRampung::class
         );
 
-        $user = $request->user();
+        $user =
+            $request->user();
 
-        $filters = $request->only([
-            'search',
-            'status',
-            'gudang_id',
-            'mitra_pengolahan_id',
-            'bulan',
-            'tahun',
-        ]);
+        $filters =
+            $request->only([
+                'search',
+                'status',
+                'gudang_id',
+                'mitra_pengolahan_id',
+                'bulan',
+                'tahun',
+            ]);
 
-        if (
-            $user->isAdminGudang()
-            && $user->gudang_id
-        ) {
+        // =====================================================
+        // ADMIN GUDANG
+        // Export hanya gudangnya sendiri
+        // =====================================================
+
+        if ($user->isAdminGudang()) {
+
+            if (! $user->gudang_id) {
+                abort(
+                    403,
+                    'Akun Admin Gudang belum memiliki gudang.'
+                );
+            }
+
             $filters['gudang_id'] =
                 $user->gudang_id;
         }
@@ -669,7 +901,9 @@ class BaRampungController extends Controller
             "Rekap_BA_Rampung_{$namaBulan}_{$tahun}.xlsx";
 
         return \Maatwebsite\Excel\Facades\Excel::download(
-            new \App\Exports\BaRampungExport($filters),
+            new \App\Exports\BaRampungExport(
+                $filters
+            ),
             $fileName
         );
     }
@@ -706,75 +940,91 @@ class BaRampungController extends Controller
         // PRODUKSI
         // =====================================================
 
-        $beras = $baRampung->produksis
-            ->firstWhere(
-                'produk_sesudah',
-                'Beras (HGL)'
+        $beras =
+            $baRampung->produksis
+                ->firstWhere(
+                    'produk_sesudah',
+                    'Beras (HGL)'
+                );
+
+        $menir =
+            $baRampung->produksis
+                ->firstWhere(
+                    'produk_sesudah',
+                    'Menir'
+                );
+
+        $bekatul =
+            $baRampung->produksis
+                ->firstWhere(
+                    'produk_sesudah',
+                    'Bekatul'
+                );
+
+        $gabah =
+            (float) (
+                $beras->kuantum_sebelum
+                ?? 0
             );
 
-        $menir = $baRampung->produksis
-            ->firstWhere(
-                'produk_sesudah',
-                'Menir'
+        $kuantumBeras =
+            (float) (
+                $beras->kuantum_sesudah
+                ?? 0
             );
 
-        $bekatul = $baRampung->produksis
-            ->firstWhere(
-                'produk_sesudah',
-                'Bekatul'
+        $kuantumMenir =
+            (float) (
+                $menir->kuantum_sesudah
+                ?? 0
             );
 
-        $gabah = (float) (
-            $beras->kuantum_sebelum ?? 0
-        );
-
-        $kuantumBeras = (float) (
-            $beras->kuantum_sesudah ?? 0
-        );
-
-        $kuantumMenir = (float) (
-            $menir->kuantum_sesudah ?? 0
-        );
-
-        $kuantumBekatul = (float) (
-            $bekatul->kuantum_sesudah ?? 0
-        );
+        $kuantumBekatul =
+            (float) (
+                $bekatul->kuantum_sesudah
+                ?? 0
+            );
 
         // =====================================================
         // NAMA FILE
         // =====================================================
 
-        $namaFile = preg_replace(
-            '/[\/\\\\:*?"<>|]+/',
-            '-',
-            $baRampung->nomor_ba
-        );
+        $namaFile =
+            preg_replace(
+                '/[\/\\\\:*?"<>|]+/',
+                '-',
+                $baRampung->nomor_ba
+            );
 
-        $namaFile = preg_replace(
-            '/\s*-\s*/',
-            '-',
-            $namaFile
-        );
+        $namaFile =
+            preg_replace(
+                '/\s*-\s*/',
+                '-',
+                $namaFile
+            );
 
-        $namaFile = trim(
-            $namaFile,
-            " .-"
-        );
+        $namaFile =
+            trim(
+                $namaFile,
+                " .-"
+            );
 
-        if (!$namaFile) {
+        if (! $namaFile) {
             $namaFile =
-                'BA-Rampung-' . $baRampung->id;
+                'BA-Rampung-' .
+                $baRampung->id;
         }
 
         // =====================================================
         // FOLDER TEMPLATE
         // =====================================================
 
-        $templatePath = storage_path(
-            'app/templates/template-ba-rampung.docx'
-        );
+        $templatePath =
+            storage_path(
+                'app/templates/template-ba-rampung.docx'
+            );
 
-        if (!File::exists($templatePath)) {
+        if (! File::exists($templatePath)) {
             abort(
                 500,
                 'Template Word tidak ditemukan: '
@@ -786,11 +1036,12 @@ class BaRampungController extends Controller
         // FOLDER TEMP
         // =====================================================
 
-        $tempDir = storage_path(
-            'app/temp-ba-rampung'
-        );
+        $tempDir =
+            storage_path(
+                'app/temp-ba-rampung'
+            );
 
-        if (!File::exists($tempDir)) {
+        if (! File::exists($tempDir)) {
             File::makeDirectory(
                 $tempDir,
                 0755,
@@ -812,78 +1063,94 @@ class BaRampungController extends Controller
         // LOAD TEMPLATE
         // =====================================================
 
-        $template = new TemplateProcessor(
-            $templatePath
+        $template =
+            new TemplateProcessor(
+                $templatePath
+            );
+
+        // =====================================================
+        // DATA BA
+        // =====================================================
+
+        $nomorBa =
+            $baRampung->nomor_ba
+            ?? '';
+
+        $nomorBaBagian =
+            '-';
+
+        if (
+            preg_match(
+                '/BA\s*-\s*(\d+)/',
+                $nomorBa,
+                $match
+            )
+        ) {
+            $nomorBaBagian =
+                $match[1];
+        }
+
+        $template->setValue(
+            'nomor_ba_bagian',
+            $nomorBaBagian
         );
 
-// =====================================================
-// DATA BA
-// =====================================================
+        $template->setValue(
+            'nomor_ba_bulan',
+            $baRampung->tanggal_ba
+                ? $baRampung->tanggal_ba->format('m')
+                : '-'
+        );
 
-$nomorBa = $baRampung->nomor_ba ?? '';
+        $template->setValue(
+            'nomor_ba_tahun',
+            $baRampung->tanggal_ba
+                ? $baRampung->tanggal_ba->format('Y')
+                : '-'
+        );
 
-$nomorBaBagian = '-';
+        $template->setValue(
+            'hari',
+            $baRampung->tanggal_ba
+                ? $baRampung->tanggal_ba
+                    ->locale('id')
+                    ->translatedFormat('l')
+                : '-'
+        );
 
-if (preg_match('/BA\s*-\s*(\d+)/', $nomorBa, $match)) {
-    $nomorBaBagian = $match[1];
-}
+        $template->setValue(
+            'tanggal',
+            $baRampung->tanggal_ba
+                ? $baRampung->tanggal_ba->format('d')
+                : '-'
+        );
 
-$template->setValue(
-    'nomor_ba_bagian',
-    $nomorBaBagian
-);
+        $template->setValue(
+            'bulan',
+            $baRampung->tanggal_ba
+                ? $baRampung->tanggal_ba
+                    ->locale('id')
+                    ->translatedFormat('F')
+                : '-'
+        );
 
-$template->setValue(
-    'nomor_ba_bulan',
-    $baRampung->tanggal_ba
-        ? $baRampung->tanggal_ba->format('m')
-        : '-'
-);
+        $template->setValue(
+            'tahun',
+            $baRampung->tahun
+            ?? '-'
+        );
 
-$template->setValue(
-    'nomor_ba_tahun',
-    $baRampung->tanggal_ba
-        ? $baRampung->tanggal_ba->format('Y')
-        : '-'
-);
+        $template->setValue(
+            'nomor_mo',
+            $baRampung->nomor_mo
+            ?? '-'
+        );
 
-$template->setValue(
-    'hari',
-    $baRampung->tanggal_ba
-        ? $baRampung->tanggal_ba->locale('id')->translatedFormat('l')
-        : '-'
-);
-
-$template->setValue(
-    'tanggal',
-    $baRampung->tanggal_ba
-        ? $baRampung->tanggal_ba->format('d')
-        : '-'
-);
-
-$template->setValue(
-    'bulan',
-    $baRampung->tanggal_ba
-        ? $baRampung->tanggal_ba->locale('id')->translatedFormat('F')
-        : '-'
-);
-
-$template->setValue(
-    'tahun',
-    $baRampung->tahun ?? '-'
-);
-
-$template->setValue(
-    'nomor_mo',
-    $baRampung->nomor_mo ?? '-'
-);
-
-$template->setValue(
-    'nomor_po',
-    $baRampung->nomor_po ?? '-'
-);
-
-// =====================================================
+        $template->setValue(
+            'nomor_po',
+            $baRampung->nomor_po
+            ?? '-'
+        );
 
         // =====================================================
         // GUDANG
@@ -891,12 +1158,14 @@ $template->setValue(
 
         $template->setValue(
             'nama_gudang',
-            $baRampung->gudang->nama_gudang ?? '-'
+            $baRampung->gudang->nama_gudang
+            ?? '-'
         );
 
         $template->setValue(
             'alamat_gudang',
-            $baRampung->gudang->alamat ?? ''
+            $baRampung->gudang->alamat
+            ?? ''
         );
 
         // =====================================================
@@ -905,98 +1174,134 @@ $template->setValue(
 
         $template->setValue(
             'nama_mitra',
-            $baRampung->mitraPengolahan->nama_mitra ?? '-'
+            $baRampung->mitraPengolahan->nama_mitra
+            ?? '-'
         );
 
         $template->setValue(
             'alamat_mitra',
-            $baRampung->mitraPengolahan->alamat ?? ''
+            $baRampung->mitraPengolahan->alamat
+            ?? ''
         );
 
         // =====================================================
         // PRODUKSI
         // =====================================================
 
- $template->setValue(
-    'kuantum_gabah',
-    number_format($gabah, 0, ',', '.')
-);
+        $template->setValue(
+            'kuantum_gabah',
+            number_format(
+                $gabah,
+                0,
+                ',',
+                '.'
+            )
+        );
 
-$template->setValue(
-    'kuantum_beras',
-    number_format($kuantumBeras, 0, ',', '.')
-);
+        $template->setValue(
+            'kuantum_beras',
+            number_format(
+                $kuantumBeras,
+                0,
+                ',',
+                '.'
+            )
+        );
 
-$template->setValue(
-    'kuantum_menir',
-    number_format($kuantumMenir, 0, ',', '.')
-);
+        $template->setValue(
+            'kuantum_menir',
+            number_format(
+                $kuantumMenir,
+                0,
+                ',',
+                '.'
+            )
+        );
 
-$template->setValue(
-    'kuantum_bekatul',
-    number_format($kuantumBekatul, 0, ',', '.')
-);
+        $template->setValue(
+            'kuantum_bekatul',
+            number_format(
+                $kuantumBekatul,
+                0,
+                ',',
+                '.'
+            )
+        );
 
         // =====================================================
         // RENDEMEN
         // =====================================================
-$template->setValue(
-    'rendemen_beras',
-    number_format(
-        (float) ($beras->rendemen ?? 0),
-        2,
-        ',',
-        '.'
-    )
-);
 
-$template->setValue(
-    'rendemen_menir',
-    number_format(
-        (float) ($menir->rendemen ?? 0),
-        2,
-        ',',
-        '.'
-    )
-);
+        $template->setValue(
+            'rendemen_beras',
+            number_format(
+                (float) (
+                    $beras->rendemen
+                    ?? 0
+                ),
+                2,
+                ',',
+                '.'
+            )
+        );
 
-$template->setValue(
-    'rendemen_bekatul',
-    number_format(
-        (float) ($bekatul->rendemen ?? 0),
-        2,
-        ',',
-        '.'
-    )
-);
+        $template->setValue(
+            'rendemen_menir',
+            number_format(
+                (float) (
+                    $menir->rendemen
+                    ?? 0
+                ),
+                2,
+                ',',
+                '.'
+            )
+        );
+
+        $template->setValue(
+            'rendemen_bekatul',
+            number_format(
+                (float) (
+                    $bekatul->rendemen
+                    ?? 0
+                ),
+                2,
+                ',',
+                '.'
+            )
+        );
 
         // =====================================================
-// PIHAK KESATU - GUDANG
-// =====================================================
+        // PIHAK KESATU - GUDANG
+        // =====================================================
 
-$template->setValue(
-    'nama_penandatangan',
-    $baRampung->nama_penandatangan ?? '-'
-);
+        $template->setValue(
+            'nama_penandatangan',
+            $baRampung->nama_penandatangan
+            ?? '-'
+        );
 
-$template->setValue(
-    'jabatan_penandatangan',
-    $baRampung->jabatan_penandatangan ?? '-'
-);
+        $template->setValue(
+            'jabatan_penandatangan',
+            $baRampung->jabatan_penandatangan
+            ?? '-'
+        );
 
-// =====================================================
-// PIHAK KEDUA - MITRA PENGOLAHAN
-// =====================================================
+        // =====================================================
+        // PIHAK KEDUA - MITRA PENGOLAHAN
+        // =====================================================
 
-$template->setValue(
-    'nama_penandatangan_pihak_kedua',
-    $baRampung->nama_penandatangan_pihak_kedua ?? '-'
-);
+        $template->setValue(
+            'nama_penandatangan_pihak_kedua',
+            $baRampung->nama_penandatangan_pihak_kedua
+            ?? '-'
+        );
 
-$template->setValue(
-    'jabatan_penandatangan_pihak_kedua',
-    $baRampung->jabatan_penandatangan_pihak_kedua ?? '-'
-);
+        $template->setValue(
+            'jabatan_penandatangan_pihak_kedua',
+            $baRampung->jabatan_penandatangan_pihak_kedua
+            ?? '-'
+        );
 
         // =====================================================
         // PIMPINAN CABANG
@@ -1004,13 +1309,14 @@ $template->setValue(
 
         $template->setValue(
             'nama_pimpinan',
-            $baRampung->pimpinanCabang->nama ?? '-'
+            $baRampung->pimpinanCabang->nama
+            ?? '-'
         );
 
         $template->setValue(
             'jabatan_pimpinan',
             $baRampung->pimpinanCabang->jabatan
-                ?? 'Pimpinan Cabang BULOG Indramayu'
+            ?? 'Pimpinan Cabang BULOG Indramayu'
         );
 
         // =====================================================
@@ -1019,7 +1325,8 @@ $template->setValue(
 
         $template->setValue(
             'catatan',
-            $baRampung->catatan ?? ''
+            $baRampung->catatan
+            ?? ''
         );
 
         // =====================================================
@@ -1027,25 +1334,25 @@ $template->setValue(
         // =====================================================
 
         $template->setValue(
-    'tanggal_ttd_hari',
-    $baRampung->tanggal_ba
-        ? $baRampung->tanggal_ba->format('d')
-        : now()->format('d')
-);
+            'tanggal_ttd_hari',
+            $baRampung->tanggal_ba
+                ? $baRampung->tanggal_ba->format('d')
+                : now()->format('d')
+        );
 
-$template->setValue(
-    'tanggal_ttd_bulan',
-    $baRampung->tanggal_ba
-        ? $baRampung->tanggal_ba->format('m')
-        : now()->format('m')
-);
+        $template->setValue(
+            'tanggal_ttd_bulan',
+            $baRampung->tanggal_ba
+                ? $baRampung->tanggal_ba->format('m')
+                : now()->format('m')
+        );
 
-$template->setValue(
-    'tanggal_ttd_tahun',
-    $baRampung->tanggal_ba
-        ? $baRampung->tanggal_ba->format('Y')
-        : now()->format('Y')
-);
+        $template->setValue(
+            'tanggal_ttd_tahun',
+            $baRampung->tanggal_ba
+                ? $baRampung->tanggal_ba->format('Y')
+                : now()->format('Y')
+        );
 
         // =====================================================
         // SIMPAN DOCX
@@ -1064,20 +1371,28 @@ $template->setValue(
             'C:\Program Files\LibreOffice\program\soffice.exe',
 
             'C:\Program Files (x86)\LibreOffice\program\soffice.exe',
-
         ];
 
         $libreOffice = null;
 
-        foreach ($libreOfficeCandidates as $candidate) {
+        foreach (
+            $libreOfficeCandidates
+            as $candidate
+        ) {
 
-            if (File::exists($candidate)) {
-                $libreOffice = $candidate;
+            if (
+                File::exists(
+                    $candidate
+                )
+            ) {
+                $libreOffice =
+                    $candidate;
+
                 break;
             }
         }
 
-        if (!$libreOffice) {
+        if (! $libreOffice) {
 
             abort(
                 500,
@@ -1121,7 +1436,9 @@ $template->setValue(
 
         if (
             $returnCode !== 0
-            || !File::exists($pdfPath)
+            || ! File::exists(
+                $pdfPath
+            )
         ) {
 
             abort(
@@ -1207,7 +1524,10 @@ $template->setValue(
             ],
         ];
 
-        foreach ($rows as $row) {
+        foreach (
+            $rows
+            as $row
+        ) {
 
             $ba->produksis()->create([
 
