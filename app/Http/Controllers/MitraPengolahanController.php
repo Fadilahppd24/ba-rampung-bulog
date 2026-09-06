@@ -13,6 +13,21 @@ use Illuminate\View\View;
 
 class MitraPengolahanController extends Controller
 {
+    /**
+     * Role yang boleh mengelola Mitra Pengolahan.
+     */
+    private function authorizeManage(): void
+    {
+        abort_unless(
+            auth()->check() &&
+            in_array(auth()->user()->role, [
+                'admin_gudang',
+                'admin_kantor',
+            ], true),
+            403
+        );
+    }
+
     public function index(Request $request): View
     {
         $query = MitraPengolahan::withCount('baRampungs');
@@ -28,7 +43,10 @@ class MitraPengolahanController extends Controller
             $query->where('jenis_usaha', $jenisUsaha);
         }
 
-        $mitras = $query->orderBy('nama_mitra')->paginate(10)->withQueryString();
+        $mitras = $query
+            ->orderBy('nama_mitra')
+            ->paginate(10)
+            ->withQueryString();
 
         $jenisUsahaOptions = MitraPengolahan::whereNotNull('jenis_usaha')
             ->distinct()
@@ -39,68 +57,132 @@ class MitraPengolahanController extends Controller
             'total' => MitraPengolahan::count(),
             'aktif' => MitraPengolahan::aktif()->count(),
             'total_ba' => BaRampung::count(),
-            'dengan_proses' => MitraPengolahan::whereHas('baRampungs', function ($q) {
-                $q->where('status', BaRampung::STATUS_MENUNGGU_VERIFIKASI);
-            })->count(),
+            'dengan_proses' => MitraPengolahan::whereHas(
+                'baRampungs',
+                function ($q) {
+                    $q->where(
+                        'status',
+                        BaRampung::STATUS_MENUNGGU_VERIFIKASI
+                    );
+                }
+            )->count(),
         ];
 
-        return view('mitra.index', compact('mitras', 'kpi', 'jenisUsahaOptions'));
+        return view(
+            'mitra.index',
+            compact(
+                'mitras',
+                'kpi',
+                'jenisUsahaOptions'
+            )
+        );
     }
 
     public function create(): View
     {
+        $this->authorizeManage();
+
         return view('mitra.create');
     }
 
     public function store(StoreMitraPengolahanRequest $request): RedirectResponse
     {
-        $mitra = MitraPengolahan::create($request->validated());
+        $mitra = MitraPengolahan::create(
+            $request->validated()
+        );
 
-        ActivityLogger::log('Membuat Mitra Pengolahan', 'mitra_pengolahan', $mitra->id, "Kode: {$mitra->kode_mitra}");
+        ActivityLogger::log(
+            'Membuat Mitra Pengolahan',
+            'mitra_pengolahan',
+            $mitra->id,
+            "Kode: {$mitra->kode_mitra}"
+        );
 
-        return redirect()->route('mitra.index')->with('success', "Mitra {$mitra->nama_mitra} berhasil ditambahkan.");
+        return redirect()
+            ->route('mitra.index')
+            ->with(
+                'success',
+                "Mitra {$mitra->nama_mitra} berhasil ditambahkan."
+            );
     }
 
     public function show(MitraPengolahan $mitra): View
     {
         $mitra->loadCount('baRampungs');
 
-        $baTerbaru = BaRampung::where('mitra_pengolahan_id', $mitra->id)
+        $baTerbaru = BaRampung::where(
+                'mitra_pengolahan_id',
+                $mitra->id
+            )
             ->with('gudang')
             ->latest('tanggal_ba')
             ->limit(5)
             ->get();
 
-        return view('mitra.show', compact('mitra', 'baTerbaru'));
+        return view(
+            'mitra.show',
+            compact('mitra', 'baTerbaru')
+        );
     }
 
     public function edit(MitraPengolahan $mitra): View
     {
-        return view('mitra.edit', compact('mitra'));
+        $this->authorizeManage();
+
+        return view(
+            'mitra.edit',
+            compact('mitra')
+        );
     }
 
-    public function update(UpdateMitraPengolahanRequest $request, MitraPengolahan $mitra): RedirectResponse
-    {
-        $mitra->update($request->validated());
-
-        ActivityLogger::log('Mengubah Mitra Pengolahan', 'mitra_pengolahan', $mitra->id, "Kode: {$mitra->kode_mitra}");
-
-        return redirect()->route('mitra.index')->with('success', "Mitra {$mitra->nama_mitra} berhasil diperbarui.");
-    }
-
-    public function toggleStatus(MitraPengolahan $mitra): RedirectResponse
-    {
-        $mitra->update([
-            'status' => $mitra->status === 'aktif' ? 'nonaktif' : 'aktif',
-        ]);
+    public function update(
+        UpdateMitraPengolahanRequest $request,
+        MitraPengolahan $mitra
+    ): RedirectResponse {
+        $mitra->update(
+            $request->validated()
+        );
 
         ActivityLogger::log(
-            $mitra->status === 'aktif' ? 'Mengaktifkan Mitra Pengolahan' : 'Menonaktifkan Mitra Pengolahan',
+            'Mengubah Mitra Pengolahan',
             'mitra_pengolahan',
             $mitra->id,
             "Kode: {$mitra->kode_mitra}"
         );
 
-        return back()->with('success', "Status Mitra {$mitra->nama_mitra} berhasil diubah menjadi " . ucfirst($mitra->status) . '.');
+        return redirect()
+            ->route('mitra.index')
+            ->with(
+                'success',
+                "Mitra {$mitra->nama_mitra} berhasil diperbarui."
+            );
+    }
+
+    public function toggleStatus(
+        MitraPengolahan $mitra
+    ): RedirectResponse {
+        $this->authorizeManage();
+
+        $mitra->update([
+            'status' => $mitra->status === 'aktif'
+                ? 'nonaktif'
+                : 'aktif',
+        ]);
+
+        ActivityLogger::log(
+            $mitra->status === 'aktif'
+                ? 'Mengaktifkan Mitra Pengolahan'
+                : 'Menonaktifkan Mitra Pengolahan',
+            'mitra_pengolahan',
+            $mitra->id,
+            "Kode: {$mitra->kode_mitra}"
+        );
+
+        return back()->with(
+            'success',
+            "Status Mitra {$mitra->nama_mitra} berhasil diubah menjadi "
+            . ucfirst($mitra->status)
+            . '.'
+        );
     }
 }

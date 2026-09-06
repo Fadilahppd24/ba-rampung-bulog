@@ -48,7 +48,7 @@
     $baRampung->status === \App\Models\BaRampung::STATUS_DITOLAK
     && $baRampung->alasan_penolakan
 )
-    <div class="rounded-xl bg-danger-bg text-danger-text px-4 py-3 text-sm">
+    <div class="rounded-xl bg-danger-bg text-danger-text px-4 py-3 text-sm mt-5">
         <p class="font-medium">Alasan Penolakan:</p>
         <p>{{ $baRampung->alasan_penolakan }}</p>
     </div>
@@ -58,13 +58,13 @@
 {{-- VERIFIKASI --}}
 @can('verify', $baRampung)
 
-    <div class="card p-6 border-l-4 border-l-warning-text">
+    <div class="card p-6 border-l-4 border-l-warning-text mt-5">
         <h3 class="font-semibold text-gray-900 mb-3">
             🔎 Verifikasi & Approval
         </h3>
 
         <p class="text-sm text-gray-500 mb-4">
-            BA ini menunggu keputusan Anda sebagai Pimpinan Cabang.
+            BA ini menunggu keputusan Anda sebagai Admin Kantor.
         </p>
 
         <div class="flex flex-wrap gap-3">
@@ -83,7 +83,10 @@
                     value="terima"
                 >
 
-                <button class="btn-primary">
+                <button
+                    type="submit"
+                    class="btn-primary"
+                >
                     ✅ Verifikasi &amp; Terima
                 </button>
             </form>
@@ -134,7 +137,7 @@
                     rows="3"
                     required
                     class="input"
-                    placeholder="Jelaskan alasan penolakan…"
+                    placeholder="Jelaskan alasan penolakan..."
                 ></textarea>
 
                 <div class="flex justify-end gap-3 mt-4">
@@ -164,7 +167,7 @@
 
 
 {{-- DATA BA + PENANDATANGAN --}}
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-5">
 
     {{-- DATA BA --}}
     <div class="card p-6">
@@ -313,7 +316,7 @@
 
 
 {{-- PRODUKSI --}}
-<div class="card p-6">
+<div class="card p-6 mt-5">
 
     <h3 class="font-semibold text-gray-900 mb-4">
         🌾 Pengolahan Gabah (GKP)
@@ -407,7 +410,7 @@
 {{-- CATATAN --}}
 @if ($baRampung->catatan)
 
-    <div class="card p-6">
+    <div class="card p-6 mt-5">
 
         <h3 class="font-semibold text-gray-900 mb-2">
             📝 Catatan
