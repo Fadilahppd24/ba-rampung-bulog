@@ -539,26 +539,25 @@
                         Nama Penandatangan
                     </label>
 
-                    <input
-                        list="pegawai-list"
-                        name="nama_penandatangan"
-                        value="{{ old('nama_penandatangan') }}"
-                        required
-                        class="input"
-                        placeholder="Pilih atau ketik nama pegawai"
-                    >
+                <input
+    list="penandatangan-kesatu-list"
+    name="nama_penandatangan"
+    value="{{ old('nama_penandatangan') }}"
+    required
+    class="input"
+    placeholder="Ketik atau pilih nama penandatangan"
+>
 
-                    <datalist id="pegawai-list">
-
-                        @foreach ($pegawais as $p)
-
-                            <option value="{{ $p->nama }}">
-                                {{ $p->jabatan }}
-                            </option>
-
-                        @endforeach
-
-                    </datalist>
+<datalist id="penandatangan-kesatu-list">
+    @foreach ($penandatanganKesatu as $p)
+        <option
+            value="{{ $p->nama_penandatangan }}"
+            data-jabatan="{{ $p->jabatan_penandatangan }}"
+        >
+            {{ $p->jabatan_penandatangan }}
+        </option>
+    @endforeach
+</datalist>
 
                 </div>
 
@@ -570,12 +569,13 @@
                     </label>
 
                     <input
-                        type="text"
-                        name="jabatan_penandatangan"
-                        value="{{ old('jabatan_penandatangan', 'Pengelola Gudang') }}"
-                        required
-                        class="input"
-                    >
+    type="text"
+    id="jabatan-penandatangan-kesatu"
+    name="jabatan_penandatangan"
+    value="{{ old('jabatan_penandatangan', 'Pengelola Gudang') }}"
+    required
+    class="input"
+>
 
                 </div>
 
@@ -594,13 +594,22 @@
                     </label>
 
                     <input
-                        type="text"
-                        name="nama_penandatangan_pihak_kedua"
-                        value="{{ old('nama_penandatangan_pihak_kedua') }}"
-                        required
-                        class="input"
-                        placeholder="Masukkan nama penandatangan mitra"
-                    >
+    type="text"
+    name="nama_penandatangan_pihak_kedua"
+    value="{{ old('nama_penandatangan_pihak_kedua') }}"
+    list="penandatangan-kedua-list"
+    required
+    class="input"
+    placeholder="Ketik atau pilih nama penandatangan mitra"
+>
+
+<datalist id="penandatangan-kedua-list">
+    @foreach ($penandatanganKedua as $p)
+        <option value="{{ $p->nama_penandatangan_pihak_kedua }}">
+            {{ $p->jabatan_penandatangan_pihak_kedua }}
+        </option>
+    @endforeach
+</datalist>
 
                 </div>
 
@@ -612,13 +621,14 @@
                     </label>
 
                     <input
-                        type="text"
-                        name="jabatan_penandatangan_pihak_kedua"
-                        value="{{ old('jabatan_penandatangan_pihak_kedua') }}"
-                        required
-                        class="input"
-                        placeholder="Masukkan jabatan"
-                    >
+    type="text"
+    id="jabatan-penandatangan-kedua"
+    name="jabatan_penandatangan_pihak_kedua"
+    value="{{ old('jabatan_penandatangan_pihak_kedua') }}"
+    required
+    class="input"
+    placeholder="Masukkan jabatan"
+/>
 
                 </div>
 
@@ -725,3 +735,32 @@
 </form>
 
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const namaKedua = document.querySelector(
+        'input[name="nama_penandatangan_pihak_kedua"]'
+    );
+
+    const jabatanKedua = document.getElementById(
+        'jabatan-penandatangan-kedua'
+    );
+
+    const dataKedua = @json($penandatanganKedua);
+
+    namaKedua.addEventListener('change', function () {
+        const nama = this.value.trim();
+
+        const data = dataKedua.find(item =>
+            item.nama_penandatangan_pihak_kedua === nama
+        );
+
+        if (data) {
+            jabatanKedua.value =
+                data.jabatan_penandatangan_pihak_kedua;
+        }
+    });
+
+});
+</script>

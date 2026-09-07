@@ -290,13 +290,36 @@ class BaRampungController extends Controller
             ->orderBy('nama')
             ->get();
 
+        // Riwayat penandatangan Pihak Kesatu
+        $penandatanganKesatu = BaRampung::query()
+            ->whereNotNull('nama_penandatangan')
+            ->whereNotNull('jabatan_penandatangan')
+            ->select('nama_penandatangan', 'jabatan_penandatangan')
+            ->distinct()
+            ->orderBy('nama_penandatangan')
+            ->get();
+
+        // Riwayat penandatangan Pihak Kedua
+        $penandatanganKedua = BaRampung::query()
+            ->whereNotNull('nama_penandatangan_pihak_kedua')
+            ->whereNotNull('jabatan_penandatangan_pihak_kedua')
+            ->select(
+                'nama_penandatangan_pihak_kedua',
+                'jabatan_penandatangan_pihak_kedua'
+            )
+            ->distinct()
+            ->orderBy('nama_penandatangan_pihak_kedua')
+            ->get();
+
         return view(
             'ba-rampung.create',
             compact(
                 'gudangs',
                 'mitras',
                 'pimpinans',
-                'pegawais'
+                'pegawais',
+                'penandatanganKesatu',
+                'penandatanganKedua'
             )
         );
     }
