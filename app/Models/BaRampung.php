@@ -113,31 +113,41 @@ class BaRampung extends Model
      * never trust a number posted from the client.
      */
     public static function generateNomorBa(\DateTimeInterface $tanggal): string
-    {
-        $bulan = $tanggal->format('m');
-        $tahun = $tanggal->format('Y');
+{
+    $bulan = $tanggal->format('m');
+    $tahun = $tanggal->format('Y');
 
-        $urutanBulan = self::whereYear('tanggal_ba', $tahun)
-            ->whereMonth('tanggal_ba', $bulan)
-            ->count() + 1;
+    $pengaturan = \App\Models\Pengaturan::first();
 
-        $urutanTahun = self::whereYear('tanggal_ba', $tahun)->count() + 10001;
+    $prefix = $pengaturan?->prefix_nomor_ba ?: 'BA';
+    $suffix = $pengaturan?->suffix_nomor_ba ?: 'GKP';
 
-        do {
-            $nomor = sprintf(
-                'BA-%03d/%s/%s/%d/GKP',
-                $urutanBulan,
-                $bulan,
-                $tahun,
-                $urutanTahun
-            );
-            $exists = self::where('nomor_ba', $nomor)->exists();
-            if ($exists) {
-                $urutanBulan++;
-                $urutanTahun++;
-            }
-        } while ($exists);
+    $urutanBulan = self::whereYear('tanggal_ba', $tahun)
+        ->whereMonth('tanggal_ba', $bulan)
+        ->count() + 1;
 
-        return $nomor;
-    }
+    $urutanTahun = self::whereYear('tanggal_ba', $tahun)
+        ->count() + 10001;
+
+    do {
+        $nomor = sprintf(
+            '%s-%03d/%s/%s/%d/%s',
+            $prefix,
+            $urutanBulan,
+            $bulan,
+            $tahun,
+            $urutanTahun,
+            $suffix
+        );
+
+        $exists = self::where('nomor_ba', $nomor)->exists();
+
+        if ($exists) {
+            $urutanBulan++;
+            $urutanTahun++;
+        }
+    } while ($exists);
+
+    return $nomor;
+}
 }

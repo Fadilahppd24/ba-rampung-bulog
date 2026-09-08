@@ -67,8 +67,7 @@
                         @endfor
                     </select>
 
-                    <span>/ 10040 / GKP</span>
-
+<span>/ 10040 / {{ $pengaturan->suffix_nomor_ba ?? 'GKP' }}</span>
                 </div>
             </div>
 
@@ -683,17 +682,7 @@
     ========================================================== --}}
     <div class="card p-6">
 
-        <label class="label">
-            Catatan (opsional)
-        </label>
-
-        <textarea
-            name="catatan"
-            rows="2"
-            class="input"
-        >{{ old('catatan') }}</textarea>
-
-    </div>
+        
 
 
     {{-- =========================================================

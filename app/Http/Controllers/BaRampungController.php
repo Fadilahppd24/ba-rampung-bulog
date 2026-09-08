@@ -290,6 +290,8 @@ class BaRampungController extends Controller
             ->orderBy('nama')
             ->get();
 
+        $pengaturan = \App\Models\Pengaturan::first();
+        
         // Riwayat penandatangan Pihak Kesatu
         $penandatanganKesatu = BaRampung::query()
             ->whereNotNull('nama_penandatangan')
@@ -318,6 +320,7 @@ class BaRampungController extends Controller
                 'mitras',
                 'pimpinans',
                 'pegawais',
+                'pengaturan',
                 'penandatanganKesatu',
                 'penandatanganKedua'
             )
@@ -358,12 +361,16 @@ class BaRampungController extends Controller
             $data['tanggal_ba']
         );
 
+        $pengaturan = \App\Models\Pengaturan::first();
+$suffix = $pengaturan?->suffix_nomor_ba ?: 'GKP';
+
         $ba = DB::transaction(
             function () use (
-                $data,
-                $tanggal,
-                $request
-            ) {
+    $data,
+    $tanggal,
+    $request,
+    $suffix
+) {
 
                 // =================================================
                 // NOMOR BA OTOMATIS
@@ -571,6 +578,7 @@ class BaRampungController extends Controller
         $pegawais = \App\Models\Pegawai::aktif()
             ->orderBy('nama')
             ->get();
+
 
         return view(
             'ba-rampung.edit',
@@ -1131,6 +1139,11 @@ class BaRampungController extends Controller
                 ? $baRampung->tanggal_ba->format('Y')
                 : '-'
         );
+
+        $template->setValue(
+    'suffix_nomor_ba',
+    \App\Models\Pengaturan::first()?->suffix_nomor_ba ?? 'GKP'
+);
 
         $template->setValue(
             'hari',
