@@ -8,9 +8,11 @@ use App\Models\User;
 class BaRampungPolicy
 {
     public function viewAny(User $user): bool
-    {
-        return true;
-    }
+{
+    return $user->isAdminKantor()
+        || $user->isAdminGudang()
+        || $user->isPimpinanCabang();
+}
 
     public function view(User $user, BaRampung $ba): bool
     {

@@ -61,15 +61,15 @@ class StoreBaRampungRequest extends FormRequest
         'pimpinan_cabang_id.required' => 'Pimpinan Cabang (Mengetahui) wajib dipilih.',
 
         'kuantum_gabah.required' => 'Kuantum Gabah (GKP) wajib diisi.',
-        'kuantum_gabah.numeric' => 'Kuantum Gabah harus berupa angka.',
+       'kuantum_gabah.integer'  => 'Kuantum Gabah harus berupa angka.',
         'kuantum_gabah.min' => 'Kuantum Gabah tidak boleh nol atau negatif.',
 
         'kuantum_beras.required' => 'Kuantum Beras (HGL) wajib diisi.',
-        'kuantum_beras.numeric' => 'Kuantum Beras harus berupa angka.',
+        'kuantum_beras.integer' => 'Kuantum Beras harus berupa angka.',
         'kuantum_beras.min' => 'Kuantum Beras tidak boleh negatif.',
 
-        'kuantum_menir.numeric' => 'Kuantum Menir harus berupa angka.',
-        'kuantum_bekatul.numeric' => 'Kuantum Bekatul harus berupa angka.',
+        'kuantum_menir.integer' => 'Kuantum Menir harus berupa angka.',
+        'kuantum_bekatul.integer' => 'Kuantum Bekatul harus berupa angka.',
     ];
 }
 }
