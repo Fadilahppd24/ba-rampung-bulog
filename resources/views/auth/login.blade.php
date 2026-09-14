@@ -42,16 +42,10 @@
 
                 <button type="submit" class="btn-primary w-full">Masuk</button>
             </form>
-
-            <div class="mt-6 rounded-lg bg-gray-50 p-4 text-xs text-gray-500 space-y-1">
-                <p class="font-medium text-gray-600">Akun demo (seeder):</p>
-                <p>Admin Gudang — admingudang@bulog.co.id / password</p>
-                <p>Pimpinan Cabang — pimpinan@bulog.co.id / password</p>
-                <p>Admin Sistem — adminsistem@bulog.co.id / password</p>
-            </div>
-        </div>
+</div>
 
         <p class="text-center text-white/40 text-xs mt-6">© {{ date('Y') }} Perum BULOG Cabang Indramayu.</p>
     </div>
 </div>
 @endsection
+
