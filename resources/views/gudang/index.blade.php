@@ -37,7 +37,7 @@
 
         <div class="p-6 border-b border-gray-100">
 
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex flex-col gap-4">
 
                 <div>
                     <h3 class="font-semibold text-gray-900">
@@ -50,27 +50,73 @@
                 </div>
 
 
-                {{-- SEARCH --}}
+                {{-- FILTER & SEARCH --}}
                 <form
                     method="GET"
                     action="{{ route('gudang.index') }}"
-                    class="flex gap-2"
+                    class="flex flex-wrap items-center gap-2"
                 >
 
+                    {{-- FILTER GUDANG UTAMA --}}
+                    <select
+                        name="gudang_utama_id"
+                        class="border border-gray-200 rounded-lg px-3 py-2 text-sm
+                               focus:outline-none focus:ring-2 focus:ring-bulog-500
+                               w-56"
+                    >
+
+                        <option value="">
+                            Semua Gudang Utama
+                        </option>
+
+                        @foreach($gudangsUtama as $gudangUtama)
+
+                            <option
+                                value="{{ $gudangUtama->id }}"
+                                @selected(
+                                    request('gudang_utama_id') == $gudangUtama->id
+                                )
+                            >
+                                {{ $gudangUtama->nama_gudang }}
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+
+                    {{-- SEARCH --}}
                     <input
                         type="text"
                         name="search"
                         value="{{ request('search') }}"
-                        placeholder="Cari gudang..."
-                        class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bulog-500"
+                        placeholder="Cari nama gudang atau kode gudang..."
+                        class="border border-gray-200 rounded-lg px-3 py-2 text-sm
+                               focus:outline-none focus:ring-2 focus:ring-bulog-500
+                               w-72"
                     >
 
+
+                    {{-- CARI --}}
                     <button
                         type="submit"
                         class="btn-secondary"
                     >
-                        Cari
+                        🔍 Cari
                     </button>
+
+
+                    {{-- RESET --}}
+                    @if(request('gudang_utama_id') || request('search'))
+
+                        <a
+                            href="{{ route('gudang.index') }}"
+                            class="btn-secondary"
+                        >
+                            Reset
+                        </a>
+
+                    @endif
 
                 </form>
 
@@ -136,6 +182,7 @@
                         {{-- ========================= --}}
                         {{-- GUDANG UTAMA --}}
                         {{-- ========================= --}}
+
                         @if(is_null($gudang->gudang_induk_id))
 
                             <tr class="bg-gray-100 border-t-2 border-gray-200">
@@ -174,6 +221,7 @@
                         {{-- ========================= --}}
                         {{-- GUDANG FILIAL --}}
                         {{-- ========================= --}}
+
                         @else
 
                             <tr class="hover:bg-gray-50">
@@ -243,7 +291,13 @@
 
                                     @if($gudang->kapasitas !== null)
 
-                                        {{ number_format($gudang->kapasitas, 2, ',', '.') }} Ton
+                                        {{ number_format(
+                                            $gudang->kapasitas,
+                                            2,
+                                            ',',
+                                            '.'
+                                        ) }}
+                                        Ton
 
                                     @else
 
@@ -258,7 +312,9 @@
                                 <td class="px-6 py-4">
 
                                     <x-status-badge
-                                        :color="$gudang->status === 'aktif' ? 'green' : 'gray'"
+                                        :color="$gudang->status === 'aktif'
+                                            ? 'green'
+                                            : 'gray'"
                                         :label="ucfirst($gudang->status)"
                                     />
 
@@ -272,7 +328,10 @@
 
                                         {{-- LIHAT --}}
                                         <a
-                                            href="{{ route('gudang.show', $gudang) }}"
+                                            href="{{ route(
+                                                'gudang.show',
+                                                $gudang
+                                            ) }}"
                                             class="text-bulog-700 hover:underline"
                                         >
                                             Lihat
@@ -283,7 +342,10 @@
                                         @role('admin_kantor')
 
                                             <a
-                                                href="{{ route('gudang.edit', $gudang) }}"
+                                                href="{{ route(
+                                                    'gudang.edit',
+                                                    $gudang
+                                                ) }}"
                                                 class="text-bulog-700 hover:underline"
                                             >
                                                 Edit
@@ -293,7 +355,10 @@
                                             {{-- UBAH STATUS --}}
                                             <form
                                                 method="POST"
-                                                action="{{ route('gudang.toggle-status', $gudang) }}"
+                                                action="{{ route(
+                                                    'gudang.toggle-status',
+                                                    $gudang
+                                                ) }}"
                                                 class="inline"
                                             >
 
@@ -304,9 +369,13 @@
                                                 <button
                                                     type="submit"
                                                     class="text-bulog-700 hover:underline"
-                                                    onclick="return confirm('Apakah Anda yakin ingin mengubah status gudang ini?')"
+                                                    onclick="return confirm(
+                                                        'Apakah Anda yakin ingin mengubah status gudang ini?'
+                                                    )"
                                                 >
-                                                    {{ $gudang->status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan' }}
+                                                    {{ $gudang->status === 'aktif'
+                                                        ? 'Nonaktifkan'
+                                                        : 'Aktifkan' }}
                                                 </button>
 
                                             </form>

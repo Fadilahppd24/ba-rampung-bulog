@@ -137,6 +137,14 @@
         text-align: center;
         margin-top: 28px;
     }
+
+    .nomor-kosong {
+    display: inline-block;
+    width: 120px;
+    min-width: 120px;
+    text-align: center;
+}
+
 </style>
 </head>
 
@@ -162,11 +170,36 @@
     {{-- ===================================================== --}}
 
     <p class="nomor">
-        Nomor:
-        <strong>
-            {{ $baRampung->nomor_ba }}
-        </strong>
-    </p>
+    Nomor :
+    <strong>BA-</strong>
+
+    <span class="nomor-kosong">
+        @php
+            $nomorIsi = '';
+
+            if (!empty($baRampung->nomor_ba)) {
+                $bagianNomor = explode('/', $baRampung->nomor_ba)[0] ?? '';
+
+                // Hapus BA-
+                $nomorIsi = preg_replace('/^BA-/i', '', trim($bagianNomor));
+
+                // Kalau isinya hanya tanda strip/spasi, anggap kosong
+                if (preg_replace('/[-\s]/', '', $nomorIsi) === '') {
+                    $nomorIsi = '';
+                }
+            }
+        @endphp
+
+        {{ $nomorIsi }}
+    </span>
+
+    <strong>
+        / {{ $baRampung->tanggal_ba->format('m') }}
+        / {{ $baRampung->tahun }}
+        / 10040
+        / ABC
+    </strong>
+</p>
 
 
     {{-- ===================================================== --}}

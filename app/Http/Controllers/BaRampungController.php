@@ -146,9 +146,10 @@ class BaRampungController extends Controller
         // =====================================================
 
         $baList = $query
-            ->latest('tanggal_ba')
-            ->paginate(10)
-            ->withQueryString();
+    ->orderByDesc('tanggal_ba')
+    ->orderByDesc('id')
+    ->paginate(10)
+    ->withQueryString();
 
         // =====================================================
         // KPI
@@ -1095,25 +1096,23 @@ class BaRampungController extends Controller
         // =====================================================
         // DATA BA
         // =====================================================
+$nomorBa = $baRampung->nomor_ba ?? '';
 
-        $nomorBa =
-            $baRampung->nomor_ba
-            ?? '';
+$nomorBaBagian = '';
 
-        $nomorBaBagian =
-            '-';
+if (
+    preg_match(
+        '/BA\s*-\s*(\d+)/',
+        $nomorBa,
+        $match
+    )
+) {
+    $nomorBaBagian = $match[1];
+}
 
-        if (
-            preg_match(
-                '/BA\s*-\s*(\d+)/',
-                $nomorBa,
-                $match
-            )
-        ) {
-            $nomorBaBagian =
-                $match[1];
-        }
-
+if ($nomorBaBagian === '') {
+    $nomorBaBagian = str_repeat("\u{00A0}", 12);
+}
         $template->setValue(
             'nomor_ba_bagian',
             $nomorBaBagian
