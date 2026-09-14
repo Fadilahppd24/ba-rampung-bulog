@@ -15,6 +15,7 @@ class UpdateBaRampungRequest extends FormRequest
     {
         return [
             'tanggal_ba' => ['required', 'date'],
+            'nomor_ba' => ['nullable', 'string', 'max:100'],
 
             // Nomor MO dan PO boleh kosong
             'nomor_mo' => ['nullable', 'string', 'max:100'],
@@ -50,6 +51,9 @@ class UpdateBaRampungRequest extends FormRequest
         return [
             'tanggal_ba.required' => 'Tanggal BA wajib diisi.',
             'tanggal_ba.date' => 'Tanggal BA tidak valid.',
+
+            'nomor_ba.string' => 'Nomor BA harus berupa teks.',
+            'nomor_ba.max' => 'Nomor BA maksimal 100 karakter.',
 
             'gudang_id.required' => 'Gudang (Pihak Kesatu) wajib dipilih.',
             'gudang_id.exists' => 'Gudang yang dipilih tidak valid.',

@@ -15,9 +15,8 @@ class StoreBaRampungRequest extends FormRequest
     {
         return [
             'tanggal_ba' => ['required', 'date'],
-            'nomor_ba_1' => ['nullable', 'string', 'max:50'],
-'nomor_ba_2' => ['nullable', 'string', 'max:50'],
-'tahun_ba' => ['required', 'integer', 'min:2000', 'max:2100'],
+           'nomor_ba' => ['nullable', 'string', 'max:100'],
+            'tahun_ba' => ['required', 'integer', 'min:2000', 'max:2100'],
             'nomor_mo' => ['nullable', 'string', 'max:100'],
             'nomor_po' => ['nullable', 'string', 'max:100'],
             'gudang_id' => ['required', 'exists:gudangs,id'],

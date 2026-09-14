@@ -36,38 +36,55 @@
                         BA -
                     </span>
 
-                    <input
-                        type="text"
-                        name="nomor_ba_1"
-                        value="{{ old('nomor_ba_1') }}"
-                        class="input"
-                        placeholder="Nomor"
-                    >
+<input
+    type="text"
+    name="nomor_ba_1"
+    id="nomor_ba_1"
+    value="{{ old('nomor_ba_1') }}"
+    class="input"
+    placeholder="Nomor"
+>
 
-                    <span>/</span>
+<span>/</span>
 
-                    <input
-                        type="text"
-                        name="nomor_ba_2"
-                        value="{{ old('nomor_ba_2') }}"
-                        class="input"
-                        placeholder="Nomor"
-                    >
+<select
+    name="nomor_ba_2"
+    id="nomor_ba_2"
+    class="input"
+>
+    <option value="">Bulan</option>
+    @for ($bulan = 1; $bulan <= 12; $bulan++)
+        <option
+            value="{{ str_pad($bulan, 2, '0', STR_PAD_LEFT) }}"
+            @selected(old('nomor_ba_2') == str_pad($bulan, 2, '0', STR_PAD_LEFT))
+        >
+            {{ str_pad($bulan, 2, '0', STR_PAD_LEFT) }}
+        </option>
+    @endfor
+</select>
 
-                    <span>/</span>
+<span>/</span>
 
-                    <select name="tahun_ba" class="input">
-                        @for ($tahun = date('Y') - 2; $tahun <= date('Y') + 2; $tahun++)
-                            <option
-                                value="{{ $tahun }}"
-                                @selected(old('tahun_ba', date('Y')) == $tahun)
-                            >
-                                {{ $tahun }}
-                            </option>
-                        @endfor
-                    </select>
+<select name="tahun_ba" id="tahun_ba" class="input">
+    @for ($tahun = date('Y') - 2; $tahun <= date('Y') + 2; $tahun++)
+        <option
+            value="{{ $tahun }}"
+            @selected(old('tahun_ba', date('Y')) == $tahun)
+        >
+            {{ $tahun }}
+        </option>
+    @endfor
+</select>
 
 <span>/ 10040 / {{ $pengaturan->suffix_nomor_ba ?? 'GKP' }}</span>
+
+{{-- Nomor BA yang benar-benar dikirim ke Laravel --}}
+<input
+    type="hidden"
+    name="nomor_ba"
+    id="nomor_ba"
+    value="{{ old('nomor_ba') }}"
+>
                 </div>
             </div>
 
@@ -77,11 +94,11 @@
                     <label class="label">Hari</label>
 
                     <input
-                        type="text"
-                        :value="hariNama"
-                        disabled
-                        class="input bg-gray-50 text-gray-500"
-                    >
+    type="text"
+    id="hari_ba"
+    readonly
+    class="input bg-gray-50 text-gray-500"
+>
                 </div>
 
                 <div>
@@ -99,12 +116,12 @@
                 <div>
                     <label class="label">Bulan & Tahun</label>
 
-                    <input
-                        type="text"
-                        :value="bulanTahunNama"
-                        disabled
-                        class="input bg-gray-50 text-gray-500"
-                    >
+<input
+    type="text"
+    id="bulan_tahun_ba"
+    readonly
+    class="input bg-gray-50 text-gray-500"
+>
                 </div>
 
             </div>
@@ -342,11 +359,11 @@
 
                         pilihGudang(gudang) {
 
-                            this.selected = gudang.id;
-                            this.search = gudang.nama;
-                            this.open = false;
+    this.selected = gudang.id;
+    this.search = gudang.nama;
+    this.open = true;
 
-                        }
+}
                     }"
                     class="relative"
                 >
@@ -723,8 +740,6 @@
 
 </form>
 
-@endsection
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -753,3 +768,112 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const form = document.querySelector('form');
+
+    const nomorBa1 = document.getElementById('nomor_ba_1');
+    const nomorBa2 = document.getElementById('nomor_ba_2');
+    const tahunBa = document.getElementById('tahun_ba');
+    const nomorBa = document.getElementById('nomor_ba');
+
+    if (!form || !nomorBa1 || !nomorBa2 || !tahunBa || !nomorBa) {
+        return;
+    }
+
+    function syncNomorBa() {
+        const bagian1 = nomorBa1.value.trim();
+        const bagian2 = nomorBa2.value.trim();
+        const tahun = tahunBa.value;
+        const suffix = @json($pengaturan->suffix_nomor_ba ?? 'GKP');
+
+        // Nomor BA boleh kosong.
+        if (!bagian1 && !bagian2) {
+            nomorBa.value = '';
+            return;
+        }
+
+        nomorBa.value =
+            'BA-' +
+            bagian1 +
+            '/' +
+            bagian2 +
+            '/' +
+            tahun +
+            '/10040/' +
+            suffix;
+    }
+
+    // Simpan nilai nomor BA setiap kali bagian nomor diubah.
+    nomorBa1.addEventListener('input', syncNomorBa);
+    nomorBa2.addEventListener('input', syncNomorBa);
+    tahunBa.addEventListener('change', syncNomorBa);
+
+    // Pastikan nilai terakhir ikut terkirim saat submit.
+    form.addEventListener('submit', function () {
+        syncNomorBa();
+    });
+
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const tanggalInput = document.querySelector('input[name="tanggal_ba"]');
+    const hariInput = document.getElementById('hari_ba');
+    const bulanTahunInput = document.getElementById('bulan_tahun_ba');
+
+    const namaHari = [
+        'Minggu',
+        'Senin',
+        'Selasa',
+        'Rabu',
+        'Kamis',
+        'Jumat',
+        'Sabtu'
+    ];
+
+    const namaBulan = [
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember'
+    ];
+
+    function updateTanggalBA() {
+
+        if (!tanggalInput.value) {
+            hariInput.value = '';
+            bulanTahunInput.value = '';
+            return;
+        }
+
+        const tanggal = new Date(tanggalInput.value + 'T00:00:00');
+
+        hariInput.value = namaHari[tanggal.getDay()];
+
+        bulanTahunInput.value =
+            namaBulan[tanggal.getMonth()] +
+            ' ' +
+            tanggal.getFullYear();
+    }
+
+    updateTanggalBA();
+
+    tanggalInput.addEventListener('change', updateTanggalBA);
+
+});
+</script>
+
+@endsection
