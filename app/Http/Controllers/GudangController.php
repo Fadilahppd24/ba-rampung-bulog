@@ -14,46 +14,52 @@ use Illuminate\View\View;
 class GudangController extends Controller
 {
     public function index(Request $request): View
-    {
-        $query = Gudang::withCount('baRampungs');
+{
+    $query = Gudang::withCount('baRampungs')
+        ->with('gudangInduk');
 
-        if ($search = $request->input('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('nama_gudang', 'like', "%{$search}%")
-                    ->orWhere('kode_gudang', 'like', "%{$search}%");
-            });
-        }
-
-        $gudangs = $query
-            ->orderBy('nama_gudang')
-            ->paginate(10)
-            ->withQueryString();
-
-        $kpi = [
-            'total' => Gudang::count(),
-
-            'aktif' => Gudang::aktif()->count(),
-
-            'total_dokumen' => BaRampung::count(),
-
-            'dengan_proses' => Gudang::whereHas('baRampungs', function ($q) {
-                $q->where(
-                    'status',
-                    BaRampung::STATUS_MENUNGGU_VERIFIKASI
-                );
-            })->count(),
-        ];
-
-        return view(
-            'gudang.index',
-            compact('gudangs', 'kpi')
-        );
+    if ($search = $request->input('search')) {
+        $query->where(function ($q) use ($search) {
+            $q->where('nama_gudang', 'like', "%{$search}%")
+                ->orWhere('kode_gudang', 'like', "%{$search}%");
+        });
     }
+
+    $gudangs = $query
+        ->orderByRaw('COALESCE(gudang_induk_id, id)')
+        ->orderByRaw('CASE WHEN gudang_induk_id IS NULL THEN 0 ELSE 1 END')
+        ->orderBy('nama_gudang')
+        ->get();
+
+    $kpi = [
+        'total' => Gudang::count(),
+        'aktif' => Gudang::aktif()->count(),
+        'total_dokumen' => BaRampung::count(),
+        'dengan_proses' => Gudang::whereHas('baRampungs', function ($q) {
+            $q->where(
+                'status',
+                BaRampung::STATUS_MENUNGGU_VERIFIKASI
+            );
+        })->count(),
+    ];
+
+    return view(
+        'gudang.index',
+        compact('gudangs', 'kpi')
+    );
+}
 
     public function create(): View
-    {
-        return view('gudang.create');
-    }
+{
+    $gudangsUtama = Gudang::whereNull('gudang_induk_id')
+        ->orderBy('nama_gudang')
+        ->get();
+
+    return view(
+        'gudang.create',
+        compact('gudangsUtama')
+    );
+}
 
     public function store(StoreGudangRequest $request): RedirectResponse
     {

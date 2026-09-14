@@ -22,8 +22,8 @@ class StoreGudangRequest extends FormRequest
             'nomor_telepon' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:150'],
             'kapasitas' => ['nullable', 'numeric', 'min:0'],
-            'status' => ['required', 'in:aktif,nonaktif'],
-        ];
+'status' => ['required', 'in:aktif,nonaktif'],
+'gudang_induk_id' => ['nullable', 'exists:gudangs,id'],        ];
     }
 
     public function messages(): array

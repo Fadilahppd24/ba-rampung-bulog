@@ -65,9 +65,14 @@ class UpdateGudangRequest extends FormRequest
             ],
 
             'status' => [
-                'required',
-                'in:aktif,nonaktif',
-            ],
+    'required',
+    'in:aktif,nonaktif',
+],
+
+'gudang_induk_id' => [
+    'nullable',
+    'exists:gudangs,id',
+],
         ];
     }
 

@@ -11,16 +11,17 @@ class Gudang extends Model
     use HasFactory;
 
     protected $fillable = [
-        'kode_gudang',
-        'nama_gudang',
-        'alamat',
-        'kecamatan',
-        'desa',
-        'nomor_telepon',
-        'email',
-        'kapasitas',
-        'status',
-    ];
+    'kode_gudang',
+    'nama_gudang',
+    'alamat',
+    'kecamatan',
+    'desa',
+    'nomor_telepon',
+    'email',
+    'kapasitas',
+    'status',
+    'gudang_induk_id',
+];
 
     protected function casts(): array
     {
@@ -38,6 +39,16 @@ class Gudang extends Model
     {
         return $this->hasMany(BaRampung::class);
     }
+
+    public function gudangInduk()
+{
+    return $this->belongsTo(Gudang::class, 'gudang_induk_id');
+}
+
+public function gudangFilial(): HasMany
+{
+    return $this->hasMany(Gudang::class, 'gudang_induk_id');
+}
 
     public function scopeAktif($query)
     {
