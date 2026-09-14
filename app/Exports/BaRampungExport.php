@@ -460,14 +460,14 @@ class BaRampungMonthSheet implements
             // F - NO TM BAHAN
             null,
 
-            // G - TANGGAL TM
-            $ba->tanggal_ba,
+           // G - TANGGAL TM
+null,
 
             // H - TM HASIL NO
             null,
 
             // I - TM HASIL TGL
-            $ba->tanggal_ba,
+null,
 
             // J - NOMOR MO
             $ba->nomor_mo ?? '-',

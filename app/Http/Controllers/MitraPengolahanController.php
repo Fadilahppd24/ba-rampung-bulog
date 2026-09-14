@@ -44,8 +44,7 @@ class MitraPengolahanController extends Controller
         }
 
         $mitras = $query
-            ->orderBy('nama_mitra')
-            ->paginate(10)
+->orderBy('kode_mitra', 'asc')            ->paginate(10)
             ->withQueryString();
 
         $jenisUsahaOptions = MitraPengolahan::whereNotNull('jenis_usaha')

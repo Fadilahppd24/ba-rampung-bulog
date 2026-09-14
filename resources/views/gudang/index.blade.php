@@ -32,7 +32,6 @@
     </div>
 
 
-
     {{-- DAFTAR GUDANG --}}
     <div class="card">
 
@@ -46,7 +45,7 @@
                     </h3>
 
                     <p class="text-sm text-gray-500 mt-1">
-                        Informasi seluruh gudang yang terdaftar.
+                        Gudang utama dan gudang filial.
                     </p>
                 </div>
 
@@ -102,6 +101,10 @@
                         </th>
 
                         <th class="px-6 py-3 font-medium">
+                            Gudang Induk
+                        </th>
+
+                        <th class="px-6 py-3 font-medium">
                             Kecamatan
                         </th>
 
@@ -130,146 +133,200 @@
 
                     @forelse($gudangs as $i => $gudang)
 
-                        <tr class="hover:bg-gray-50">
+                        {{-- ========================= --}}
+                        {{-- GUDANG UTAMA --}}
+                        {{-- ========================= --}}
+                        @if(is_null($gudang->gudang_induk_id))
 
-                            {{-- NOMOR --}}
-                            <td class="px-6 py-4 text-gray-500">
-                                {{ $gudangs->firstItem() + $i }}
-                            </td>
+                            <tr class="bg-gray-100 border-t-2 border-gray-200">
+
+                                <td
+                                    colspan="9"
+                                    class="px-6 py-4"
+                                >
+
+                                    <div class="flex items-center gap-3">
+
+                                        <span class="text-lg">
+                                            🏭
+                                        </span>
+
+                                        <div>
+
+                                            <p class="font-bold text-gray-900">
+                                                {{ $gudang->nama_gudang }}
+                                            </p>
+
+                                            <p class="text-xs text-gray-500">
+                                                {{ $gudang->kode_gudang }}
+                                                — Gudang Utama
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
 
 
-                            {{-- KODE --}}
-                            <td class="px-6 py-4">
+                        {{-- ========================= --}}
+                        {{-- GUDANG FILIAL --}}
+                        {{-- ========================= --}}
+                        @else
 
-                                <span class="font-medium text-gray-900">
-                                    {{ $gudang->kode_gudang }}
-                                </span>
+                            <tr class="hover:bg-gray-50">
 
-                            </td>
+                                {{-- NOMOR --}}
+                                <td class="px-6 py-4 text-gray-500">
+                                    {{ $i + 1 }}
+                                </td>
 
 
-                            {{-- NAMA --}}
-                            <td class="px-6 py-4">
+                                {{-- KODE --}}
+                                <td class="px-6 py-4">
 
-                                <div>
+                                    <span class="font-medium text-gray-900">
+                                        {{ $gudang->kode_gudang }}
+                                    </span>
 
-                                    <p class="font-medium text-gray-900">
-                                        {{ $gudang->nama_gudang }}
-                                    </p>
+                                </td>
 
-                                    @if($gudang->alamat)
 
-                                        <p class="text-xs text-gray-500 mt-1">
-                                            {{ $gudang->alamat }}
+                                {{-- NAMA GUDANG --}}
+                                <td class="px-6 py-4">
+
+                                    <div class="pl-4">
+
+                                        <p class="font-medium text-gray-900">
+                                            ↳ {{ $gudang->nama_gudang }}
                                         </p>
+
+                                        @if($gudang->alamat)
+
+                                            <p class="text-xs text-gray-500 mt-1">
+                                                {{ $gudang->alamat }}
+                                            </p>
+
+                                        @endif
+
+                                    </div>
+
+                                </td>
+
+
+                                {{-- GUDANG INDUK --}}
+                                <td class="px-6 py-4">
+
+                                    <span class="text-xs text-gray-600">
+                                        {{ $gudang->gudangInduk->nama_gudang ?? '-' }}
+                                    </span>
+
+                                </td>
+
+
+                                {{-- KECAMATAN --}}
+                                <td class="px-6 py-4 text-gray-600">
+                                    {{ $gudang->kecamatan ?? '-' }}
+                                </td>
+
+
+                                {{-- DESA --}}
+                                <td class="px-6 py-4 text-gray-600">
+                                    {{ $gudang->desa ?? '-' }}
+                                </td>
+
+
+                                {{-- KAPASITAS --}}
+                                <td class="px-6 py-4 text-gray-600">
+
+                                    @if($gudang->kapasitas !== null)
+
+                                        {{ number_format($gudang->kapasitas, 2, ',', '.') }} Ton
+
+                                    @else
+
+                                        -
 
                                     @endif
 
-                                </div>
-
-                            </td>
+                                </td>
 
 
-                            {{-- KECAMATAN --}}
-                            <td class="px-6 py-4 text-gray-600">
-                                {{ $gudang->kecamatan ?? '-' }}
-                            </td>
+                                {{-- STATUS --}}
+                                <td class="px-6 py-4">
+
+                                    <x-status-badge
+                                        :color="$gudang->status === 'aktif' ? 'green' : 'gray'"
+                                        :label="ucfirst($gudang->status)"
+                                    />
+
+                                </td>
 
 
-                            {{-- DESA --}}
-                            <td class="px-6 py-4 text-gray-600">
-                                {{ $gudang->desa ?? '-' }}
-                            </td>
+                                {{-- AKSI --}}
+                                <td class="px-6 py-4">
 
+                                    <div class="flex justify-end items-center gap-3 text-xs">
 
-                            {{-- KAPASITAS --}}
-                            <td class="px-6 py-4 text-gray-600">
-
-                                @if($gudang->kapasitas !== null)
-
-                                    {{ number_format($gudang->kapasitas, 2, ',', '.') }} Ton
-
-                                @else
-
-                                    -
-
-                                @endif
-
-                            </td>
-
-
-                            {{-- STATUS --}}
-                            <td class="px-6 py-4">
-
-                                <x-status-badge
-                                    :color="$gudang->status === 'aktif' ? 'green' : 'gray'"
-                                    :label="ucfirst($gudang->status)"
-                                />
-
-                            </td>
-
-
-                            {{-- AKSI --}}
-                            <td class="px-6 py-4">
-
-                                <div class="flex justify-end items-center gap-3 text-xs">
-
-                                    {{-- SEMUA USER BISA LIHAT --}}
-                                    <a
-                                        href="{{ route('gudang.show', $gudang) }}"
-                                        class="text-bulog-700 hover:underline"
-                                    >
-                                        Lihat
-                                    </a>
-
-
-                                    {{-- ADMIN KANTOR BISA EDIT DAN UBAH STATUS --}}
-                                    @role('admin_kantor')
-
+                                        {{-- LIHAT --}}
                                         <a
-                                            href="{{ route('gudang.edit', $gudang) }}"
+                                            href="{{ route('gudang.show', $gudang) }}"
                                             class="text-bulog-700 hover:underline"
                                         >
-                                            Edit
+                                            Lihat
                                         </a>
 
 
-                                        {{-- UBAH STATUS --}}
-                                        <form
-                                            method="POST"
-                                            action="{{ route('gudang.toggle-status', $gudang) }}"
-                                            class="inline"
-                                        >
+                                        {{-- ADMIN KANTOR --}}
+                                        @role('admin_kantor')
 
-                                            @csrf
-
-                                            @method('PATCH')
-
-                                            <button
-                                                type="submit"
+                                            <a
+                                                href="{{ route('gudang.edit', $gudang) }}"
                                                 class="text-bulog-700 hover:underline"
-                                                onclick="return confirm('Apakah Anda yakin ingin mengubah status gudang ini?')"
                                             >
-                                                {{ $gudang->status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan' }}
-                                            </button>
+                                                Edit
+                                            </a>
 
-                                        </form>
 
-                                    @endrole
+                                            {{-- UBAH STATUS --}}
+                                            <form
+                                                method="POST"
+                                                action="{{ route('gudang.toggle-status', $gudang) }}"
+                                                class="inline"
+                                            >
 
-                                </div>
+                                                @csrf
 
-                            </td>
+                                                @method('PATCH')
 
-                        </tr>
+                                                <button
+                                                    type="submit"
+                                                    class="text-bulog-700 hover:underline"
+                                                    onclick="return confirm('Apakah Anda yakin ingin mengubah status gudang ini?')"
+                                                >
+                                                    {{ $gudang->status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan' }}
+                                                </button>
 
+                                            </form>
+
+                                        @endrole
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        @endif
 
                     @empty
 
                         <tr>
 
                             <td
-                                colspan="8"
+                                colspan="9"
                                 class="px-6 py-16 text-center text-gray-500"
                             >
 
@@ -282,7 +339,7 @@
                                 </p>
 
 
-                                {{-- ADMIN KANTOR BISA TAMBAH JIKA DATA KOSONG --}}
+                                {{-- ADMIN KANTOR BISA TAMBAH --}}
                                 @role('admin_kantor')
 
                                     <a
@@ -305,16 +362,6 @@
             </table>
 
         </div>
-
-
-        {{-- PAGINATION --}}
-        @if($gudangs->hasPages())
-
-            <div class="p-6 border-t border-gray-100">
-                {{ $gudangs->links() }}
-            </div>
-
-        @endif
 
     </div>
 

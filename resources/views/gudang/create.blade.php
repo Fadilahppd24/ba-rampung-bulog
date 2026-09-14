@@ -70,6 +70,70 @@
                 @enderror
             </div>
 
+            {{-- JENIS GUDANG --}}
+<div>
+    <label class="label">
+        Jenis Gudang
+    </label>
+
+    <select
+        name="jenis_gudang"
+        id="jenis_gudang"
+        class="input"
+        required
+    >
+        <option value="utama"
+            @selected(old('jenis_gudang', 'utama') === 'utama')
+        >
+            Gudang Utama
+        </option>
+
+        <option value="filial"
+            @selected(old('jenis_gudang') === 'filial')
+        >
+            Gudang Filial
+        </option>
+    </select>
+
+    @error('jenis_gudang')
+        <p class="text-xs text-red-600 mt-1">
+            {{ $message }}
+        </p>
+    @enderror
+</div>
+
+{{-- GUDANG INDUK --}}
+<div id="gudang-induk-wrapper">
+    <label class="label">
+        Gudang Induk
+    </label>
+
+    <select
+        name="gudang_induk_id"
+        id="gudang_induk_id"
+        class="input"
+    >
+        <option value="">
+            Pilih Gudang Utama
+        </option>
+
+        @foreach ($gudangsUtama as $gudang)
+            <option
+                value="{{ $gudang->id }}"
+                @selected(old('gudang_induk_id') == $gudang->id)
+            >
+                {{ $gudang->nama_gudang }}
+            </option>
+        @endforeach
+    </select>
+
+    @error('gudang_induk_id')
+        <p class="text-xs text-red-600 mt-1">
+            {{ $message }}
+        </p>
+    @enderror
+</div>
+
             {{-- ALAMAT --}}
             <div class="md:col-span-2">
                 <label class="label">
@@ -245,5 +309,31 @@
     </form>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const jenisGudang = document.getElementById('jenis_gudang');
+    const wrapperInduk = document.getElementById('gudang-induk-wrapper');
+    const gudangInduk = document.getElementById('gudang_induk_id');
+
+    function updateGudangInduk() {
+
+        if (jenisGudang.value === 'filial') {
+            wrapperInduk.style.display = 'block';
+            gudangInduk.required = true;
+        } else {
+            wrapperInduk.style.display = 'none';
+            gudangInduk.required = false;
+            gudangInduk.value = '';
+        }
+    }
+
+    updateGudangInduk();
+
+    jenisGudang.addEventListener('change', updateGudangInduk);
+
+});
+</script>
 
 @endsection

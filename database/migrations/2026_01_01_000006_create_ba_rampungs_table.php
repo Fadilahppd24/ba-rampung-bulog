@@ -10,8 +10,7 @@ return new class extends Migration
     {
         Schema::create('ba_rampungs', function (Blueprint $table) {
             $table->id();
-            $table->string('nomor_ba')->unique();
-            $table->date('tanggal_ba');
+$table->string('nomor_ba')->nullable()->unique();            $table->date('tanggal_ba');
             $table->string('hari', 20);
             $table->string('bulan', 20);
             $table->unsignedSmallInteger('tahun');

@@ -361,24 +361,13 @@ class BaRampungController extends Controller
             $data['tanggal_ba']
         );
 
-        $pengaturan = \App\Models\Pengaturan::first();
-$suffix = $pengaturan?->suffix_nomor_ba ?: 'GKP';
 
         $ba = DB::transaction(
             function () use (
     $data,
     $tanggal,
     $request,
-    $suffix
 ) {
-
-                // =================================================
-                // NOMOR BA OTOMATIS
-                // =================================================
-
-                $nomorBa = BaRampung::generateNomorBa(
-                    $tanggal
-                );
 
                 // =================================================
                 // SIMPAN BA
@@ -387,7 +376,7 @@ $suffix = $pengaturan?->suffix_nomor_ba ?: 'GKP';
                 $ba = BaRampung::create([
 
                     'nomor_ba' =>
-                        $nomorBa,
+    $data['nomor_ba'] ?? null,
 
                     'tanggal_ba' =>
                         $tanggal,
@@ -640,16 +629,20 @@ $suffix = $pengaturan?->suffix_nomor_ba ?: 'GKP';
         );
 
         DB::transaction(
-            function () use (
-                $data,
-                $tanggal,
-                $baRampung
-            ) {
+    function () use (
+        $data,
+        $tanggal,
+        $request,
+        $baRampung
+    ) {
 
                 $baRampung->update([
 
                     'tanggal_ba' =>
                         $tanggal,
+
+                        'nomor_ba' =>
+    $data['nomor_ba'] ?? null,
 
                     'hari' =>
                         $tanggal->translatedFormat('l'),
