@@ -93,13 +93,13 @@
                 );
 
             transition:
-                background 1s ease;
+                background 1.2s ease;
         }
 
 
         /* =========================================================
            LOGIN OVERLAY
-           muncul perlahan saat masuk mode login
+           muncul perlahan & smooth saat masuk mode login
         ========================================================= */
 
         .login-dark-overlay {
@@ -116,17 +116,66 @@
             background:
                 linear-gradient(
                     90deg,
-                    rgba(14, 54, 37, 0.04),
-                    rgba(9, 53, 37, 0.64)
+                    rgba(14, 54, 37, 0.05),
+                    rgba(9, 53, 37, 0.68)
                 );
 
             transition:
-                opacity 1s cubic-bezier(.22,.61,.36,1);
+                opacity 1.4s cubic-bezier(.22,.61,.36,1);
         }
 
 
         .page.login-mode .login-dark-overlay {
             opacity: 1;
+        }
+
+
+        /* =========================================================
+           CLICK RIPPLE
+           efek lingkaran halus yang menyebar dari titik klik
+           tombol "Masuk" — pengganti tirai solid, jauh lebih
+           smooth & tidak menutup layar sama sekali
+        ========================================================= */
+
+        .click-ripple {
+            position: fixed;
+
+            left: 0;
+            top: 0;
+
+            width: 18px;
+            height: 18px;
+
+            border-radius: 50%;
+
+            transform: translate(-50%, -50%) scale(0);
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(8,119,201,0.38) 0%,
+                    rgba(8,119,201,0.14) 40%,
+                    rgba(23,63,45,0) 72%
+                );
+
+            pointer-events: none;
+
+            z-index: 55;
+
+            opacity: 1;
+
+            will-change: transform, opacity;
+        }
+
+
+        .click-ripple.animate {
+            transition:
+                transform 1s cubic-bezier(.22,1,.36,1),
+                opacity 1s ease;
+
+            transform: translate(-50%, -50%) scale(70);
+
+            opacity: 0;
         }
 
 
@@ -227,11 +276,11 @@
         .bulog-logo {
             position: absolute;
 
-            left: 5.8%;
-            top: 27px;
+            left: 4%;
+            top: 12px;
 
-            width: 125px;
-            height: 55px;
+            width: 190px;
+            height: 80px;
 
             object-fit: contain;
 
@@ -241,7 +290,7 @@
                 brightness(0)
                 invert(1);
 
-            transform: scale(1.12);
+            transform: scale(1.55);
 
             transform-origin: left center;
 
@@ -252,7 +301,7 @@
 
         .page.login-mode .bulog-logo {
             transform:
-                scale(1.12)
+                scale(1.55)
                 translateX(-4px);
         }
 
@@ -439,16 +488,33 @@
 
         /* =========================================================
            WELCOME CONTENT
+           (diperbaiki: pakai "safe zone" top/bottom + max-height
+           supaya tidak pernah kepotong header/footer, dengan
+           overflow-y auto sebagai jaring pengaman di layar pendek)
         ========================================================= */
 
         .welcome-content {
             position: absolute;
 
             left: 50%;
-            top: 50%;
 
-            transform:
-                translate(-50%, -45%);
+            top: 118px;
+            bottom: 96px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            align-items: center;
+
+            max-height: calc(100vh - 214px);
+
+            overflow-y: auto;
+
+            scrollbar-width: none;
+            -ms-overflow-style: none;
 
             width: min(850px, 80vw);
 
@@ -458,10 +524,17 @@
 
             color: white;
 
+            transform: translateX(-50%);
+
             transition:
-                opacity .65s cubic-bezier(.22,.61,.36,1),
-                transform .85s cubic-bezier(.22,.61,.36,1),
-                filter .65s ease;
+                opacity .55s ease,
+                transform .7s cubic-bezier(.22,1,.36,1),
+                filter .55s ease;
+        }
+
+
+        .welcome-content::-webkit-scrollbar {
+            display: none;
         }
 
 
@@ -496,7 +569,7 @@
 
             font-weight: 400;
 
-            line-height: .82;
+            line-height: .95;
 
             letter-spacing: -1px;
 
@@ -507,8 +580,18 @@
 
             opacity: 0;
 
+            /* padding memberi ruang aman untuk bagian atas/bawah huruf
+               (mis. huruf "B", "R", "G") supaya tidak pernah terpotong
+               oleh clip-path saat/​setelah animasi reveal; margin negatif
+               menetralkan posisinya biar tata letak tetap sama */
+            padding: 0.16em 0;
+
+            margin: -0.16em 0 -0.02em;
+
+            clip-path: inset(0 0 100% 0);
+
             animation:
-                welcomeTitle .95s .2s forwards;
+                titleReveal 2.6s .25s cubic-bezier(.65,0,.35,1) forwards;
         }
 
 
@@ -521,7 +604,7 @@
             width: 42px;
             height: 1px;
 
-            margin: 25px auto 18px;
+            margin: 12px auto 18px;
 
             background: rgba(255,255,255,.65);
 
@@ -562,7 +645,7 @@
             opacity: 0;
 
             animation:
-                welcomeFade .8s .55s forwards;
+                welcomeFade .8s 2s forwards;
         }
 
 
@@ -571,14 +654,14 @@
         ========================================================= */
 
         .enter-button {
-            width: 150px;
-            height: 54px;
+            width: 204px;
+            height: 68px;
 
-            border: 0;
+            border: 1px solid rgba(255,255,255,.5);
 
-            border-radius: 18px;
+            border-radius: 999px;
 
-            padding: 0 8px 0 22px;
+            padding: 0 10px 0 32px;
 
             display: flex;
 
@@ -588,48 +671,94 @@
 
             margin: 0 auto;
 
-            background: #f7f3e8;
+            background:
+                linear-gradient(160deg, #fffefb 0%, #f5edd9 55%, #ecdfbf 100%);
 
             color: #173f2d;
 
             font-family: 'Manrope', sans-serif;
 
-            font-size: 9px;
+            font-size: 12px;
 
             font-weight: 800;
 
-            letter-spacing: 3px;
+            letter-spacing: 3.4px;
 
             text-transform: uppercase;
 
             cursor: pointer;
 
             box-shadow:
-                0 15px 35px rgba(0,0,0,.20);
+                0 18px 42px rgba(0,0,0,.26),
+                inset 0 1px 0 rgba(255,255,255,.9),
+                0 0 0 0 rgba(8,119,201,.35);
 
             opacity: 0;
 
             animation:
-                welcomeButton .8s .75s forwards;
+                welcomeButton .85s 2.5s cubic-bezier(.34,1.56,.64,1) forwards,
+                buttonBreathe 2.8s 3.4s ease-in-out infinite;
 
             transition:
-                transform .3s ease,
-                box-shadow .3s ease;
+                transform .3s cubic-bezier(.34,1.56,.64,1),
+                box-shadow .3s ease,
+                opacity .4s ease;
         }
 
 
         .enter-button:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px) scale(1.035);
 
             box-shadow:
-                0 20px 40px rgba(0,0,0,.27);
+                0 24px 50px rgba(0,0,0,.32),
+                inset 0 1px 0 rgba(255,255,255,.95),
+                0 0 0 0 rgba(8,119,201,.35);
         }
 
 
-        .enter-arrow {
-            width: 38px;
-            height: 38px;
+        .enter-button:active {
+            transform: translateY(-1px) scale(.95);
 
+            box-shadow:
+                0 10px 22px rgba(0,0,0,.24),
+                inset 0 1px 0 rgba(255,255,255,.85),
+                0 0 0 0 rgba(8,119,201,.35);
+        }
+
+
+        .enter-button:disabled {
+            cursor: default;
+        }
+
+
+        @keyframes buttonBreathe {
+
+            0%, 100% {
+                box-shadow:
+                    0 18px 42px rgba(0,0,0,.26),
+                    inset 0 1px 0 rgba(255,255,255,.9),
+                    0 0 0 0 rgba(8,119,201,.32);
+            }
+
+            50% {
+                box-shadow:
+                    0 18px 42px rgba(0,0,0,.26),
+                    inset 0 1px 0 rgba(255,255,255,.9),
+                    0 0 0 10px rgba(8,119,201,0);
+            }
+
+        }
+
+
+        /* =========================================================
+           ARROW ICON
+           (enter-arrow tetap biru di atas tombol krem,
+           login-arrow dibuat putih supaya kontras di atas
+           tombol login yang sekarang full biru)
+        ========================================================= */
+
+        .enter-arrow,
+        .login-arrow {
             border-radius: 50%;
 
             display: flex;
@@ -637,53 +766,137 @@
             align-items: center;
             justify-content: center;
 
-            background: #0877c9;
+            flex-shrink: 0;
+
+            transition:
+                transform .35s cubic-bezier(.34,1.56,.64,1),
+                box-shadow .3s ease;
+        }
+
+
+        .enter-arrow {
+            width: 48px;
+            height: 48px;
+
+            background: linear-gradient(150deg, #12a2f2 0%, #0877c9 100%);
 
             color: white;
 
-            font-size: 16px;
+            box-shadow:
+                0 8px 18px rgba(8,119,201,.5);
+        }
 
-            transition:
-                transform .3s ease;
+
+        .login-arrow {
+            width: 42px;
+            height: 42px;
+
+            background: #ffffff;
+
+            color: #0877c9;
+
+            box-shadow:
+                0 6px 14px rgba(0,0,0,.18);
+        }
+
+
+        .enter-arrow svg {
+            width: 19px;
+            height: 19px;
+
+            transition: transform .3s ease;
+        }
+
+
+        .login-arrow svg {
+            width: 16px;
+            height: 16px;
+
+            transition: transform .3s ease;
         }
 
 
         .enter-button:hover .enter-arrow {
+            transform: rotate(18deg) scale(1.06);
+
+            box-shadow:
+                0 8px 18px rgba(8,119,201,.6);
+        }
+
+
+        .login-button:hover .login-arrow {
+            transform: rotate(18deg) scale(1.06);
+
+            box-shadow:
+                0 8px 18px rgba(0,0,0,.28);
+        }
+
+
+        .enter-button:hover .enter-arrow svg,
+        .login-button:hover .login-arrow svg {
             transform: translateX(3px);
+        }
+
+
+        .enter-button:active .enter-arrow {
+            transform: rotate(0deg) scale(.92);
+        }
+
+
+        .login-button:active .login-arrow {
+            transform: rotate(0deg) scale(.92);
         }
 
 
         /* =========================================================
            LOGIN CONTENT
+           (diperbaiki: pakai "safe zone" top/bottom + max-height
+           supaya form login tidak pernah kepotong header/footer
+           di layar pendek/laptop, dengan overflow-y auto sebagai
+           jaring pengaman kalau kontennya lebih tinggi dari layar)
         ========================================================= */
 
         .login-content {
             position: absolute;
 
-            top: 50%;
+            top: 118px;
+            bottom: 96px;
 
             right: 8%;
 
             width: min(470px, 38vw);
 
-            transform:
-                translateY(-43%)
-                translateX(80px);
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            max-height: calc(100vh - 214px);
+
+            overflow-y: auto;
+
+            scrollbar-width: none;
+            -ms-overflow-style: none;
 
             z-index: 26;
 
             color: white;
 
-            opacity: 0;
-
             pointer-events: none;
 
-            filter: blur(8px);
+            filter: blur(4px);
+
+            transform: translateX(40px);
 
             transition:
-                opacity .8s .35s cubic-bezier(.22,.61,.36,1),
-                transform 1s .25s cubic-bezier(.22,.61,.36,1),
-                filter .8s .35s ease;
+                transform 1s cubic-bezier(.22,1,.36,1),
+                filter .8s ease;
+        }
+
+
+        .login-content::-webkit-scrollbar {
+            display: none;
         }
 
 
@@ -695,26 +908,79 @@
             opacity: 0;
 
             transform:
-                translate(-50%, -50%)
+                translateX(-50%)
                 scale(.94)
-                translateY(-20px);
+                translateY(-14px);
 
-            filter: blur(5px);
+            filter: blur(7px);
 
             pointer-events: none;
         }
 
 
         .page.login-mode .login-content {
-            opacity: 1;
-
             pointer-events: auto;
 
-            transform:
-                translateY(-43%)
-                translateX(0);
+            transform: translateX(0);
 
             filter: blur(0);
+        }
+
+
+        /* =========================================================
+           STAGGER MASUK ELEMEN LOGIN
+           tiap elemen muncul satu-satu, halus, dengan teks
+           besar (judul) "tersingkap" dari atas ke bawah
+        ========================================================= */
+
+        .login-small,
+        .login-accent,
+        .login-title,
+        .login-description,
+        .login-form,
+        .login-footer {
+            opacity: 0;
+        }
+
+
+        .login-title {
+            clip-path: inset(0 0 100% 0);
+        }
+
+
+        .page.login-mode .login-small {
+            animation:
+                welcomeFade .6s .1s cubic-bezier(.22,1,.36,1) forwards;
+        }
+
+
+        .page.login-mode .login-accent {
+            animation:
+                welcomeFade .6s .22s cubic-bezier(.22,1,.36,1) forwards;
+        }
+
+
+        .page.login-mode .login-title {
+            animation:
+                titleReveal 2.3s .35s cubic-bezier(.65,0,.35,1) forwards;
+        }
+
+
+        .page.login-mode .login-description {
+            animation:
+                welcomeFade .7s 1.9s cubic-bezier(.22,1,.36,1) forwards;
+        }
+
+
+        .page.login-mode .login-form {
+            animation:
+                welcomeFade .7s 2.2s cubic-bezier(.22,1,.36,1) forwards;
+        }
+
+
+        .page.login-mode .login-footer {
+            animation:
+                welcomeFade .7s 2.5s cubic-bezier(.22,1,.36,1) forwards;
         }
 
 
@@ -775,15 +1041,20 @@
         .login-title {
             font-family: 'Cormorant Garamond', serif;
 
-            font-size: clamp(68px, 5.7vw, 88px);
+            font-size: clamp(56px, 5.7vw, 88px);
 
             font-weight: 400;
 
-            line-height: .82;
+            line-height: .95;
 
             color: #fff;
 
-            margin-bottom: 20px;
+            /* padding memberi ruang aman untuk bagian atas/bawah huruf
+               supaya tidak kepotong clip-path; margin negatif menjaga
+               tata letak tetap sama seperti sebelumnya */
+            padding: 0.16em 0;
+
+            margin: -0.16em 0 4px;
 
             text-shadow:
                 0 5px 25px rgba(0,0,0,.28);
@@ -1039,6 +1310,9 @@
 
         /* =========================================================
            LOGIN BUTTON
+           (didesain ulang: pill biru gradient penuh, senada
+           dengan aksen biru brand #0877c9, dengan lingkaran
+           panah putih supaya kontras & terasa lebih premium)
         ========================================================= */
 
         .login-button {
@@ -1050,7 +1324,7 @@
 
             border-radius: 17px;
 
-            padding: 0 9px 0 22px;
+            padding: 0 9px 0 24px;
 
             display: flex;
 
@@ -1058,9 +1332,10 @@
 
             justify-content: space-between;
 
-            background: #f7f3e8;
+            background:
+                linear-gradient(135deg, #12a2f2 0%, #0877c9 55%, #075a99 100%);
 
-            color: #173f2d;
+            color: #ffffff;
 
             font-family: 'Manrope', sans-serif;
 
@@ -1075,10 +1350,11 @@
             cursor: pointer;
 
             box-shadow:
-                0 15px 35px rgba(0,0,0,.18);
+                0 15px 35px rgba(8,119,201,.4),
+                inset 0 1px 0 rgba(255,255,255,.28);
 
             transition:
-                transform .3s ease,
+                transform .25s cubic-bezier(.34,1.56,.64,1),
                 box-shadow .3s ease;
         }
 
@@ -1087,34 +1363,13 @@
             transform: translateY(-2px);
 
             box-shadow:
-                0 19px 40px rgba(0,0,0,.25);
+                0 19px 42px rgba(8,119,201,.5),
+                inset 0 1px 0 rgba(255,255,255,.32);
         }
 
 
-        .login-arrow {
-            width: 38px;
-            height: 38px;
-
-            border-radius: 50%;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            background: #0877c9;
-
-            color: white;
-
-            font-size: 16px;
-
-            transition:
-                transform .3s ease;
-        }
-
-
-        .login-button:hover .login-arrow {
-            transform: translateX(3px);
+        .login-button:active {
+            transform: scale(.96);
         }
 
 
@@ -1218,7 +1473,7 @@
 
 
         /* =========================================================
-           ANIMATIONS WELCOME
+           ANIMATIONS
         ========================================================= */
 
         @keyframes welcomeFade {
@@ -1240,14 +1495,44 @@
         }
 
 
-        @keyframes welcomeTitle {
+        /* teks "tersingkap" halus dari atas ke bawah,
+           dipakai untuk judul besar (BA RAMPUNG / Login) */
+
+        @keyframes titleReveal {
+
+            from {
+                opacity: 0;
+
+                clip-path: inset(0 0 100% 0);
+
+                transform:
+                    translateY(-10px);
+            }
+
+            60% {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 1;
+
+                clip-path: inset(0 0 0% 0);
+
+                transform:
+                    translateY(0);
+            }
+
+        }
+
+
+        @keyframes welcomeButton {
 
             from {
                 opacity: 0;
 
                 transform:
-                    translateY(30px)
-                    scale(.96);
+                    translateY(20px)
+                    scale(.9);
             }
 
             to {
@@ -1261,22 +1546,119 @@
         }
 
 
-        @keyframes welcomeButton {
+        /* =========================================================
+           SHORT VIEWPORT SAFETY NET
+           (di layar dengan tinggi terbatas — laptop, browser
+           dengan banyak toolbar, dsb — jarak antar elemen
+           dipadatkan bertahap supaya semuanya tetap muat dan
+           tidak pernah kepotong oleh header/footer)
+        ========================================================= */
 
-            from {
-                opacity: 0;
+        @media (max-height: 800px) {
 
-                transform:
-                    translateY(20px);
+            .welcome-content,
+            .login-content {
+                top: 112px;
+                bottom: 88px;
+                max-height: calc(100vh - 200px);
             }
 
-            to {
-                opacity: 1;
-
-                transform:
-                    translateY(0);
+            .login-title {
+                font-size: clamp(48px, 5vw, 72px);
+                margin-bottom: 14px;
             }
 
+            .welcome-title {
+                font-size: clamp(58px, 6vw, 96px);
+            }
+
+            .login-description {
+                margin-bottom: 18px;
+                font-size: 10px;
+                line-height: 1.6;
+            }
+
+            .welcome-description {
+                margin-bottom: 20px;
+            }
+
+            .field {
+                margin-bottom: 13px;
+            }
+
+            .input {
+                height: 46px;
+            }
+
+            .remember-row {
+                margin-bottom: 16px;
+            }
+
+            .login-button {
+                height: 48px;
+            }
+
+            .login-footer {
+                margin-top: 15px;
+            }
+        }
+
+
+        @media (max-height: 640px) {
+
+            .welcome-content,
+            .login-content {
+                top: 100px;
+                bottom: 76px;
+                max-height: calc(100vh - 176px);
+            }
+
+            .login-small,
+            .welcome-small {
+                margin-bottom: 8px;
+            }
+
+            .login-accent {
+                margin-bottom: 8px;
+            }
+
+            .login-title {
+                font-size: 42px;
+                margin-bottom: 10px;
+            }
+
+            .welcome-title {
+                font-size: 46px;
+            }
+
+            .login-description,
+            .welcome-description {
+                display: none;
+            }
+
+            .welcome-divider {
+                margin: 14px auto 14px;
+            }
+
+            .field {
+                margin-bottom: 10px;
+            }
+
+            .input {
+                height: 42px;
+            }
+
+            .remember-row {
+                margin-bottom: 12px;
+            }
+
+            .login-button {
+                height: 44px;
+            }
+
+            .login-footer {
+                margin-top: 10px;
+            }
         }
 
 
@@ -1332,11 +1714,18 @@
 
 
             .bulog-logo {
-                left: 22px;
-                top: 21px;
+                left: 18px;
+                top: 10px;
 
-                width: 90px;
-                height: 45px;
+                width: 120px;
+                height: 58px;
+
+                transform: scale(1.15);
+            }
+
+
+            .page.login-mode .bulog-logo {
+                transform: scale(1.15) translateX(-3px);
             }
 
 
@@ -1369,9 +1758,24 @@
 
 
             .welcome-content {
+                left: 50%;
+
+                top: 104px;
+                bottom: 84px;
+
+                max-height: calc(100vh - 188px);
+
                 width: calc(100% - 44px);
 
-                top: 49%;
+                transform: translateX(-50%);
+            }
+
+
+            .page.login-mode .welcome-content {
+                transform:
+                    translateX(-50%)
+                    scale(.94)
+                    translateY(-14px);
             }
 
 
@@ -1383,7 +1787,7 @@
 
 
             .welcome-title {
-                font-size: 62px;
+                font-size: 52px;
             }
 
 
@@ -1395,28 +1799,31 @@
 
 
             .login-content {
-                top: 50%;
+                top: 104px;
+                bottom: 84px;
 
                 right: auto;
                 left: 50%;
 
                 width: calc(100% - 44px);
 
+                max-height: calc(100vh - 188px);
+
                 transform:
-                    translate(-50%, -40%)
-                    translateX(50px);
+                    translateX(-50%)
+                    translateX(30px);
             }
 
 
             .page.login-mode .login-content {
                 transform:
-                    translate(-50%, -40%)
+                    translateX(-50%)
                     translateX(0);
             }
 
 
             .login-title {
-                font-size: 62px;
+                font-size: 52px;
             }
 
 
@@ -1593,7 +2000,21 @@
             </span>
 
             <span class="enter-arrow">
-                →
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+
+                    <path d="M5 12h14"/>
+                    <path d="M13 6l6 6-6 6"/>
+
+                </svg>
+
             </span>
 
         </button>
@@ -1826,7 +2247,21 @@
                 </span>
 
                 <span class="login-arrow">
-                    →
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <path d="M5 12h14"/>
+                        <path d="M13 6l6 6-6 6"/>
+
+                    </svg>
+
                 </span>
 
             </button>
@@ -1928,37 +2363,186 @@
 
 
     /* =========================================================
+       AUDIO CONTEXT (dibuat sekali, dipakai ulang)
+    ========================================================== */
+
+    let audioCtx = null;
+
+    function getAudioCtx() {
+
+        if (!audioCtx) {
+
+            const AC =
+                window.AudioContext ||
+                window.webkitAudioContext;
+
+            if (AC) {
+
+                audioCtx = new AC();
+
+            }
+
+        }
+
+        return audioCtx;
+
+    }
+
+
+    /* =========================================================
+       SUARA KLIK — "Blip Ganda"
+       disintesis langsung lewat Web Audio API (tanpa file
+       eksternal): dua bunyi gelombang persegi pendek
+       berurutan dengan jeda, seperti "tek-tek" konfirmasi
+       digital yang singkat & jelas
+    ========================================================== */
+
+    function playSquareBlip(ctx, delay, freq, dur, peak) {
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'square';
+
+        const t0 = ctx.currentTime + delay;
+
+        osc.frequency.setValueAtTime(freq, t0);
+
+        gain.gain.setValueAtTime(0.0001, t0);
+        gain.gain.exponentialRampToValueAtTime(peak, t0 + Math.min(0.01, dur * 0.2));
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(t0);
+        osc.stop(t0 + dur + 0.02);
+
+    }
+
+
+    function playClickSound() {
+
+        try {
+
+            const ctx = getAudioCtx();
+
+            if (!ctx) return;
+
+            if (ctx.state === 'suspended') {
+
+                ctx.resume();
+
+            }
+
+
+            playSquareBlip(ctx, 0, 1100, 0.035, 0.11);
+            playSquareBlip(ctx, 0.07, 1500, 0.035, 0.11);
+
+        } catch (e) {
+
+            /* diam saja kalau browser tidak mendukung */
+
+        }
+
+    }
+
+
+    /* =========================================================
+       RIPPLE HALUS DARI TITIK KLIK
+    ========================================================== */
+
+    function spawnRipple(x, y) {
+
+        const ripple =
+            document.createElement('div');
+
+        ripple.className = 'click-ripple';
+
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+
+        document.body.appendChild(ripple);
+
+
+        requestAnimationFrame(
+            function () {
+
+                requestAnimationFrame(
+                    function () {
+
+                        ripple.classList.add('animate');
+
+                    }
+                );
+
+            }
+        );
+
+
+        setTimeout(
+            function () {
+
+                ripple.remove();
+
+            },
+            1050
+        );
+
+    }
+
+
+    /* =========================================================
        WELCOME -> LOGIN
+       transisi smooth tanpa tirai solid: overlay meredup
+       perlahan, welcome content memudar+blur keluar, lalu
+       konten login masuk bertahap dengan judul yang
+       "tersingkap" dari atas ke bawah (titleReveal)
     ========================================================== */
 
     if (enterButton) {
 
         enterButton.addEventListener(
             'click',
-            function () {
+            function (event) {
 
-                page.classList.add('login-mode');
+                if (page.classList.contains('login-mode')) return;
 
 
-                /*
-                 * Setelah animasi selesai,
-                 * fokus otomatis ke email.
-                 */
+                playClickSound();
+
+                spawnRipple(event.clientX, event.clientY);
+
+
+                enterButton.disabled = true;
+
+                enterButton.style.opacity = '0';
+
 
                 setTimeout(
                     function () {
 
-                        const email =
-                            document.getElementById('email');
+                        page.classList.add('login-mode');
 
-                        if (email) {
 
-                            email.focus();
+                        setTimeout(
+                            function () {
 
-                        }
+                                const email =
+                                    document.getElementById('email');
+
+                                if (email) {
+
+                                    email.focus();
+
+                                }
+
+                            },
+                            950
+                        );
 
                     },
-                    1050
+                    110
                 );
 
             }
@@ -2037,6 +2621,11 @@
             ) {
 
                 page.classList.remove('login-mode');
+
+
+                enterButton.disabled = false;
+
+                enterButton.style.opacity = '1';
 
             }
 
