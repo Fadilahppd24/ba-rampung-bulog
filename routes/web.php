@@ -11,7 +11,7 @@ use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\PimpinanCabangController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('dashboard'));
+Route::view('/', 'welcome')->name('welcome');
 
 // ---- Guest ----
 Route::middleware('guest')->group(function () {
