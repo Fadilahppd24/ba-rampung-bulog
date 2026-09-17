@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\AktivitasLog;
 use App\Models\Gudang;
 use App\Models\MitraPengolahan;
-use App\Models\Pegawai;
 use App\Models\Pengaturan;
 use App\Models\PimpinanCabang;
 use App\Services\ActivityLogger;
@@ -95,17 +94,16 @@ class PengaturanController extends Controller
      * "Backup" here is a logical export (JSON snapshot of the master-data
      * tables) rather than a raw `mysqldump`, since a real SQL dump needs a
      * shell binary that may not exist on every host. It is a genuine,
-     * restorable backup of Gudang / Mitra / Pegawai / Pimpinan Cabang data.
+     * restorable backup of Gudang / Mitra / Pimpinan Cabang data.
      */
     public function downloadBackup()
     {
         $snapshot = [
-            'exported_at' => now()->toIso8601String(),
-            'gudangs' => Gudang::all()->toArray(),
-            'mitra_pengolahans' => MitraPengolahan::all()->toArray(),
-            'pegawais' => Pegawai::all()->toArray(),
-            'pimpinan_cabangs' => PimpinanCabang::all()->toArray(),
-        ];
+    'exported_at' => now()->toIso8601String(),
+    'gudangs' => Gudang::all()->toArray(),
+    'mitra_pengolahans' => MitraPengolahan::all()->toArray(),
+    'pimpinan_cabangs' => PimpinanCabang::all()->toArray(),
+];
 
         ActivityLogger::log('Backup Database', 'pengaturan', null, 'Export snapshot data master ke JSON.');
 
@@ -142,11 +140,11 @@ class PengaturanController extends Controller
 
         $ringkasan['gudang'] = $this->restoreTable(Gudang::class, $content['gudangs'] ?? [], 'kode_gudang');
         $ringkasan['mitra'] = $this->restoreTable(MitraPengolahan::class, $content['mitra_pengolahans'] ?? [], 'kode_mitra');
-        $ringkasan['pegawai'] = $this->restoreTable(Pegawai::class, $content['pegawais'] ?? [], 'nip');
 
         ActivityLogger::log('Restore Database', 'pengaturan', null, 'Menambahkan ' . array_sum($ringkasan) . ' data baru dari file backup (data lama tidak diubah).');
 
-        return back()->with('success', "Restore selesai. Ditambahkan: {$ringkasan['gudang']} Gudang, {$ringkasan['mitra']} Mitra, {$ringkasan['pegawai']} Pegawai baru. Data yang sudah ada tidak diubah.");
+        return back()->with('success',
+"Restore selesai. Ditambahkan: {$ringkasan['gudang']} Gudang, {$ringkasan['mitra']} Mitra baru. Data yang sudah ada tidak diubah.");
     }
 
     private function restoreTable(string $modelClass, array $rows, string $uniqueKey): int

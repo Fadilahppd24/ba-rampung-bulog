@@ -6,7 +6,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GudangController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\MitraPengolahanController;
-use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\PimpinanCabangController;
 use Illuminate\Support\Facades\Route;
@@ -113,31 +112,6 @@ Route::middleware(['auth', 'role:admin_gudang,admin_kantor,pimpinan_cabang'])->g
 
         Route::patch('/mitra/{mitra}/toggle-status', [MitraPengolahanController::class, 'toggleStatus'])
             ->name('mitra.toggle-status');
-    });
-
-    // ---- Pegawai ----
-    Route::get('/pegawai', [PegawaiController::class, 'index'])
-        ->name('pegawai.index');
-
-    Route::get('/pegawai/{pegawai}', [PegawaiController::class, 'show'])
-        ->name('pegawai.show');
-
-    // Hanya Admin Kantor yang mengelola Pegawai.
-    Route::middleware('role:admin_kantor')->group(function () {
-        Route::get('/pegawai-create', [PegawaiController::class, 'create'])
-            ->name('pegawai.create');
-
-        Route::post('/pegawai', [PegawaiController::class, 'store'])
-            ->name('pegawai.store');
-
-        Route::get('/pegawai/{pegawai}/edit', [PegawaiController::class, 'edit'])
-            ->name('pegawai.edit');
-
-        Route::put('/pegawai/{pegawai}', [PegawaiController::class, 'update'])
-            ->name('pegawai.update');
-
-        Route::patch('/pegawai/{pegawai}/toggle-status', [PegawaiController::class, 'toggleStatus'])
-            ->name('pegawai.toggle-status');
     });
 
     // ---- Pimpinan Cabang ----

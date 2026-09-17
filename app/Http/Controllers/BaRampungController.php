@@ -287,10 +287,6 @@ class BaRampungController extends Controller
             ->orderBy('nama')
             ->get();
 
-        $pegawais = \App\Models\Pegawai::aktif()
-            ->orderBy('nama')
-            ->get();
-
         $pengaturan = \App\Models\Pengaturan::first();
         
         // Riwayat penandatangan Pihak Kesatu
@@ -320,7 +316,6 @@ class BaRampungController extends Controller
                 'gudangs',
                 'mitras',
                 'pimpinans',
-                'pegawais',
                 'pengaturan',
                 'penandatanganKesatu',
                 'penandatanganKedua'
@@ -565,11 +560,6 @@ class BaRampungController extends Controller
             ->orderBy('nama')
             ->get();
 
-        $pegawais = \App\Models\Pegawai::aktif()
-            ->orderBy('nama')
-            ->get();
-
-
         return view(
             'ba-rampung.edit',
             compact(
@@ -577,7 +567,6 @@ class BaRampungController extends Controller
                 'gudangs',
                 'mitras',
                 'pimpinans',
-                'pegawais'
             )
         );
     }

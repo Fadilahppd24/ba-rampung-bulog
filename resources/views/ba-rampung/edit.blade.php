@@ -394,36 +394,25 @@
             <div class="space-y-4">
 
                 {{-- Nama --}}
-                <div>
+<div>
 
-                    <label class="label">
-                        Nama Penandatangan
-                    </label>
+    <label class="label">
+        Nama Penandatangan
+    </label>
 
-                    <input
-                        list="pegawai-list"
-                        name="nama_penandatangan"
-                        value="{{ old(
-                            'nama_penandatangan',
-                            $baRampung->nama_penandatangan
-                        ) }}"
-                        required
-                        class="input"
-                    >
+    <input
+        type="text"
+        name="nama_penandatangan"
+        value="{{ old(
+            'nama_penandatangan',
+            $baRampung->nama_penandatangan
+        ) }}"
+        required
+        class="input"
+        placeholder="Masukkan nama penandatangan"
+    >
 
-                    <datalist id="pegawai-list">
-
-                        @foreach ($pegawais as $p)
-
-                            <option value="{{ $p->nama }}">
-                                {{ $p->jabatan }}
-                            </option>
-
-                        @endforeach
-
-                    </datalist>
-
-                </div>
+</div>
 
 
                 {{-- Jabatan --}}

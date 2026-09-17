@@ -4,217 +4,629 @@
 
 <aside
     x-cloak
-    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-    class="fixed inset-y-0 left-0 z-40 w-72 transform bg-bulog-900 transition-transform duration-200 lg:static lg:translate-x-0 flex flex-col"
+    :class="sidebarOpen
+        ? 'translate-x-0'
+        : '-translate-x-full lg:translate-x-0'"
+    class="fixed inset-y-0 left-0 z-40 w-64 transform
+           bg-[#0D2B6B]
+           transition-transform duration-200
+           lg:static lg:translate-x-0
+           flex flex-col"
 >
-    {{-- LOGO --}}
-    <div class="flex items-center gap-3 px-6 py-6">
-        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-bulog-cream text-bulog-900 font-bold">
-            B
-        </div>
 
-        <div>
-            <p class="text-lg font-semibold text-white leading-tight">
-                bulog
-            </p>
+    {{-- =====================================================
+         LOGO BULOG
+    ====================================================== --}}
+    <div class="flex items-center justify-center px-5 py-6">
 
-            <p class="text-xs text-white/60">
-                Cabang Indramayu
-            </p>
-        </div>
+        <img
+            src="{{ asset('assets/images/bulog-logo.png') }}"
+            alt="BULOG"
+            class="w-[170px] h-auto object-contain"
+        >
+
     </div>
 
-    {{-- DEBUG ROLE --}}
-    <div class="mx-4 mb-3 rounded-lg bg-red-600 px-3 py-2 text-xs font-bold text-white">
-        ROLE: {{ $user?->role ?? 'TIDAK LOGIN' }}
-    </div>
 
-    <nav class="flex-1 overflow-y-auto px-4 pb-6 space-y-1">
+    {{-- =====================================================
+         NAVIGATION
+    ====================================================== --}}
+    <nav class="flex-1 overflow-y-auto px-3 pb-6">
 
-        {{-- DASHBOARD --}}
+
+        {{-- =================================================
+             DASHBOARD
+        ================================================== --}}
         <a
             href="{{ route('dashboard') }}"
             class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
         >
-            <span>📊</span>
-            Dashboard
+
+            {{-- Icon Dashboard --}}
+            <svg
+                class="w-5 h-5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <rect
+                    x="4"
+                    y="4"
+                    width="6"
+                    height="6"
+                    rx="1"
+                    stroke-width="2"
+                />
+
+                <rect
+                    x="14"
+                    y="4"
+                    width="6"
+                    height="6"
+                    rx="1"
+                    stroke-width="2"
+                />
+
+                <rect
+                    x="4"
+                    y="14"
+                    width="6"
+                    height="6"
+                    rx="1"
+                    stroke-width="2"
+                />
+
+                <rect
+                    x="14"
+                    y="14"
+                    width="6"
+                    height="6"
+                    rx="1"
+                    stroke-width="2"
+                />
+            </svg>
+
+            <span>
+                Dashboard
+            </span>
+
         </a>
 
 
-        {{-- ================================================= --}}
-        {{-- ADMIN GUDANG --}}
-        {{-- ================================================= --}}
-
+        {{-- =================================================
+             ADMIN GUDANG
+        ================================================== --}}
         @if ($user?->isAdminGudang())
 
-            <div class="pt-4 pb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+            <div class="sidebar-title">
                 BA Rampung
             </div>
 
+
+            {{-- Daftar BA --}}
             <a
                 href="{{ route('ba-rampung.index') }}"
-                class="sidebar-link {{ request()->routeIs('ba-rampung.index') || request()->routeIs('ba-rampung.show') ? 'active' : '' }}"
+                class="sidebar-link
+                    {{
+                        request()->routeIs('ba-rampung.index')
+                        || request()->routeIs('ba-rampung.show')
+                        ? 'active'
+                        : ''
+                    }}"
             >
-                <span>📋</span>
-                Daftar BA Rampung
+
+                <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 3h9l3 3v15H6V3z"
+                    />
+
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        d="M9 8h6M9 12h6M9 16h4"
+                    />
+                </svg>
+
+                <span>
+                    Daftar BA Rampung
+                </span>
+
             </a>
 
+
+            {{-- Buat BA --}}
             @can('create', \App\Models\BaRampung::class)
+
                 <a
                     href="{{ route('ba-rampung.create') }}"
-                    class="sidebar-link {{ request()->routeIs('ba-rampung.create') || request()->routeIs('ba-rampung.edit') ? 'active' : '' }}"
+                    class="sidebar-link
+                        {{
+                            request()->routeIs('ba-rampung.create')
+                            || request()->routeIs('ba-rampung.edit')
+                            ? 'active'
+                            : ''
+                        }}"
                 >
-                    <span>➕</span>
-                    Buat BA Rampung
+
+                    <svg
+                        class="w-5 h-5 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            d="M12 5v14M5 12h14"
+                        />
+                    </svg>
+
+                    <span>
+                        Buat BA Rampung
+                    </span>
+
                 </a>
+
             @endcan
 
-            <div class="pt-4 pb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+
+            {{-- Laporan --}}
+            <div class="sidebar-title">
                 Laporan
             </div>
 
+
             <a
                 href="{{ route('laporan.index') }}"
-                class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}"
+                class="sidebar-link
+                    {{ request()->routeIs('laporan.*') ? 'active' : '' }}"
             >
-                <span>📄</span>
-                Laporan
+
+                <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 19V5"
+                    />
+
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 17l5-5 4 3 6-7"
+                    />
+                </svg>
+
+                <span>
+                    Laporan
+                </span>
+
             </a>
 
         @endif
 
 
-        {{-- ================================================= --}}
-        {{-- ADMIN KANTOR --}}
-        {{-- ================================================= --}}
-
+        {{-- =================================================
+             ADMIN KANTOR
+        ================================================== --}}
         @if ($user?->isAdminKantor())
 
-            <div class="pt-4 pb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+            <div class="sidebar-title">
                 BA Rampung
             </div>
 
+
+            {{-- Semua BA --}}
             <a
                 href="{{ route('ba-rampung.index') }}"
-                class="sidebar-link {{ request()->routeIs('ba-rampung.index') || request()->routeIs('ba-rampung.show') ? 'active' : '' }}"
+                class="sidebar-link
+                    {{
+                        request()->routeIs('ba-rampung.index')
+                        || request()->routeIs('ba-rampung.show')
+                        ? 'active'
+                        : ''
+                    }}"
             >
-                <span>📋</span>
-                Semua BA Rampung
+
+                <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 3h9l3 3v15H6V3z"
+                    />
+
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        d="M9 8h6M9 12h6M9 16h4"
+                    />
+                </svg>
+
+                <span>
+                    Semua BA Rampung
+                </span>
+
             </a>
 
+
+            {{-- Buat BA --}}
             @can('create', \App\Models\BaRampung::class)
+
                 <a
                     href="{{ route('ba-rampung.create') }}"
-                    class="sidebar-link {{ request()->routeIs('ba-rampung.create') || request()->routeIs('ba-rampung.edit') ? 'active' : '' }}"
+                    class="sidebar-link
+                        {{
+                            request()->routeIs('ba-rampung.create')
+                            || request()->routeIs('ba-rampung.edit')
+                            ? 'active'
+                            : ''
+                        }}"
                 >
-                    <span>➕</span>
-                    Buat BA Rampung
+
+                    <svg
+                        class="w-5 h-5 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            d="M12 5v14M5 12h14"
+                        />
+                    </svg>
+
+                    <span>
+                        Buat BA Rampung
+                    </span>
+
                 </a>
+
             @endcan
 
 
-            <div class="pt-4 pb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+            {{-- =================================================
+                 MASTER DATA
+            ================================================== --}}
+            <div class="sidebar-title">
                 Master Data
             </div>
 
+
+            {{-- Gudang --}}
             <a
                 href="{{ route('gudang.index') }}"
-                class="sidebar-link {{ request()->routeIs('gudang.*') ? 'active' : '' }}"
+                class="sidebar-link
+                    {{ request()->routeIs('gudang.*') ? 'active' : '' }}"
             >
-                <span>🏠</span>
-                Gudang
+
+                <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 10l9-6 9 6"
+                    />
+
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M5 10v9h14v-9"
+                    />
+
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        d="M9 19v-5h6v5"
+                    />
+                </svg>
+
+                <span>
+                    Gudang
+                </span>
+
             </a>
 
+
+            {{-- Mitra --}}
             <a
                 href="{{ route('mitra.index') }}"
-                class="sidebar-link {{ request()->routeIs('mitra.*') ? 'active' : '' }}"
+                class="sidebar-link
+                    {{ request()->routeIs('mitra.*') ? 'active' : '' }}"
             >
-                <span>🤝</span>
-                Mitra Pengolahan
+
+                <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"
+                    />
+
+                    <circle
+                        cx="9"
+                        cy="7"
+                        r="4"
+                        stroke-width="2"
+                    />
+
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        d="M17 8l2 2 4-4"
+                    />
+                </svg>
+
+                <span>
+                    Mitra Pengolahan
+                </span>
+
             </a>
 
-            <a
-                href="{{ route('pegawai.index') }}"
-                class="sidebar-link {{ request()->routeIs('pegawai.*') ? 'active' : '' }}"
-            >
-                <span>👤</span>
+
+            {{-- =================================================
+                 PEGAWAI DIHAPUS DARI SIDEBAR
+            ================================================== --}}
+            {{-- 
+                Menu Pegawai sengaja dihapus.
+                Tidak ada:
+                route('pegawai.index')
                 Pegawai & User
-            </a>
+            --}}
 
+
+            {{-- Pimpinan --}}
             <a
                 href="{{ route('pimpinan.index') }}"
-                class="sidebar-link {{ request()->routeIs('pimpinan.*') ? 'active' : '' }}"
+                class="sidebar-link
+                    {{ request()->routeIs('pimpinan.*') ? 'active' : '' }}"
             >
-                <span>👔</span>
-                Pimpinan Cabang
+
+                <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"
+                    />
+
+                    <circle
+                        cx="9"
+                        cy="7"
+                        r="4"
+                        stroke-width="2"
+                    />
+
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        d="M16 3.5a4 4 0 010 7.9"
+                    />
+                </svg>
+
+                <span>
+                    Pimpinan Cabang
+                </span>
+
             </a>
 
 
-            <div class="pt-4 pb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+            {{-- =================================================
+                 LAPORAN
+            ================================================== --}}
+            <div class="sidebar-title">
                 Laporan
             </div>
 
+
             <a
                 href="{{ route('laporan.index') }}"
-                class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}"
+                class="sidebar-link
+                    {{ request()->routeIs('laporan.*') ? 'active' : '' }}"
             >
-                <span>📄</span>
-                Laporan
+
+                <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 19V5"
+                    />
+
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 17l5-5 4 3 6-7"
+                    />
+                </svg>
+
+                <span>
+                    Laporan
+                </span>
+
             </a>
 
 
-            <div class="pt-4 pb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+            {{-- =================================================
+                 ADMINISTRASI
+            ================================================== --}}
+            <div class="sidebar-title">
                 Administrasi
             </div>
 
+
             <a
                 href="{{ route('pengaturan.umum') }}"
-                class="sidebar-link {{ request()->routeIs('pengaturan.*') ? 'active' : '' }}"
+                class="sidebar-link
+                    {{ request()->routeIs('pengaturan.*') ? 'active' : '' }}"
             >
-                <span>⚙️</span>
-                Pengaturan
+
+                <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="3"
+                        stroke-width="2"
+                    />
+
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.6v.1h-2.6V20a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1-1.8-1.8.1-.1A1.7 1.7 0 008 15a1.7 1.7 0 00-1.6-1H6v-2.6h.1A1.7 1.7 0 008 10a1.7 1.7 0 00-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 001.9.3 1.7 1.7 0 001-1.6v-.1H15V5a1.7 1.7 0 001 1.6 1.7 1.7 0 001.9-.3l.1-.1 1.8 1.8-.1.1A1.7 1.7 0 0019.4 10a1.7 1.7 0 001.6 1h.1v2.6H21a1.7 1.7 0 00-1.6 1.4z"
+                    />
+                </svg>
+
+                <span>
+                    Pengaturan
+                </span>
+
             </a>
 
         @endif
 
 
-        {{-- ================================================= --}}
-        {{-- PIMPINAN CABANG --}}
-        {{-- ================================================= --}}
-
+        {{-- =================================================
+             PIMPINAN CABANG
+        ================================================== --}}
         @if ($user?->isPimpinanCabang())
 
-            <div class="pt-4 pb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+            <div class="sidebar-title">
                 BA Rampung
             </div>
 
+
             <a
                 href="{{ route('ba-rampung.index') }}"
-                class="sidebar-link {{ request()->routeIs('ba-rampung.index') || request()->routeIs('ba-rampung.show') ? 'active' : '' }}"
+                class="sidebar-link
+                    {{
+                        request()->routeIs('ba-rampung.index')
+                        || request()->routeIs('ba-rampung.show')
+                        ? 'active'
+                        : ''
+                    }}"
             >
-                <span>📋</span>
-                Daftar BA Rampung
+
+                <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 3h9l3 3v15H6V3z"
+                    />
+
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        d="M9 8h6M9 12h6M9 16h4"
+                    />
+                </svg>
+
+                <span>
+                    Daftar BA Rampung
+                </span>
+
             </a>
 
-            <div class="pt-4 pb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+
+            <div class="sidebar-title">
                 Laporan
             </div>
 
+
             <a
                 href="{{ route('laporan.index') }}"
-                class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}"
+                class="sidebar-link
+                    {{ request()->routeIs('laporan.*') ? 'active' : '' }}"
             >
-                <span>📄</span>
-                Laporan
+
+                <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 19V5"
+                    />
+
+                    <path
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 17l5-5 4 3 6-7"
+                    />
+                </svg>
+
+                <span>
+                    Laporan
+                </span>
+
             </a>
 
         @endif
 
+
     </nav>
+
 </aside>
 
 
-{{-- OVERLAY MOBILE --}}
+{{-- MOBILE OVERLAY --}}
 <div
     x-show="sidebarOpen"
     x-cloak

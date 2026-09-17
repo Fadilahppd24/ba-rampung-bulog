@@ -129,11 +129,19 @@
                 <div>
                     <label class="label">Nama Penandatangan</label>
                     <input list="pegawai-list" name="nama_penandatangan" value="{{ old('nama_penandatangan') }}" required class="input" placeholder="Pilih atau ketik nama pegawai">
-                    <datalist id="pegawai-list">
-                        @foreach ($pegawais as $p)
-                            <option value="{{ $p->nama }}">{{ $p->jabatan }}</option>
-                        @endforeach
-                    </datalist>
+                    <div>
+    <label class="label">
+        Nama Penandatangan
+    </label>
+
+    <input
+        type="text"
+        name="nama_penandatangan"
+        class="input"
+        value="{{ old('nama_penandatangan') }}"
+        placeholder="Masukkan nama penandatangan"
+    >
+</div>
                 </div>
                 <div>
                     <label class="label">Jabatan</label>

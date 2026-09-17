@@ -13,7 +13,10 @@
         <x-status-badge :color="$baRampung->statusBadgeColor()" :label="$baRampung->statusLabel()" class="text-sm px-3 py-1.5" />
         <a href="{{ route('ba-rampung.pdf', $baRampung) }}" target="_blank" class="btn-secondary">🖨️ Cetak PDF</a>
         @can('update', $baRampung)
-            <a href="{{ route('ba-rampung.edit', $baRampung) }}" class="btn-secondary">✏️ Edit</a>
+           <a href="{{ route('ba-rampung.edit', $baRampung) }}"
+   class="btn-primary">
+    Edit
+</a>
         @endcan
     </div>
 </div>

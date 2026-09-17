@@ -1,38 +1,112 @@
 @props(['title' => 'Dashboard', 'breadcrumbs' => []])
 
-<header class="sticky top-0 z-20 flex items-center justify-between border-b border-black/5 bg-white/95 backdrop-blur px-4 py-4 lg:px-8">
-    <div class="flex items-center gap-3">
-        <button @click="sidebarOpen = !sidebarOpen" class="rounded-lg p-2 hover:bg-gray-100 lg:hidden">
-            <span class="text-xl">☰</span>
+<header class="sticky top-0 z-20 h-20 flex items-center justify-between 
+bg-white border-b border-gray-100 px-6 lg:px-8">
+
+
+    {{-- KIRI --}}
+    <div class="flex items-center gap-4">
+
+        <button 
+            @click="sidebarOpen = !sidebarOpen"
+            class="lg:hidden p-2 rounded-lg hover:bg-gray-100"
+        >
+            ☰
         </button>
+
+
         <div>
-            <h1 class="text-xl font-semibold text-gray-900">{{ $title }}</h1>
-            @if (count($breadcrumbs))
-                <p class="text-xs text-gray-500 mt-0.5">
-                    @foreach ($breadcrumbs as $crumb)
-                        {{ $crumb }}@if (! $loop->last) <span class="mx-1">›</span> @endif
+
+            <h1 class="text-2xl font-bold text-gray-900">
+                {{ $title }}
+            </h1>
+
+
+            @if(count($breadcrumbs))
+
+                <div class="text-xs text-gray-500 mt-1">
+
+                    @foreach($breadcrumbs as $crumb)
+
+                        {{ $crumb }}
+
+                        @if(!$loop->last)
+                            <span class="mx-1">›</span>
+                        @endif
+
                     @endforeach
-                </p>
+
+                </div>
+
             @endif
+
         </div>
+
     </div>
 
-    <div class="flex items-center gap-4">
-        <button class="relative rounded-lg p-2 hover:bg-gray-100">
-            <span class="text-xl">🔔</span>
+
+
+
+    {{-- KANAN --}}
+    <div class="flex items-center gap-5">
+
+
+        {{-- NOTIF --}}
+        <button
+            class="relative h-10 w-10 rounded-full hover:bg-gray-100 flex items-center justify-center"
+        >
+            🔔
         </button>
+
+
+
+        {{-- USER --}}
         <div class="flex items-center gap-3">
-            <div class="h-9 w-9 rounded-full bg-bulog-100 flex items-center justify-center text-bulog-800 font-semibold">
-                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+
+
+            <div 
+                class="h-10 w-10 rounded-full bg-[#123B7A] 
+                text-white flex items-center justify-center font-semibold"
+            >
+
+                {{ strtoupper(substr(auth()->user()->name,0,1)) }}
+
             </div>
-            <div class="hidden sm:block text-right">
-                <p class="text-sm font-medium text-gray-900 leading-tight">{{ auth()->user()->name }}</p>
-                <p class="text-xs text-gray-500">{{ auth()->user()->roleLabel() }}</p>
+
+
+
+            <div class="hidden sm:block leading-tight">
+
+                <p class="text-sm font-semibold text-gray-900">
+                    {{ auth()->user()->name }}
+                </p>
+
+
+                <p class="text-xs text-gray-500">
+                    {{ auth()->user()->roleLabel() }}
+                </p>
+
             </div>
+
+
+
             <form method="POST" action="{{ route('logout') }}">
+
                 @csrf
-                <button class="text-xs text-gray-500 hover:text-bulog-700 underline decoration-dotted">Keluar</button>
+
+                <button
+                    class="text-sm text-red-500 hover:text-red-700"
+                >
+                    Keluar
+                </button>
+
             </form>
+
+
         </div>
+
+
     </div>
+
+
 </header>

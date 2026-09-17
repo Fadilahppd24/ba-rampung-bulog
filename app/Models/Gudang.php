@@ -30,11 +30,6 @@ class Gudang extends Model
         ];
     }
 
-    public function pegawais(): HasMany
-    {
-        return $this->hasMany(Pegawai::class);
-    }
-
     public function baRampungs(): HasMany
     {
         return $this->hasMany(BaRampung::class);
