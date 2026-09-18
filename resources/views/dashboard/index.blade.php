@@ -1,601 +1,704 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
+@section('title','Dashboard')
 
 @section('content')
 
-{{-- ========================================================= --}}
-{{-- DASHBOARD ADMIN GUDANG --}}
-{{-- ========================================================= --}}
+<div class="space-y-6">
 
-@role('admin_gudang')
 
-    {{-- KPI ADMIN GUDANG --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+{{-- HEADER --}}
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
 
-        <x-kpi-card
-            icon="📋"
-            label="Total BA Rampung"
-            :value="number_format($kpi['total_ba'])"
-        />
 
-        <x-kpi-card
-            icon="⏳"
-            label="Menunggu Verifikasi"
-            :value="number_format($kpi['menunggu_verifikasi'])"
-        />
+<div>
+<h1 class="text-3xl font-bold text-gray-900">
+Selamat Datang, {{ auth()->user()->name }}!
+</h1>
 
-        <x-kpi-card
-            icon="✅"
-            label="BA Selesai"
-            :value="number_format($kpi['selesai'])"
-        />
+<p class="text-gray-500 mt-1">
+Pantau dan kelola data BA Rampung dengan lebih mudah dan cepat.
+</p>
 
-        <x-kpi-card
-            icon="❌"
-            label="BA Ditolak"
-            :value="number_format($kpi['ditolak'])"
-        />
+</div>
 
-    </div>
 
 
-    {{-- REKAP BA PER BULAN --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+<form method="GET">
 
-        <div class="card p-5 lg:col-span-2">
+<div class="flex items-center gap-3">
 
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-semibold text-gray-900">
-                    📊 Rekap BA Rampung per Bulan ({{ $tahun }})
-                </h3>
-            </div>
+<span class="text-sm text-gray-500">
+📅 Tahun
+</span>
 
-            <canvas id="chartPerBulan" height="110"></canvas>
 
-        </div>
+<select
+name="tahun"
+onchange="this.form.submit()"
+class="
+rounded-xl
+border-gray-200
+shadow-sm
+px-4
+py-2
+text-sm
+bg-white
+">
 
+@for($i=date('Y');$i>=date('Y')-5;$i--)
 
-        {{-- INFORMASI PEKERJAAN --}}
-        <div class="card p-5">
+<option
+value="{{ $i }}"
+@selected($tahun==$i)
+>
+{{ $i }}
+</option>
 
-            <h3 class="font-semibold text-gray-900 mb-4">
-                📋 Status BA Rampung
-            </h3>
+@endfor
 
-            <div class="space-y-4">
 
-                <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-600">
-                        Menunggu Verifikasi
-                    </span>
+</select>
 
-                    <span class="font-semibold text-gray-900">
-                        {{ number_format($kpi['menunggu_verifikasi']) }}
-                    </span>
-                </div>
 
-                <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-600">
-                        Selesai
-                    </span>
+</div>
 
-                    <span class="font-semibold text-gray-900">
-                        {{ number_format($kpi['selesai']) }}
-                    </span>
-                </div>
+</form>
 
-                <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-600">
-                        Ditolak
-                    </span>
 
-                    <span class="font-semibold text-gray-900">
-                        {{ number_format($kpi['ditolak']) }}
-                    </span>
-                </div>
+</div>
 
-                <div class="border-t border-gray-100 pt-4 flex items-center justify-between">
-                    <span class="text-sm font-medium text-gray-700">
-                        Total BA
-                    </span>
 
-                    <span class="font-bold text-gray-900">
-                        {{ number_format($kpi['total_ba']) }}
-                    </span>
-                </div>
 
-            </div>
 
-        </div>
 
-    </div>
+{{-- KPI --}}
 
+<div class="
+grid
+grid-cols-1
+sm:grid-cols-2
+xl:grid-cols-4
+gap-5
+">
 
-    {{-- BA RAMPUNG TERBARU --}}
-    <div class="card p-5">
 
-        <div class="flex items-center justify-between mb-4">
+<x-kpi-card
+icon="📋"
+label="Total BA Rampung"
+:value="number_format($kpi['total_ba'])"
+/>
 
-            <h3 class="font-semibold text-gray-900">
-                🧾 BA Rampung Terbaru
-            </h3>
 
-            <a
-                href="{{ route('ba-rampung.index') }}"
-                class="text-sm text-bulog-700 hover:underline"
-            >
-                Lihat Semua →
-            </a>
+<x-kpi-card
+icon="🏠"
+label="Gudang Aktif"
+:value="number_format($kpi['gudang_aktif'])"
+/>
 
-        </div>
 
+<x-kpi-card
+icon="🤝"
+label="Mitra Pengolahan"
+:value="number_format($kpi['mitra_pengolahan'])"
+/>
 
-        @if ($baTerbaru->isEmpty())
 
-            <p class="text-sm text-gray-500 py-6 text-center">
-                Belum ada data BA Rampung.
-            </p>
+<x-kpi-card
+icon="✅"
+label="Penyaluran Berjalan"
+:value="number_format($kpi['penyaluran_berjalan'])"
+sub="Menunggu verifikasi"
+/>
 
-        @else
 
-            <div class="divide-y divide-gray-100">
+</div>
 
-                @foreach ($baTerbaru as $ba)
 
-                    <a
-                        href="{{ route('ba-rampung.show', $ba) }}"
-                        class="flex items-center justify-between py-3 hover:bg-gray-50 -mx-2 px-2 rounded-lg"
-                    >
 
-                        <div>
 
-                            <p class="text-sm font-medium text-gray-900">
-                                {{ $ba->nomor_ba }}
-                            </p>
 
-                            <p class="text-xs text-gray-500">
-                                {{ $ba->gudang->nama_gudang ?? '-' }}
-                                ·
-                                {{ $ba->mitraPengolahan->nama_mitra ?? '-' }}
-                            </p>
 
-                        </div>
+{{-- CHART AREA --}}
 
-                        <x-status-badge
-                            :color="$ba->statusBadgeColor()"
-                            :label="$ba->statusLabel()"
-                        />
+<div class="
+grid
+grid-cols-1
+xl:grid-cols-3
+gap-6
+">
 
-                    </a>
 
-                @endforeach
 
-            </div>
+{{-- BAR CHART --}}
 
-        @endif
+<div class="
+bg-white
+rounded-2xl
+border
+border-gray-100
+shadow-sm
+p-6
+xl:col-span-2
+">
 
-    </div>
 
+<div class="flex justify-between items-center mb-5">
 
-    {{-- AKSI CEPAT --}}
-    <div class="card p-5">
 
-        <h3 class="font-semibold text-gray-900 mb-4">
-            ⚡ Aksi Cepat
-        </h3>
+<h3 class="font-bold text-gray-900">
+📊 Rekap BA Rampung per Bulan ({{ $tahun }})
+</h3>
 
-        <div class="flex flex-wrap gap-3">
 
-            @can('create', \App\Models\BaRampung::class)
+</div>
 
-                <a
-                    href="{{ route('ba-rampung.create') }}"
-                    class="btn-primary"
-                >
-                    ➕ Buat BA Rampung
-                </a>
 
-            @endcan
 
-            <a
-                href="{{ route('ba-rampung.index') }}"
-                class="btn-secondary"
-            >
-                📄 Lihat Daftar BA
-            </a>
+<div class="h-[330px]">
 
-        </div>
+<canvas id="chartPerBulan"></canvas>
 
-    </div>
+</div>
 
-@endrole
 
+</div>
 
 
-{{-- ========================================================= --}}
-{{-- DASHBOARD ADMIN KANTOR --}}
-{{-- ========================================================= --}}
 
-@role('admin_kantor')
 
-    {{-- KPI ADMIN KANTOR --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-        <x-kpi-card
-            icon="📋"
-            label="Total BA Rampung"
-            :value="number_format($kpi['total_ba'])"
-        />
 
-        <x-kpi-card
-            icon="🏠"
-            label="Gudang Aktif"
-            :value="number_format($kpi['gudang_aktif'])"
-        />
 
-        <x-kpi-card
-            icon="🤝"
-            label="Mitra Pengolahan"
-            :value="number_format($kpi['mitra_pengolahan'])"
-        />
+{{-- DONUT --}}
 
-        <x-kpi-card
-            icon="✅"
-            label="Penyaluran Berjalan"
-            :value="number_format($kpi['penyaluran_berjalan'])"
-            sub="Menunggu verifikasi"
-        />
+<div
+class="
+bg-white
+rounded-2xl
+border
+border-gray-100
+shadow-sm
+p-6
+">
 
-    </div>
 
+<h3 class="font-bold text-gray-900 mb-5">
+📦 Distribusi Pergudangan
+</h3>
 
-    {{-- GRAFIK --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-        {{-- REKAP BULAN --}}
-        <div class="card p-5 lg:col-span-2">
 
-            <div class="flex items-center justify-between mb-4">
+<div class="relative h-[260px]">
 
-                <h3 class="font-semibold text-gray-900">
-                    📊 Rekap BA Rampung per Bulan ({{ $tahun }})
-                </h3>
 
-            </div>
+<canvas id="chartGudang"></canvas>
 
-            <canvas id="chartPerBulan" height="110"></canvas>
 
-        </div>
 
+<div
+class="
+absolute
+inset-0
+flex
+items-center
+justify-center
+pointer-events-none
+">
 
-        {{-- DISTRIBUSI GUDANG --}}
-        <div class="card p-5">
+<div class="text-center">
 
-            <h3 class="font-semibold text-gray-900 mb-4">
-                📦 Distribusi Pergudangan
-            </h3>
+<p class="text-3xl font-bold text-gray-900">
+{{ $kpi['total_ba'] }}
+</p>
 
-            @if ($distribusiGudang->isEmpty())
+<p class="text-xs text-gray-500">
+BA Rampung
+</p>
 
-                <p class="text-sm text-gray-500">
-                    Belum ada data BA Rampung.
-                </p>
+</div>
 
-            @else
+</div>
 
-                <canvas id="chartGudang" height="180"></canvas>
 
-                <div class="mt-4 space-y-1.5">
+</div>
 
-                    @foreach ($distribusiGudang as $d)
 
-                        <div class="flex items-center justify-between text-xs">
 
-                            <span class="text-gray-600">
-                                {{ $d->nama_gudang }}
-                            </span>
 
-                            <span class="font-medium text-gray-900">
-                                {{ $d->jumlah }}
-                            </span>
 
-                        </div>
 
-                    @endforeach
+<div class="mt-5 space-y-3">
 
-                </div>
 
-            @endif
+@foreach($distribusiGudang as $d)
 
-        </div>
 
-    </div>
+<div class="
+flex
+justify-between
+text-sm
+">
 
 
-    {{-- BA TERBARU + AKTIVITAS --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<div class="flex gap-2 items-center">
 
-        {{-- BA TERBARU --}}
-        <div class="card p-5">
 
-            <div class="flex items-center justify-between mb-4">
+<span class="
+w-2
+h-2
+rounded-full
+bg-bulog-600
+"></span>
 
-                <h3 class="font-semibold text-gray-900">
-                    🧾 BA Rampung Terbaru
-                </h3>
 
-                <a
-                    href="{{ route('ba-rampung.index') }}"
-                    class="text-sm text-bulog-700 hover:underline"
-                >
-                    Lihat Semua →
-                </a>
+<span class="text-gray-600">
+{{ $d->nama_gudang }}
+</span>
 
-            </div>
 
+</div>
 
-            @if ($baTerbaru->isEmpty())
 
-                <p class="text-sm text-gray-500 py-6 text-center">
-                    Belum ada data BA Rampung.
-                </p>
 
-            @else
+<span class="font-semibold">
+{{ $d->jumlah }}
+</span>
 
-                <div class="divide-y divide-gray-100">
 
-                    @foreach ($baTerbaru as $ba)
 
-                        <a
-                            href="{{ route('ba-rampung.show', $ba) }}"
-                            class="flex items-center justify-between py-3 hover:bg-gray-50 -mx-2 px-2 rounded-lg"
-                        >
+</div>
 
-                            <div>
 
-                                <p class="text-sm font-medium text-gray-900">
-                                    {{ $ba->nomor_ba }}
-                                </p>
 
-                                <p class="text-xs text-gray-500">
-                                    {{ $ba->gudang->nama_gudang ?? '-' }}
-                                    ·
-                                    {{ $ba->mitraPengolahan->nama_mitra ?? '-' }}
-                                </p>
+@endforeach
 
-                            </div>
 
-                            <x-status-badge
-                                :color="$ba->statusBadgeColor()"
-                                :label="$ba->statusLabel()"
-                            />
+</div>
 
-                        </a>
 
-                    @endforeach
 
-                </div>
+</div>
 
-            @endif
 
-        </div>
+</div>
 
 
-        {{-- AKTIVITAS --}}
-        <div class="card p-5">
 
-            <h3 class="font-semibold text-gray-900 mb-4">
-                🕒 Aktivitas Terbaru
-            </h3>
 
-            @if ($aktivitasTerbaru->isEmpty())
 
-                <p class="text-sm text-gray-500 py-6 text-center">
-                    Belum ada aktivitas tercatat.
-                </p>
 
-            @else
+{{-- DATA BAWAH --}}
 
-                <div class="space-y-4">
+<div class="
+grid
+grid-cols-1
+xl:grid-cols-2
+gap-6
+">
 
-                    @foreach ($aktivitasTerbaru as $log)
 
-                        <div class="flex gap-3 text-sm">
 
-                            <span class="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-bulog-600"></span>
+{{-- BA TERBARU --}}
 
-                            <div>
+<div class="
+bg-white
+rounded-2xl
+shadow-sm
+border
+p-6
+">
 
-                                <p class="text-gray-800">
 
-                                    <span class="font-medium">
-                                        {{ $log->user->name ?? 'Sistem' }}
-                                    </span>
+<div class="
+flex
+justify-between
+mb-5
+">
 
-                                    — {{ $log->aktivitas }}
+<h3 class="font-bold">
+🧾 BA Rampung Terbaru
+</h3>
 
-                                </p>
 
-                                <p class="text-xs text-gray-400">
-                                    {{ $log->created_at->diffForHumans() }}
-                                </p>
+<a
+href="{{route('ba-rampung.index')}}"
+class="text-sm text-blue-600"
+>
+Lihat Semua →
+</a>
 
-                            </div>
+</div>
 
-                        </div>
 
-                    @endforeach
 
-                </div>
+<div class="overflow-x-auto">
 
-            @endif
+<table class="w-full text-sm">
 
-        </div>
 
-    </div>
+<thead>
 
+<tr class="bg-gray-50 text-gray-600">
 
-    {{-- AKSI CEPAT --}}
-    <div class="card p-5">
+<th class="p-3 text-left">
+No
+</th>
 
-        <h3 class="font-semibold text-gray-900 mb-4">
-            ⚡ Aksi Cepat
-        </h3>
 
-        <div class="flex flex-wrap gap-3">
+<th class="p-3 text-left">
+Nomor BA
+</th>
 
-            @can('create', \App\Models\BaRampung::class)
 
-                <a
-                    href="{{ route('ba-rampung.create') }}"
-                    class="btn-primary"
-                >
-                    ➕ Buat BA Rampung
-                </a>
+<th class="p-3 text-left">
+Gudang
+</th>
 
-            @endcan
 
-            <a
-                href="{{ route('ba-rampung.index') }}"
-                class="btn-secondary"
-            >
-                📄 Lihat Daftar BA
-            </a>
+<th class="p-3 text-left">
+Status
+</th>
 
-        </div>
 
-    </div>
+</tr>
 
-@endrole
+</thead>
 
 
 
-{{-- ========================================================= --}}
-{{-- CHART --}}
-{{-- ========================================================= --}}
+<tbody>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+
+@foreach($baTerbaru as $key=>$ba)
+
+
+<tr class="border-b">
+
+
+<td class="p-3">
+{{$key+1}}
+</td>
+
+
+<td class="p-3 font-medium">
+{{$ba->nomor_ba}}
+</td>
+
+
+<td class="p-3">
+{{$ba->gudang->nama_gudang ?? '-'}}
+</td>
+
+
+<td class="p-3">
+
+<x-status-badge
+:color="$ba->statusBadgeColor()"
+:label="$ba->statusLabel()"
+/>
+
+</td>
+
+
+</tr>
+
+
+
+@endforeach
+
+
+</tbody>
+
+
+</table>
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+{{-- AKTIVITAS --}}
+
+<div
+class="
+bg-white
+rounded-2xl
+shadow-sm
+border
+p-6
+">
+
+
+<h3 class="font-bold mb-5">
+🕒 Aktivitas Terbaru
+</h3>
+
+
+
+<div class="space-y-5">
+
+
+@foreach($aktivitasTerbaru as $log)
+
+
+<div class="flex gap-3">
+
+
+<span class="
+mt-2
+w-3
+h-3
+rounded-full
+bg-blue-500
+"></span>
+
+
+
+<div>
+
+
+<p class="text-sm">
+
+<b>
+{{$log->user->name ?? 'System'}}
+</b>
+
+{{$log->aktivitas}}
+
+</p>
+
+
+<p class="text-xs text-gray-400">
+
+{{$log->created_at->diffForHumans()}}
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+@endforeach
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 
-    const bulanLabels = @json(
-        collect($perBulan)->pluck('bulan')
-    );
-
-    const bulanData = @json(
-        collect($perBulan)->pluck('jumlah')
-    );
+document.addEventListener('DOMContentLoaded', function(){
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Chart Rekap BA per Bulan
-    |--------------------------------------------------------------------------
-    */
+    // ==========================
+    // BAR CHART BA PER BULAN
+    // ==========================
 
-    new Chart(
-        document.getElementById('chartPerBulan'),
-        {
-            type: 'bar',
+    const chartPerBulan = document.getElementById('chartPerBulan');
 
-            data: {
-                labels: bulanLabels,
 
-                datasets: [{
-                    label: 'Jumlah BA',
+    if(chartPerBulan){
 
-                    data: bulanData,
+        new Chart(chartPerBulan, {
 
-                    backgroundColor: '#1F4732',
+            type:'bar',
 
-                    borderRadius: 6,
+            data:{
 
-                    maxBarThickness: 28,
-                }],
+                labels:@json(
+                    collect($perBulan)->pluck('bulan')
+                ),
+
+                datasets:[{
+
+                    label:'Jumlah BA',
+
+                    data:@json(
+                        collect($perBulan)->pluck('jumlah')
+                    ),
+
+
+                    backgroundColor:'#1F4732',
+
+                    borderRadius:10,
+
+                    barThickness:25
+
+                }]
+
             },
 
-            options: {
 
-                plugins: {
-                    legend: {
-                        display: false
+            options:{
+
+
+                responsive:true,
+
+                maintainAspectRatio:false,
+
+
+                plugins:{
+
+                    legend:{
+                        display:false
                     }
+
                 },
 
-                scales: {
-                    y: {
-                        beginAtZero: true,
 
-                        ticks: {
-                            precision: 0
+                scales:{
+
+
+                    y:{
+
+                        beginAtZero:true,
+
+                        ticks:{
+                            precision:0
                         }
+
                     }
-                },
+
+
+                }
+
+
+
+            }
+
+
+        });
+
+
+    }
+
+
+
+
+
+    // ==========================
+    // DONUT GUDANG
+    // ==========================
+
+
+    const chartGudang =
+        document.getElementById('chartGudang');
+
+
+
+    if(chartGudang){
+
+
+        new Chart(chartGudang,{
+
+
+            type:'doughnut',
+
+
+
+            data:{
+
+
+                labels:@json(
+                    $distribusiGudang->pluck('nama_gudang')
+                ),
+
+
+
+                datasets:[{
+
+
+                    data:@json(
+                        $distribusiGudang->pluck('jumlah')
+                    ),
+
+
+
+                    backgroundColor:[
+
+                        '#1F4732',
+                        '#3D7A5A',
+                        '#F5B83D',
+                        '#2563EB',
+                        '#EF4444'
+
+                    ],
+
+
+
+                    borderWidth:0
+
+
+                }]
+
 
             },
-        }
-    );
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Chart Distribusi Gudang
-    |--------------------------------------------------------------------------
-    */
 
-    @role('admin_kantor')
+            options:{
 
-        @if ($distribusiGudang->isNotEmpty())
 
-            new Chart(
-                document.getElementById('chartGudang'),
-                {
-                    type: 'doughnut',
+                responsive:true,
 
-                    data: {
+                maintainAspectRatio:false,
 
-                        labels: @json(
-                            $distribusiGudang->pluck('nama_gudang')
-                        ),
 
-                        datasets: [{
+                cutout:'70%',
 
-                            data: @json(
-                                $distribusiGudang->pluck('jumlah')
-                            ),
 
-                            backgroundColor: [
-                                '#1F4732',
-                                '#3D7A5A',
-                                '#EFE7D3',
-                                '#92650A',
-                                '#B42318',
-                                '#9CA3AF'
-                            ],
 
-                            borderWidth: 0,
+                plugins:{
 
-                        }],
-                    },
 
-                    options: {
+                    legend:{
 
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
 
-                        cutout: '65%',
+                        display:false
 
-                    },
+
+                    }
+
+
                 }
-            );
 
-        @endif
 
-    @endrole
+
+            }
+
+
+
+        });
+
+
+    }
+
+
+
+});
+
 
 </script>
 

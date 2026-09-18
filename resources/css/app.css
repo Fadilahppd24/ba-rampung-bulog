@@ -3,128 +3,172 @@
 @tailwind utilities;
 
 
+
 @layer components {
 
 
-    /* =========================
-       CARD DASHBOARD
-    ========================= */
 
-    .card {
+/* =====================================
+   DASHBOARD CARD
+===================================== */
 
-        @apply bg-white rounded-2xl shadow-sm border border-gray-100;
+.card {
 
-    }
+    @apply 
+    bg-white
+    rounded-2xl
+    border
+    border-gray-100
+    shadow-sm
+    transition
+    duration-300;
 
-
-
-    /* =========================
-       BUTTON
-    ========================= */
-
-    .btn-primary {
-
-        @apply inline-flex items-center justify-center gap-2 
-        rounded-lg bg-bulog-700 px-4 py-2.5 
-        text-sm font-medium text-white 
-        hover:bg-bulog-800 transition-colors;
-
-    }
+}
 
 
-    .btn-secondary {
+.card:hover {
 
-        @apply inline-flex items-center justify-center gap-2 
-        rounded-lg border border-gray-300 bg-white 
-        px-4 py-2.5 text-sm font-medium text-gray-700 
-        hover:bg-gray-50 transition-colors;
+    @apply shadow-md;
 
-    }
-
-
-
-    /* =========================
-       INPUT FORM
-    ========================= */
-
-    .input {
-
-        @apply w-full rounded-lg border border-gray-300 
-        px-3.5 py-2.5 text-sm text-gray-900 
-        placeholder-gray-400 
-        focus:border-bulog-600 
-        focus:ring-1 focus:ring-bulog-600 
-        outline-none;
-
-    }
-
-
-
-    .label {
-
-        @apply block text-sm font-medium 
-        text-gray-700 mb-1.5;
-
-    }
+}
 
 
 
 
-    /* =========================
-       SIDEBAR MENU
-    ========================= */
 
+/* =====================================
+   KPI CARD
+===================================== */
 
-    .sidebar-link {
+.kpi-card {
 
+    @apply
+    bg-white
+    rounded-2xl
+    border
+    border-gray-100
+    p-5
+    flex
+    items-center
+    gap-4
+    shadow-sm
+    transition
+    duration-300;
 
-        @apply flex items-center gap-3 
-        rounded-lg px-4 py-3 
-        text-sm font-medium 
-        text-white/90 
-        transition;
-
-
-    }
-
-
-
-    .sidebar-link:hover {
-
-
-        @apply bg-white/10 text-white;
-
-
-    }
+}
 
 
 
+.kpi-card:hover {
 
-    .sidebar-link.active {
+    @apply
+    shadow-lg
+    -translate-y-1;
 
-
-        @apply bg-[#F5B83D] 
-        text-gray-900 
-        font-semibold;
-
-
-    }
+}
 
 
 
 
-    .sidebar-title {
 
 
-        @apply mt-6 mb-2 px-3 
-        text-[11px] 
-        font-semibold 
-        uppercase 
-        tracking-wider 
-        text-white/40;
+
+/* =====================================
+   BUTTON
+===================================== */
 
 
-    }
+.btn-primary {
+
+    @apply
+    inline-flex
+    items-center
+    justify-center
+    gap-2
+    rounded-xl
+    bg-bulog-700
+    px-5
+    py-2.5
+    text-sm
+    font-semibold
+    text-white
+    shadow-sm
+    transition
+    duration-300;
+
+}
+
+
+.btn-primary:hover {
+
+    @apply
+    bg-bulog-800
+    shadow-md;
+
+}
+
+
+
+.btn-secondary {
+
+
+    @apply
+    inline-flex
+    items-center
+    justify-center
+    gap-2
+    rounded-xl
+    border
+    border-gray-200
+    bg-white
+    px-5
+    py-2.5
+    text-sm
+    font-medium
+    text-gray-700
+    transition
+    duration-300;
+
+
+}
+
+
+
+.btn-secondary:hover {
+
+
+    @apply
+    bg-gray-50
+    shadow-sm;
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+   FORM
+===================================== */
+
+
+.input {
+
+
+    @apply
+    w-full
+    rounded-xl
+    border
+    border-gray-200
+    bg-white
+    px-4
+    py-3
+    text-sm
+    text-gray-900
+    transition;
 
 
 
@@ -132,13 +176,223 @@
 
 
 
-/* =========================
-   CHART
-========================= */
+.input:focus {
+
+    @apply
+    border-bulog-600
+    ring-2
+    ring-yellow-100
+    outline-none;
+
+}
+
+
+
+
+
+.label {
+
+
+    @apply
+    block
+    text-sm
+    font-semibold
+    text-gray-700
+    mb-2;
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+   SIDEBAR
+===================================== */
+
+
+.sidebar-link {
+
+
+    @apply
+    flex
+    items-center
+    gap-3
+    rounded-xl
+    px-4
+    py-3
+    text-sm
+    font-medium
+    text-white/90
+    transition
+    duration-200;
+
+
+}
+
+
+
+.sidebar-link:hover {
+
+
+    @apply
+    bg-white/10
+    text-white;
+
+
+}
+
+
+
+.sidebar-link.active {
+
+
+    @apply
+    bg-[#F5B83D]
+    text-gray-900
+    font-bold;
+
+
+}
+
+
+
+
+
+.sidebar-title {
+
+
+    @apply
+    mt-6
+    mb-2
+    px-3
+    text-[11px]
+    font-bold
+    uppercase
+    tracking-wider
+    text-white/40;
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+   TABLE DASHBOARD
+===================================== */
+
+
+.dashboard-table {
+
+
+    @apply
+    w-full
+    text-sm;
+
+
+}
+
+
+
+.dashboard-table th {
+
+
+    @apply
+    bg-gray-50
+    text-gray-500
+    font-semibold
+    px-4
+    py-3
+    text-left;
+
+
+}
+
+
+
+.dashboard-table td {
+
+
+    @apply
+    px-4
+    py-3
+    border-b
+    border-gray-100;
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================
+   BADGE
+===================================== */
+
+
+.badge {
+
+
+    @apply
+    inline-flex
+    items-center
+    rounded-full
+    px-3
+    py-1
+    text-xs
+    font-semibold;
+
+
+}
+
+
+
+
+
+
+}
+
+
+
+
+
+/* =====================================
+   GLOBAL
+===================================== */
+
+
+body {
+
+    @apply
+    bg-gray-50;
+
+}
+
+
+
+
+
+/* =====================================
+   CHART RESPONSIVE
+===================================== */
 
 
 canvas {
 
-    max-height: 300px;
+
+    width:100% !important;
+    height:100% !important;
+
 
 }
