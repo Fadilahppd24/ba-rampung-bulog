@@ -3,9 +3,27 @@
 @tailwind utilities;
 
 
+/* =========================================================
+   GLOBAL FONT
+========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+
+@layer base {
+
+    body {
+        font-family: 'Manrope', sans-serif;
+    }
+
+}
+
+
+/* =========================================================
+   COMPONENTS
+========================================================= */
 
 @layer components {
-
 
 
 /* =====================================
@@ -14,7 +32,7 @@
 
 .card {
 
-    @apply 
+    @apply
     bg-white
     rounded-2xl
     border
@@ -31,9 +49,6 @@
     @apply shadow-md;
 
 }
-
-
-
 
 
 /* =====================================
@@ -58,7 +73,6 @@
 }
 
 
-
 .kpi-card:hover {
 
     @apply
@@ -66,11 +80,6 @@
     -translate-y-1;
 
 }
-
-
-
-
-
 
 
 /* =====================================
@@ -86,7 +95,6 @@
     justify-center
     gap-2
     rounded-xl
-    bg-bulog-700
     px-5
     py-2.5
     text-sm
@@ -96,18 +104,24 @@
     transition
     duration-300;
 
+    background-color: #082f63;
+
 }
 
 
 .btn-primary:hover {
 
     @apply
-    bg-bulog-800
     shadow-md;
+
+    background-color: #0b4f9c;
 
 }
 
 
+/* =====================================
+   BUTTON SECONDARY
+===================================== */
 
 .btn-secondary {
 
@@ -133,7 +147,6 @@
 }
 
 
-
 .btn-secondary:hover {
 
 
@@ -143,11 +156,6 @@
 
 
 }
-
-
-
-
-
 
 
 /* =====================================
@@ -175,19 +183,22 @@
 }
 
 
-
 .input:focus {
 
     @apply
-    border-bulog-600
-    ring-2
-    ring-yellow-100
     outline-none;
+
+    border-color: #0b4f9c;
+
+    box-shadow:
+        0 0 0 3px rgba(11, 79, 156, 0.10);
 
 }
 
 
-
+/* =====================================
+   LABEL
+===================================== */
 
 
 .label {
@@ -204,15 +215,9 @@
 }
 
 
-
-
-
-
-
 /* =====================================
    SIDEBAR
 ===================================== */
-
 
 .sidebar-link {
 
@@ -234,7 +239,6 @@
 }
 
 
-
 .sidebar-link:hover {
 
 
@@ -246,20 +250,17 @@
 }
 
 
-
 .sidebar-link.active {
 
 
     @apply
-    bg-[#F5B83D]
     text-gray-900
     font-bold;
 
+    background-color: #f28c28;
+
 
 }
-
-
-
 
 
 .sidebar-title {
@@ -279,11 +280,6 @@
 }
 
 
-
-
-
-
-
 /* =====================================
    TABLE DASHBOARD
 ===================================== */
@@ -300,21 +296,20 @@
 }
 
 
-
 .dashboard-table th {
 
 
     @apply
-    bg-gray-50
-    text-gray-500
     font-semibold
     px-4
     py-3
     text-left;
 
+    background-color: #f8fafc;
+    color: #64748b;
+
 
 }
-
 
 
 .dashboard-table td {
@@ -328,12 +323,6 @@
 
 
 }
-
-
-
-
-
-
 
 
 /* =====================================
@@ -357,19 +346,284 @@
 }
 
 
+/* =====================================
+   EXTRA MODERN CARD
+===================================== */
+
+.modern-card {
+
+    @apply
+    bg-white
+    rounded-2xl
+    border
+    border-gray-100
+    shadow-sm
+    transition
+    duration-300;
+
+}
 
 
+.modern-card:hover {
+
+    @apply shadow-md;
+
+}
+
+
+/* =====================================
+   BULOG ACCENT
+===================================== */
+
+.bulog-accent {
+
+    background-color: #f28c28;
+
+}
+
+
+.bulog-navy {
+
+    color: #082f63;
+
+}
+
+
+.bulog-blue {
+
+    color: #0b4f9c;
+
+}
+
+
+/* =====================================
+   DASHBOARD SECTION TITLE
+===================================== */
+
+.dashboard-section-title {
+
+    @apply
+    text-lg
+    font-bold
+    text-gray-900;
+
+}
+
+
+.dashboard-section-subtitle {
+
+    @apply
+    text-sm
+    text-gray-500
+    mt-1;
+
+}
+
+
+/* =====================================
+   SOFT BACKGROUND
+===================================== */
+
+.dashboard-soft-bg {
+
+    background-color: #f6f8fb;
+
+}
+
+
+/* =====================================
+   ORANGE BUTTON
+===================================== */
+
+.btn-orange {
+
+    @apply
+    inline-flex
+    items-center
+    justify-center
+    gap-2
+    rounded-xl
+    px-5
+    py-2.5
+    text-sm
+    font-semibold
+    text-white
+    shadow-sm
+    transition
+    duration-300;
+
+    background-color: #f28c28;
+
+}
+
+
+.btn-orange:hover {
+
+    @apply shadow-md;
+
+    background-color: #d97012;
+
+}
+
+
+/* =====================================
+   NAVBAR SUPPORT
+===================================== */
+
+.navbar-card {
+
+    @apply
+    bg-white
+    border-b
+    border-gray-100;
+
+}
+
+
+/* =====================================
+   USER AVATAR
+===================================== */
+
+.user-avatar {
+
+    @apply
+    rounded-full
+    flex
+    items-center
+    justify-center
+    font-bold;
+
+    background-color: #eef5ff;
+    color: #082f63;
+
+}
+
+
+/* =====================================
+   QUICK ACTION
+===================================== */
+
+.quick-action {
+
+    @apply
+    flex
+    items-center
+    gap-3
+    rounded-xl
+    border
+    border-gray-100
+    bg-white
+    px-4
+    py-3
+    transition
+    duration-200;
+
+}
+
+
+.quick-action:hover {
+
+    @apply
+    shadow-sm;
+
+    border-color: #dbeafe;
+
+}
+
+
+/* =====================================
+   EMPTY STATE
+===================================== */
+
+.empty-state {
+
+    @apply
+    flex
+    flex-col
+    items-center
+    justify-center
+    text-center
+    py-10
+    px-6;
+
+}
+
+
+.empty-state-title {
+
+    @apply
+    mt-3
+    text-sm
+    font-semibold
+    text-gray-700;
+
+}
+
+
+.empty-state-text {
+
+    @apply
+    mt-1
+    text-xs
+    text-gray-400;
+
+}
+
+
+/* =====================================
+   SCROLLBAR
+===================================== */
+
+.custom-scrollbar {
+
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+
+}
+
+
+.custom-scrollbar::-webkit-scrollbar {
+
+    width: 6px;
+    height: 6px;
+
+}
+
+
+.custom-scrollbar::-webkit-scrollbar-track {
+
+    background: transparent;
+
+}
+
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+
+    background: #cbd5e1;
+    border-radius: 999px;
+
+}
+
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+
+    background: #94a3b8;
+
+}
 
 
 }
 
 
-
-
-
-/* =====================================
+/* =========================================================
    GLOBAL
-===================================== */
+========================================================= */
+
+html {
+
+    scroll-behavior: smooth;
+
+}
 
 
 body {
@@ -377,15 +631,42 @@ body {
     @apply
     bg-gray-50;
 
+    color: #0f172a;
+
 }
 
 
+/* =========================================================
+   TEXT SELECTION
+========================================================= */
+
+::selection {
+
+    background-color: rgba(242, 140, 40, 0.20);
+    color: #082f63;
+
+}
 
 
+/* =========================================================
+   FOCUS
+========================================================= */
 
-/* =====================================
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+
+    outline: 2px solid #0b4f9c;
+    outline-offset: 2px;
+
+}
+
+
+/* =========================================================
    CHART RESPONSIVE
-===================================== */
+========================================================= */
 
 
 canvas {
@@ -394,5 +675,618 @@ canvas {
     width:100% !important;
     height:100% !important;
 
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 640px) {
+
+    .kpi-card {
+
+        @apply
+        p-4
+        gap-3;
+
+    }
+
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-orange {
+
+        @apply
+        px-4
+        py-2.5;
+
+    }
+
+
+    .dashboard-table {
+
+        font-size: 0.8125rem;
+
+    }
+
+}
+
+/* =========================================================
+   MODERN BULOG DASHBOARD
+   Reference Design
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   FONT
+--------------------------------------------------------- */
+.dashboard-hero {
+    background-image:
+        linear-gradient(
+            to bottom,
+            rgba(8,47,99,.38),
+            rgba(8,47,99,.18) 45%,
+            rgba(244,241,234,.92) 100%
+        ),
+        url('/images/dashboard-bulog.jpg');
+
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+}
+
+   
+
+
+/* ---------------------------------------------------------
+   NAVIGATION
+--------------------------------------------------------- */
+
+.dashboard-nav-link {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 10px 18px;
+
+    border-radius: 999px;
+
+    color: rgba(255,255,255,.82);
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    transition:
+        background-color .2s ease,
+        color .2s ease,
+        transform .2s ease;
+
+}
+
+
+.dashboard-nav-link:hover {
+
+    color: white;
+
+    background: rgba(255,255,255,.12);
+
+}
+
+
+.dashboard-nav-active {
+
+    color: #082F63;
+
+    background: white;
+
+    box-shadow:
+        0 4px 14px rgba(0,0,0,.08);
+
+}
+
+
+.dashboard-nav-active:hover {
+
+    color: #082F63;
+
+    background: white;
+
+}
+
+
+.mobile-dashboard-link {
+
+    display: block;
+
+    padding: 12px 14px;
+
+    border-radius: 12px;
+
+    color: rgba(255,255,255,.85);
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+.mobile-dashboard-link:hover {
+
+    background: rgba(255,255,255,.10);
+
+    color: white;
+
+}
+
+
+/* ---------------------------------------------------------
+   KPI
+--------------------------------------------------------- */
+
+.reference-kpi-card {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    overflow: hidden;
+
+    min-height: 105px;
+
+    padding: 20px;
+
+    border:
+
+        1px solid
+
+        rgba(255,255,255,.65);
+
+    border-radius: 18px;
+
+    background:
+
+        rgba(255,255,255,.86);
+
+    box-shadow:
+
+        0 8px 30px
+
+        rgba(24,45,66,.08);
+
+    backdrop-filter: blur(12px);
+
+    transition:
+
+        transform .25s ease,
+
+        box-shadow .25s ease;
+
+}
+
+
+.reference-kpi-card::after {
+
+    content: "";
+
+    position: absolute;
+
+    right: -25px;
+
+    top: -25px;
+
+    width: 90px;
+
+    height: 90px;
+
+    border-radius: 999px;
+
+    background: rgba(11,79,156,.06);
+
+}
+
+
+.reference-kpi-card:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+
+        0 14px 34px
+
+        rgba(24,45,66,.12);
+
+}
+
+
+.reference-kpi-icon {
+
+    position: relative;
+
+    z-index: 1;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 52px;
+
+    height: 52px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    color: white;
+
+    font-size: 22px;
+
+    box-shadow:
+
+        0 8px 18px
+
+        rgba(0,0,0,.10);
+
+}
+
+
+.reference-kpi-icon.blue {
+
+    background: #0B4F9C;
+
+}
+
+
+.reference-kpi-icon.orange {
+
+    background: #F28C28;
+
+}
+
+
+.reference-kpi-label {
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    color: #64748B;
+
+}
+
+
+.reference-kpi-value {
+
+    margin-top: 2px;
+
+    font-family:
+
+        'Manrope',
+
+        sans-serif;
+
+    font-size: 26px;
+
+    line-height: 1;
+
+    font-weight: 800;
+
+    color: #082F63;
+
+}
+
+
+.reference-kpi-sub {
+
+    margin-top: 5px;
+
+    font-size: 11px;
+
+    color: #7B8794;
+
+}
+
+
+.reference-kpi-change {
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    color: #15803D;
+
+}
+
+
+.reference-kpi-neutral {
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    color: #64748B;
+
+}
+
+
+/* ---------------------------------------------------------
+   PANELS
+--------------------------------------------------------- */
+
+.reference-panel {
+
+    overflow: hidden;
+
+    border:
+
+        1px solid
+
+        rgba(226,232,240,.9);
+
+    border-radius: 18px;
+
+    background:
+
+        rgba(255,255,255,.91);
+
+    box-shadow:
+
+        0 8px 28px
+
+        rgba(30,50,70,.06);
+
+    backdrop-filter: blur(8px);
+
+}
+
+
+.reference-section-icon {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 36px;
+
+    height: 36px;
+
+    border-radius: 10px;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+}
+
+
+.reference-section-icon.blue {
+
+    background: #EAF2FB;
+
+    color: #0B4F9C;
+
+}
+
+
+.reference-section-icon.orange {
+
+    background: #FFF1E4;
+
+    color: #F28C28;
+
+}
+
+
+.reference-title {
+
+    font-family:
+
+        'Cormorant Garamond',
+
+        serif;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    color: #082F63;
+
+}
+
+
+/* ---------------------------------------------------------
+   TABLE
+--------------------------------------------------------- */
+
+.reference-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 12px;
+
+}
+
+
+.reference-table thead {
+
+    background: #F8FAFC;
+
+}
+
+
+.reference-table th {
+
+    padding: 11px 14px;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    color: #64748B;
+
+    border-bottom:
+
+        1px solid
+
+        #E2E8F0;
+
+}
+
+
+.reference-table td {
+
+    padding: 12px 14px;
+
+    white-space: nowrap;
+
+    color: #64748B;
+
+    border-bottom:
+
+        1px solid
+
+        #EEF2F7;
+
+}
+
+
+.reference-table tbody tr {
+
+    transition:
+
+        background-color .2s ease;
+
+}
+
+
+.reference-table tbody tr:hover {
+
+    background: #F8FAFC;
+
+}
+
+
+/* ---------------------------------------------------------
+   QUICK ACTION
+--------------------------------------------------------- */
+
+.quick-action-button {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 58px;
+
+    padding: 10px;
+
+    border-radius: 12px;
+
+    background: #EEF4FA;
+
+    color: #123B7A;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-align: center;
+
+    transition:
+
+        transform .2s ease,
+
+        background-color .2s ease,
+
+        color .2s ease;
+
+}
+
+
+.quick-action-button:hover {
+
+    transform: translateY(-2px);
+
+    background: #E1ECF7;
+
+}
+
+
+.quick-action-button.primary {
+
+    background: #0B4F9C;
+
+    color: white;
+
+}
+
+
+.quick-action-button.primary:hover {
+
+    background: #082F63;
+
+}
+
+
+/* ---------------------------------------------------------
+   RESPONSIVE
+--------------------------------------------------------- */
+
+@media (max-width: 768px) {
+
+    .dashboard-hero {
+
+        background-position:
+
+            58% top;
+
+    }
+
+
+    .reference-title {
+
+        font-size: 18px;
+
+    }
+
+
+    .reference-kpi-card {
+
+        min-height: 92px;
+
+        padding: 16px;
+
+    }
+
+
+    .reference-kpi-value {
+
+        font-size: 23px;
+
+    }
 
 }
