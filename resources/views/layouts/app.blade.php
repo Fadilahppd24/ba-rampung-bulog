@@ -22,106 +22,36 @@
     ])
 
 
-<style>
-    /* =========================================================
-       NAVBAR DROPDOWN — NATIVE HTML
-       Tidak bergantung pada Alpine/JavaScript.
-    ========================================================= */
+    <style>
+        /*
+         * BA RAMPUNG BACKGROUND ONLY
+         * Navbar tidak diubah.
+         * Gambar gudang tetap diam ketika halaman di-scroll.
+         */
+        .ba-rampung-fixed-bg {
+            min-height: 100vh;
 
-    .dashboard-dropdown {
-        position: relative;
-        flex: 0 0 auto;
-    }
+            background-image:
+                linear-gradient(
+                    180deg,
+                    rgba(244, 241, 234, 0.10) 0%,
+                    rgba(244, 241, 234, 0.30) 45%,
+                    rgba(244, 241, 234, 0.88) 100%
+                ),
+                url('/images/dashboard-bulog.jpg');
 
-    .dashboard-dropdown > summary {
-        list-style: none;
-        cursor: pointer;
-        user-select: none;
-    }
-
-    .dashboard-dropdown > summary::-webkit-details-marker {
-        display: none;
-    }
-
-    .dashboard-dropdown > summary {
-        display: inline-flex !important;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .dashboard-dropdown-chevron {
-        width: 14px;
-        height: 14px;
-        flex: 0 0 14px;
-        transition: transform .18s ease;
-    }
-
-    .dashboard-dropdown[open] .dashboard-dropdown-chevron {
-        transform: rotate(180deg);
-    }
-
-    .dashboard-dropdown-menu {
-        position: absolute;
-        top: calc(100% + 10px);
-        left: 0;
-        z-index: 9999;
-
-        width: 230px;
-        padding: 8px;
-
-        border: 1px solid rgba(15, 61, 115, .12);
-        border-radius: 16px;
-
-        background: rgba(255,255,255,.98);
-        box-shadow:
-            0 18px 45px rgba(8,47,99,.20),
-            0 4px 12px rgba(8,47,99,.08);
-
-        backdrop-filter: blur(16px);
-    }
-
-    .dashboard-dropdown-menu a {
-        display: flex;
-        align-items: center;
-
-        min-height: 42px;
-        padding: 10px 13px;
-
-        border-radius: 11px;
-
-        color: #173B67;
-        background: transparent;
-
-        font-size: 13px;
-        font-weight: 600;
-        text-decoration: none;
-
-        transition: background .15s ease, color .15s ease;
-    }
-
-    .dashboard-dropdown-menu a:hover {
-        color: #0D3F7A;
-        background: #EEF5FC;
-    }
-
-    .dashboard-dropdown-right .dashboard-dropdown-menu {
-        left: auto;
-        right: 0;
-    }
-
-    @media (max-width: 1023px) {
-        .dashboard-dropdown {
-            width: 100%;
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
 
-        .dashboard-dropdown-menu {
-            position: static;
-            width: 100%;
-            margin-top: 6px;
-            box-shadow: none;
+        @media (max-width: 1023px) {
+            .ba-rampung-fixed-bg {
+                background-attachment: scroll;
+            }
         }
-    }
-</style>
+    </style>
 
 </head>
 
@@ -144,10 +74,10 @@
      HALAMAN LAIN TETAP MEMAKAI SIDEBAR + HEADER LAMA
 ========================================================= --}}
 
-@if(request()->routeIs('dashboard'))
+@if(request()->routeIs('dashboard') || request()->routeIs('ba-rampung.*') || request()->routeIs('gudang.*') || request()->routeIs('mitra.*') || request()->routeIs('pimpinan.*') || request()->routeIs('laporan.*') || request()->routeIs('pengaturan.*'))
 
 
-<div class="min-h-screen">
+<div class="min-h-screen {{ request()->routeIs('ba-rampung.*') || request()->routeIs('gudang.*') || request()->routeIs('mitra.*') || request()->routeIs('pimpinan.*') || request()->routeIs('laporan.*') || request()->routeIs('pengaturan.*') ? 'ba-rampung-fixed-bg' : '' }}">
 
 
     {{-- NAVBAR DASHBOARD --}}
@@ -219,54 +149,60 @@
                         href="{{ route('dashboard') }}"
                         class="
                             dashboard-nav-link
-                            dashboard-nav-active
+                            {{ request()->routeIs('dashboard') ? 'dashboard-nav-active' : '' }}
                         "
                     >
                         Home
                     </a>
 
 
-                    {{-- BA RAMPUNG DROPDOWN --}}
-                    <details class="dashboard-dropdown">
-                        <summary class="dashboard-nav-link">
-                            <span>BA Rampung</span>
-                            <svg class="dashboard-dropdown-chevron" viewBox="0 0 24 24" fill="none">
-                                <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2"
-                                      stroke-linecap="round" stroke-linejoin="round"/>
+                    {{-- BA RAMPUNG --}}
+
+                    <div class="relative group">
+                        <a
+                            href="{{ route('ba-rampung.index') }}"
+                            class="dashboard-nav-link {{ request()->routeIs('ba-rampung.*') ? 'dashboard-nav-active' : '' }} inline-flex items-center gap-1"
+                        >
+                            BA Rampung
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m6 9 6 6 6-6"/>
                             </svg>
-                        </summary>
+                        </a>
 
-                        <div class="dashboard-dropdown-menu">
-                            <a href="{{ route('ba-rampung.index') }}">
-                                <span>Daftar BA Rampung</span>
-                            </a>
-                            <a href="{{ route('ba-rampung.create') }}">
-                                <span>Buat BA Rampung</span>
-                            </a>
-                        </div>
-                    </details>
-
-
-                    {{-- MASTER DATA DROPDOWN --}}
-                    @if(auth()->user()?->isAdminKantor())
-                        <details class="dashboard-dropdown">
-                            <summary class="dashboard-nav-link">
-                                <span>Master Data</span>
-                                <svg class="dashboard-dropdown-chevron" viewBox="0 0 24 24" fill="none">
-                                    <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2"
-                                          stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </summary>
-
-                            <div class="dashboard-dropdown-menu">
-                                <a href="{{ route('gudang.index') }}">
-                                    <span>Data Gudang</span>
+                        <div class="absolute left-0 top-full z-[100] hidden min-w-[220px] pt-2 group-hover:block">
+                            <div class="rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
+                                <a href="{{ route('ba-rampung.index') }}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#123F7A]">
+                                    Daftar BA Rampung
                                 </a>
-                                <a href="{{ route('mitra.index') }}">
-                                    <span>Data Mitra Pengolahan</span>
-                                </a>
+                                @if(auth()->user()?->isAdminGudang() || auth()->user()?->isAdminKantor())
+                                    <a href="{{ route('ba-rampung.create') }}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#123F7A]">
+                                        Tambah BA Rampung
+                                    </a>
+                                @endif
                             </div>
-                        </details>
+                        </div>
+                    </div>
+
+
+                    {{-- MASTER DATA --}}
+
+                    @if(auth()->user()?->isAdminKantor())
+                        <div class="relative group">
+                            <a href="#" class="dashboard-nav-link inline-flex items-center gap-1 {{ request()->routeIs('gudang.*') || request()->routeIs('mitra.*') || request()->routeIs('pimpinan.*') ? 'dashboard-nav-active' : '' }}">
+                                Master Data
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="m6 9 6 6 6-6"/>
+                                </svg>
+                            </a>
+
+                            <div class="absolute left-0 top-full z-[100] hidden min-w-[220px] pt-2 group-hover:block">
+                                <div class="rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
+                                    <a href="{{ route('gudang.index') }}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#123F7A] {{ request()->routeIs('gudang.*') ? 'bg-slate-50 text-[#123F7A]' : '' }}">Gudang</a>
+                                    <a href="{{ route('mitra.index') }}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#123F7A] {{ request()->routeIs('mitra.*') ? 'bg-slate-50 text-[#123F7A]' : '' }}">Mitra</a>
+                                    <a href="{{ route('pimpinan.index') }}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#123F7A] {{ request()->routeIs('pimpinan.*') ? 'bg-slate-50 text-[#123F7A]' : '' }}">Pimpinan</a>
+                                </div>
+                            </div>
+                        </div>
                     @endif
 
 
@@ -280,23 +216,29 @@
                     </a>
 
 
-                    {{-- ADMINISTRASI DROPDOWN --}}
-                    @if(auth()->user()?->isAdminKantor())
-                        <details class="dashboard-dropdown dashboard-dropdown-right">
-                            <summary class="dashboard-nav-link">
-                                <span>Administrasi</span>
-                                <svg class="dashboard-dropdown-chevron" viewBox="0 0 24 24" fill="none">
-                                    <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2"
-                                          stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </summary>
+                    {{-- ADMINISTRASI --}}
 
-                            <div class="dashboard-dropdown-menu">
-                                <a href="{{ route('pengaturan.umum') }}">
-                                    <span>Pengaturan Umum</span>
-                                </a>
+                    @if(auth()->user()?->isAdminKantor())
+                        <div class="relative group">
+                            <a href="#" class="dashboard-nav-link inline-flex items-center gap-1">
+                                Administrasi
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="m6 9 6 6 6-6"/>
+                                </svg>
+                            </a>
+
+                            <div class="absolute right-0 top-full z-[100] hidden min-w-[220px] pt-2 group-hover:block">
+                                <div class="rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
+                                    <a href="{{ route('pengaturan.umum') }}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#123F7A]">Pengaturan Umum</a>
+                                    @if(Route::has('users.index'))
+                                        <a href="{{ route('users.index') }}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#123F7A]">Manajemen User</a>
+                                    @endif
+                                    @if(Route::has('aktivitas.index'))
+                                        <a href="{{ route('aktivitas.index') }}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#123F7A]">Log Aktivitas</a>
+                                    @endif
+                                </div>
                             </div>
-                        </details>
+                        </div>
                     @endif
 
                 </nav>
@@ -633,6 +575,7 @@
                 px-6
                 pb-10
                 lg:px-10
+                {{ request()->routeIs('ba-rampung.*') || request()->routeIs('gudang.*') || request()->routeIs('mitra.*') || request()->routeIs('pimpinan.*') || request()->routeIs('laporan.*') || request()->routeIs('pengaturan.*') ? 'pt-28' : '' }}
             "
         >
 

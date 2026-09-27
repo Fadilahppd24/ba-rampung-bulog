@@ -4,305 +4,348 @@
 
 @section('content')
 
-<div class="max-w-3xl">
+<div class="space-y-6">
 
-    <div class="mb-5">
-        <h2 class="text-xl font-semibold text-gray-900">
-            Tambah Gudang
-        </h2>
+    {{-- =========================================================
+         HERO / HEADER HALAMAN
+    ========================================================== --}}
+    <div class="flex flex-col gap-4 pt-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <p class="dashboard-kicker text-white/75">
+                Master Data
+            </p>
 
-        <p class="text-sm text-gray-500 mt-1">
-            Tambahkan data gudang baru.
-        </p>
+            <h1 class="dashboard-display mt-2 text-4xl leading-tight text-white sm:text-5xl">
+                Tambah <span class="text-[#F28C28]">Gudang</span>
+            </h1>
+
+            <p class="mt-2 text-sm text-white/85" style="text-shadow: 0 1px 8px rgba(3, 28, 55, .2);">
+                Tambahkan data gudang baru.
+            </p>
+        </div>
+
+        <a
+            href="{{ route('gudang.index') }}"
+            class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-[#123F7A] shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-50"
+        >
+            ← Kembali ke Daftar Gudang
+        </a>
     </div>
 
+
+    {{-- =========================================================
+         FORM
+         action, method, @csrf, name attribute, validasi
+         SEMUA DIPERTAHANKAN PERSIS SEPERTI SEBELUMNYA.
+    ========================================================== --}}
     <form
         method="POST"
         action="{{ route('gudang.store') }}"
-        class="card p-6 space-y-5"
+        class="space-y-6"
     >
 
         @csrf
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
 
-            {{-- KODE GUDANG --}}
-            <div>
-                <label class="label">
-                    Kode Gudang
-                </label>
-
-                <input
-                    type="text"
-                    name="kode_gudang"
-                    value="{{ old('kode_gudang') }}"
-                    required
-                    class="input"
-                    placeholder="GDG-007"
-                >
-
-                @error('kode_gudang')
-                    <p class="text-xs text-red-600 mt-1">
-                        {{ $message }}
+            <div class="mb-6 flex items-center gap-3">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#123F7A] text-base font-bold text-white">
+                    01
+                </div>
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-xl">
+                    🏭
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-gray-900">
+                        Data Gudang
+                    </h3>
+                    <p class="text-xs text-gray-500">
+                        Informasi dasar gudang penyimpanan.
                     </p>
-                @enderror
+                </div>
             </div>
 
-            {{-- NAMA GUDANG --}}
-            <div>
-                <label class="label">
-                    Nama Gudang
-                </label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                <input
-                    type="text"
-                    name="nama_gudang"
-                    value="{{ old('nama_gudang') }}"
-                    required
-                    class="input"
-                    placeholder="Gudang Bulog Cikedung"
-                >
+                {{-- KODE GUDANG --}}
+                <div>
+                    <label class="label">
+                        Kode Gudang
+                    </label>
 
-                @error('nama_gudang')
-                    <p class="text-xs text-red-600 mt-1">
-                        {{ $message }}
-                    </p>
-                @enderror
-            </div>
-
-            {{-- JENIS GUDANG --}}
-<div>
-    <label class="label">
-        Jenis Gudang
-    </label>
-
-    <select
-        name="jenis_gudang"
-        id="jenis_gudang"
-        class="input"
-        required
-    >
-        <option value="utama"
-            @selected(old('jenis_gudang', 'utama') === 'utama')
-        >
-            Gudang Utama
-        </option>
-
-        <option value="filial"
-            @selected(old('jenis_gudang') === 'filial')
-        >
-            Gudang Filial
-        </option>
-    </select>
-
-    @error('jenis_gudang')
-        <p class="text-xs text-red-600 mt-1">
-            {{ $message }}
-        </p>
-    @enderror
-</div>
-
-{{-- GUDANG INDUK --}}
-<div id="gudang-induk-wrapper">
-    <label class="label">
-        Gudang Induk
-    </label>
-
-    <select
-        name="gudang_induk_id"
-        id="gudang_induk_id"
-        class="input"
-    >
-        <option value="">
-            Pilih Gudang Utama
-        </option>
-
-        @foreach ($gudangsUtama as $gudang)
-            <option
-                value="{{ $gudang->id }}"
-                @selected(old('gudang_induk_id') == $gudang->id)
-            >
-                {{ $gudang->nama_gudang }}
-            </option>
-        @endforeach
-    </select>
-
-    @error('gudang_induk_id')
-        <p class="text-xs text-red-600 mt-1">
-            {{ $message }}
-        </p>
-    @enderror
-</div>
-
-            {{-- ALAMAT --}}
-            <div class="md:col-span-2">
-                <label class="label">
-                    Alamat
-                </label>
-
-                <textarea
-                    name="alamat"
-                    rows="2"
-                    class="input"
-                    placeholder="Alamat lengkap gudang"
-                >{{ old('alamat') }}</textarea>
-
-                @error('alamat')
-                    <p class="text-xs text-red-600 mt-1">
-                        {{ $message }}
-                    </p>
-                @enderror
-            </div>
-
-            {{-- KECAMATAN --}}
-            <div>
-                <label class="label">
-                    Kecamatan
-                </label>
-
-                <input
-                    type="text"
-                    name="kecamatan"
-                    value="{{ old('kecamatan') }}"
-                    class="input"
-                >
-
-                @error('kecamatan')
-                    <p class="text-xs text-red-600 mt-1">
-                        {{ $message }}
-                    </p>
-                @enderror
-            </div>
-
-            {{-- DESA --}}
-            <div>
-                <label class="label">
-                    Desa
-                </label>
-
-                <input
-                    type="text"
-                    name="desa"
-                    value="{{ old('desa') }}"
-                    class="input"
-                >
-
-                @error('desa')
-                    <p class="text-xs text-red-600 mt-1">
-                        {{ $message }}
-                    </p>
-                @enderror
-            </div>
-
-            {{-- TELEPON --}}
-            <div>
-                <label class="label">
-                    Nomor Telepon
-                </label>
-
-                <input
-                    type="text"
-                    name="nomor_telepon"
-                    value="{{ old('nomor_telepon') }}"
-                    class="input"
-                >
-
-                @error('nomor_telepon')
-                    <p class="text-xs text-red-600 mt-1">
-                        {{ $message }}
-                    </p>
-                @enderror
-            </div>
-
-            {{-- EMAIL --}}
-            <div>
-                <label class="label">
-                    Email
-                </label>
-
-                <input
-                    type="email"
-                    name="email"
-                    value="{{ old('email') }}"
-                    class="input"
-                >
-
-                @error('email')
-                    <p class="text-xs text-red-600 mt-1">
-                        {{ $message }}
-                    </p>
-                @enderror
-            </div>
-
-            {{-- KAPASITAS --}}
-            <div>
-                <label class="label">
-                    Kapasitas (Ton)
-                </label>
-
-                <input
-                    type="number"
-                    step="0.01"
-                    name="kapasitas"
-                    value="{{ old('kapasitas') }}"
-                    class="input"
-                >
-
-                @error('kapasitas')
-                    <p class="text-xs text-red-600 mt-1">
-                        {{ $message }}
-                    </p>
-                @enderror
-            </div>
-
-            {{-- STATUS --}}
-            <div>
-                <label class="label">
-                    Status
-                </label>
-
-                <select name="status" class="input">
-
-                    <option
-                        value="aktif"
-                        @selected(old('status', 'aktif') === 'aktif')
+                    <input
+                        type="text"
+                        name="kode_gudang"
+                        value="{{ old('kode_gudang') }}"
+                        required
+                        class="input"
+                        placeholder="GDG-007"
                     >
-                        Aktif
-                    </option>
 
-                    <option
-                        value="nonaktif"
-                        @selected(old('status') === 'nonaktif')
+                    @error('kode_gudang')
+                        <p class="text-xs text-red-600 mt-1">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- NAMA GUDANG --}}
+                <div>
+                    <label class="label">
+                        Nama Gudang
+                    </label>
+
+                    <input
+                        type="text"
+                        name="nama_gudang"
+                        value="{{ old('nama_gudang') }}"
+                        required
+                        class="input"
+                        placeholder="Gudang Bulog Cikedung"
                     >
-                        Nonaktif
-                    </option>
 
-                </select>
+                    @error('nama_gudang')
+                        <p class="text-xs text-red-600 mt-1">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
 
-                @error('status')
-                    <p class="text-xs text-red-600 mt-1">
-                        {{ $message }}
-                    </p>
-                @enderror
+                {{-- JENIS GUDANG --}}
+                <div>
+                    <label class="label">
+                        Jenis Gudang
+                    </label>
+
+                    <select
+                        name="jenis_gudang"
+                        id="jenis_gudang"
+                        class="input"
+                        required
+                    >
+                        <option value="utama"
+                            @selected(old('jenis_gudang', 'utama') === 'utama')
+                        >
+                            Gudang Utama
+                        </option>
+
+                        <option value="filial"
+                            @selected(old('jenis_gudang') === 'filial')
+                        >
+                            Gudang Filial
+                        </option>
+                    </select>
+
+                    @error('jenis_gudang')
+                        <p class="text-xs text-red-600 mt-1">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- GUDANG INDUK --}}
+                <div id="gudang-induk-wrapper">
+                    <label class="label">
+                        Gudang Induk
+                    </label>
+
+                    <select
+                        name="gudang_induk_id"
+                        id="gudang_induk_id"
+                        class="input"
+                    >
+                        <option value="">
+                            Pilih Gudang Utama
+                        </option>
+
+                        @foreach ($gudangsUtama as $gudang)
+                            <option
+                                value="{{ $gudang->id }}"
+                                @selected(old('gudang_induk_id') == $gudang->id)
+                            >
+                                {{ $gudang->nama_gudang }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    @error('gudang_induk_id')
+                        <p class="text-xs text-red-600 mt-1">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- ALAMAT --}}
+                <div class="md:col-span-2">
+                    <label class="label">
+                        Alamat
+                    </label>
+
+                    <textarea
+                        name="alamat"
+                        rows="2"
+                        class="input"
+                        placeholder="Alamat lengkap gudang"
+                    >{{ old('alamat') }}</textarea>
+
+                    @error('alamat')
+                        <p class="text-xs text-red-600 mt-1">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- KECAMATAN --}}
+                <div>
+                    <label class="label">
+                        Kecamatan
+                    </label>
+
+                    <input
+                        type="text"
+                        name="kecamatan"
+                        value="{{ old('kecamatan') }}"
+                        class="input"
+                    >
+
+                    @error('kecamatan')
+                        <p class="text-xs text-red-600 mt-1">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- DESA --}}
+                <div>
+                    <label class="label">
+                        Desa
+                    </label>
+
+                    <input
+                        type="text"
+                        name="desa"
+                        value="{{ old('desa') }}"
+                        class="input"
+                    >
+
+                    @error('desa')
+                        <p class="text-xs text-red-600 mt-1">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- TELEPON --}}
+                <div>
+                    <label class="label">
+                        Nomor Telepon
+                    </label>
+
+                    <input
+                        type="text"
+                        name="nomor_telepon"
+                        value="{{ old('nomor_telepon') }}"
+                        class="input"
+                    >
+
+                    @error('nomor_telepon')
+                        <p class="text-xs text-red-600 mt-1">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- EMAIL --}}
+                <div>
+                    <label class="label">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        value="{{ old('email') }}"
+                        class="input"
+                    >
+
+                    @error('email')
+                        <p class="text-xs text-red-600 mt-1">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- KAPASITAS --}}
+                <div>
+                    <label class="label">
+                        Kapasitas (Ton)
+                    </label>
+
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="kapasitas"
+                        value="{{ old('kapasitas') }}"
+                        class="input"
+                    >
+
+                    @error('kapasitas')
+                        <p class="text-xs text-red-600 mt-1">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- STATUS --}}
+                <div>
+                    <label class="label">
+                        Status
+                    </label>
+
+                    <select name="status" class="input">
+
+                        <option
+                            value="aktif"
+                            @selected(old('status', 'aktif') === 'aktif')
+                        >
+                            Aktif
+                        </option>
+
+                        <option
+                            value="nonaktif"
+                            @selected(old('status') === 'nonaktif')
+                        >
+                            Nonaktif
+                        </option>
+
+                    </select>
+
+                    @error('status')
+                        <p class="text-xs text-red-600 mt-1">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
             </div>
 
-        </div>
+            <div class="mt-6 flex justify-between border-t border-slate-100 pt-6">
 
-        <div class="flex justify-between pt-2">
+                <a
+                    href="{{ route('gudang.index') }}"
+                    class="btn-secondary"
+                >
+                    ← Kembali
+                </a>
 
-            <a
-                href="{{ route('gudang.index') }}"
-                class="btn-secondary"
-            >
-                ← Kembali
-            </a>
+                <button
+                    type="submit"
+                    class="btn-primary"
+                >
+                    💾 Simpan Gudang
+                </button>
 
-            <button
-                type="submit"
-                class="btn-primary"
-            >
-                💾 Simpan Gudang
-            </button>
+            </div>
 
         </div>
 

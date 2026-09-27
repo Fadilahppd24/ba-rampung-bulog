@@ -7,11 +7,14 @@
     ];
 @endphp
 
-<div class="card p-2 flex flex-wrap gap-1">
-    @foreach ($tabs as $route => $tab)
-        <a href="{{ route($route) }}"
-           class="flex-1 min-w-[140px] text-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors {{ request()->routeIs($route) ? 'bg-bulog-700 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
-            {{ $tab['icon'] }} {{ $tab['label'] }}
-        </a>
-    @endforeach
+<div class="rounded-[1.25rem] border border-slate-200/80 bg-white/95 p-2 shadow-lg backdrop-blur-md">
+    <div class="grid grid-cols-1 gap-1 sm:grid-cols-2 xl:grid-cols-4">
+        @foreach ($tabs as $route => $tab)
+            <a href="{{ route($route) }}"
+               class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all {{ request()->routeIs($route) ? 'bg-[#123F7A] text-white shadow-md' : 'text-slate-500 hover:bg-blue-50 hover:text-[#123F7A]' }}">
+                <span>{{ $tab['icon'] }}</span>
+                <span>{{ $tab['label'] }}</span>
+            </a>
+        @endforeach
+    </div>
 </div>
