@@ -4,149 +4,378 @@
 
 @section('content')
 
-<div class="space-y-6">
+<form
+    method="POST"
+    action="{{ route('ba-rampung.store') }}"
+    x-data="baForm({
+        gabah: {{ old('kuantum_gabah', 0) }},
+        beras: {{ old('kuantum_beras', 0) }},
+        menir: {{ old('kuantum_menir', 0) }},
+        bekatul: {{ old('kuantum_bekatul', 0) }},
+        tanggal: '{{ old('tanggal_ba', now()->toDateString()) }}'
+    })"
+    class="space-y-6 pb-10"
+>
+
+    @csrf
+
 
     {{-- =========================================================
-         FONT & STYLE HERO
-         Sama persis dengan Dashboard & Daftar BA Rampung
-         (dashboard-kicker / dashboard-display). Tidak mengubah logic.
+         HEADER / INTRO
+         Tampilan dibuat mengikuti halaman Master Data:
+         background gambar berasal dari layouts.app,
+         sedangkan hero menggunakan panel biru transparan.
     ========================================================== --}}
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
+    <div
+        class="
+            relative
+            overflow-hidden
+            rounded-[30px]
+            min-h-[250px]
+            flex
+            items-center
+            bg-[#082F63]/25
+            backdrop-blur-[2px]
+            border
+            border-white/20
+            shadow-[0_20px_60px_rgba(8,47,99,0.14)]
+        "
+    >
 
-        .dashboard-display {
-            font-family: 'Cormorant Garamond', Georgia, serif;
-            font-weight: 400;
-            letter-spacing: -0.025em;
-            text-shadow: 0 2px 18px rgba(3, 28, 55, .16);
-        }
+        {{-- Soft blue glass --}}
+        <div
+            class="
+                absolute
+                inset-0
+                bg-gradient-to-r
+                from-[#082F63]/45
+                via-[#082F63]/25
+                to-[#082F63]/10
+            "
+        ></div>
 
-        .dashboard-kicker {
-            letter-spacing: .32em;
-            text-transform: uppercase;
-            font-size: 10px;
-            font-weight: 700;
-        }
-    </style>
+        {{-- Decorative blur --}}
+        <div
+            class="
+                absolute
+                -right-16
+                -top-20
+                w-64
+                h-64
+                rounded-full
+                bg-white/5
+                blur-2xl
+            "
+        ></div>
 
-    {{-- =========================================================
-         HERO / HEADER HALAMAN
-    ========================================================== --}}
-    <div class="flex flex-col gap-4 pt-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-            <p class="dashboard-kicker text-white/75">
-                Sistem BA Rampung
-            </p>
+        <div
+            class="
+                absolute
+                -left-20
+                -bottom-24
+                w-72
+                h-72
+                rounded-full
+                bg-[#4B8ACB]/10
+                blur-3xl
+            "
+        ></div>
 
-            <h1 class="dashboard-display mt-2 text-4xl leading-tight text-white sm:text-5xl">
-                Tambah <span class="text-[#F28C28]">BA Rampung</span>
-            </h1>
+        {{-- Content --}}
+        <div
+            class="
+                relative
+                z-10
+                w-full
+                px-8
+                py-10
+                md:px-11
+                md:py-11
+                pr-8
+                md:pr-[330px]
+            "
+        >
 
-            <p class="mt-2 text-sm text-white/85" style="text-shadow: 0 1px 8px rgba(3, 28, 55, .2);">
-                Lengkapi informasi berikut untuk membuat BA Rampung baru.
-            </p>
+            <div class="max-w-3xl">
+
+                <p
+                    class="
+                        text-[11px]
+                        uppercase
+                        tracking-[0.35em]
+                        font-semibold
+                        text-white/80
+                        mb-3
+                    "
+                >
+                    Sistem BA Rampung
+                </p>
+
+                <h1
+                    class="
+                        text-4xl
+                        md:text-5xl
+                        lg:text-[58px]
+                        font-medium
+                        leading-[0.95]
+                        text-white
+                        tracking-tight
+                    "
+                    style="font-family: 'Cormorant Garamond', serif;"
+                >
+                    Tambah
+                    <span class="text-[#F28C28]">
+                        BA Rampung.
+                    </span>
+                </h1>
+
+                <p
+                    class="
+                        mt-4
+                        max-w-2xl
+                        text-sm
+                        md:text-base
+                        leading-relaxed
+                        text-white/80
+                    "
+                >
+                    Lengkapi informasi berikut untuk membuat
+                    Berita Acara Rampung baru.
+                </p>
+
+            </div>
+
         </div>
 
+        {{-- Back button: tetap di sisi kanan, tidak mengganggu judul --}}
         <a
             href="{{ route('ba-rampung.index') }}"
-            class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-[#123F7A] shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-50"
+            class="
+                absolute
+                z-20
+                right-7
+                bottom-7
+                md:right-9
+                md:bottom-9
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                rounded-full
+                bg-white/95
+                px-6
+                py-3.5
+                text-sm
+                font-semibold
+                text-[#082F63]
+                shadow-[0_10px_30px_rgba(0,0,0,0.14)]
+                border
+                border-white/50
+                backdrop-blur
+                transition-all
+                duration-200
+                hover:bg-[#F28C28]
+                hover:text-white
+                hover:-translate-y-0.5
+            "
         >
             ← Kembali ke Daftar BA
         </a>
+
     </div>
 
 
+
     {{-- =========================================================
-         FORM
-         action, method, x-data, @csrf, name attribute, validasi
-         SEMUA DIPERTAHANKAN PERSIS SEPERTI SEBELUMNYA.
+         01. DATA BA RAMPUNG
     ========================================================== --}}
-    <form
-        method="POST"
-        action="{{ route('ba-rampung.store') }}"
-        x-data="baForm({ gabah: {{ old('kuantum_gabah', 0) }}, beras: {{ old('kuantum_beras', 0) }}, menir: {{ old('kuantum_menir', 0) }}, bekatul: {{ old('kuantum_bekatul', 0) }}, tanggal: '{{ old('tanggal_ba', now()->toDateString()) }}' })"
-        class="space-y-6"
+    <div
+        class="
+            rounded-[28px]
+            bg-white/95
+            backdrop-blur
+            border
+            border-white
+            shadow-[0_15px_45px_rgba(8,47,99,0.08)]
+            overflow-hidden
+        "
     >
-        @csrf
 
-        {{-- =========================================================
-             SECTION 01 — DATA BA RAMPUNG
-        ========================================================== --}}
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        {{-- Header --}}
+        <div
+            class="
+                flex
+                items-center
+                gap-4
+                px-7
+                py-6
+                border-b
+                border-slate-100
+            "
+        >
 
-            <div class="mb-6 flex items-center gap-3">
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#123F7A] text-base font-bold text-white">
-                    01
-                </div>
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-xl">
-                    📄
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-gray-900">
-                        Data BA Rampung
-                    </h3>
-                    <p class="text-xs text-gray-500">
-                        Informasi dasar BA Rampung.
-                    </p>
-                </div>
+            <div
+                class="
+                    w-11
+                    h-11
+                    rounded-2xl
+                    bg-[#082F63]
+                    text-white
+                    flex
+                    items-center
+                    justify-center
+                    font-semibold
+                "
+            >
+                01
             </div>
 
-            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div>
 
+                <h2
+                    class="
+                        text-lg
+                        font-semibold
+                        text-[#082F63]
+                    "
+                >
+                    Data BA Rampung
+                </h2>
+
+                <p class="text-xs text-slate-400 mt-0.5">
+                    Informasi dasar Berita Acara Rampung.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {{-- Content --}}
+        <div class="p-7">
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                {{-- Nomor BA --}}
                 <div>
-                    <label class="label">Nomor BA (Otomatis)</label>
 
-                    <div class="relative">
-                        <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">📄</span>
+                    <label class="label">
+                        Nomor BA (Otomatis)
+                    </label>
+
+                    <div
+                        class="
+                            relative
+                            flex
+                            items-center
+                        "
+                    >
+
+                        <span
+                            class="
+                                absolute
+                                left-4
+                                text-[#082F63]/30
+                            "
+                        >
+                            📄
+                        </span>
+
                         <input
                             type="text"
                             disabled
-                            value="Akan dibuat otomatis setelah disimpan"
-                            class="input bg-gray-50 pl-10 text-xs italic text-gray-400"
+                            value="Akan dibuat otomatis oleh sistem setelah disimpan"
+                            class="
+                                input
+                                pl-11
+                                bg-slate-50
+                                text-slate-400
+                                italic
+                                text-xs
+                            "
                         >
+
                     </div>
+
                 </div>
 
-                <div class="grid grid-cols-3 gap-3">
+
+                {{-- Tanggal --}}
+                <div
+                    class="
+                        grid
+                        grid-cols-1
+                        sm:grid-cols-3
+                        gap-3
+                    "
+                >
 
                     <div>
-                        <label class="label">Hari</label>
+
+                        <label class="label">
+                            Hari
+                        </label>
+
                         <input
                             type="text"
                             :value="hariNama"
                             disabled
-                            class="input bg-gray-50 text-gray-500"
+                            class="
+                                input
+                                bg-slate-50
+                                text-slate-500
+                            "
                         >
+
                     </div>
 
-                    <div>
-                        <label class="label">Tanggal BA</label>
-                        <div class="relative">
-                            <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400 text-sm">📅</span>
-                            <input
-                                type="date"
-                                name="tanggal_ba"
-                                x-model="tanggal"
-                                required
-                                class="input pl-9"
-                            >
-                        </div>
-                    </div>
 
                     <div>
-                        <label class="label">Tahun</label>
+
+                        <label class="label">
+                            Tanggal BA
+                        </label>
+
+                        <input
+                            type="date"
+                            name="tanggal_ba"
+                            x-model="tanggal"
+                            required
+                            class="input"
+                        >
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="label">
+                            Tahun
+                        </label>
+
                         <input
                             type="text"
                             :value="tahunNama"
                             disabled
-                            class="input bg-gray-50 text-gray-500"
+                            class="
+                                input
+                                bg-slate-50
+                                text-slate-500
+                            "
                         >
+
                     </div>
 
                 </div>
 
+
+                {{-- MO --}}
                 <div>
-                    <label class="label">Nomor Manufacturing Order (MO)</label>
+
+                    <label class="label">
+                        Nomor Manufacturing Order (MO)
+                    </label>
+
                     <input
                         type="text"
                         name="nomor_mo"
@@ -155,10 +384,17 @@
                         class="input"
                         placeholder="Masukkan nomor MO"
                     >
+
                 </div>
 
+
+                {{-- PO --}}
                 <div>
-                    <label class="label">Nomor Purchase Order (PO)</label>
+
+                    <label class="label">
+                        Nomor Purchase Order (PO)
+                    </label>
+
                     <input
                         type="text"
                         name="nomor_po"
@@ -167,374 +403,940 @@
                         class="input"
                         placeholder="Masukkan nomor PO"
                     >
+
                 </div>
 
             </div>
+
+        </div>
+
+    </div>
+
+
+
+    {{-- =========================================================
+         02. PENGOLAHAN GABAH
+    ========================================================== --}}
+    <div
+        class="
+            rounded-[28px]
+            bg-white/95
+            backdrop-blur
+            border
+            border-white
+            shadow-[0_15px_45px_rgba(8,47,99,0.08)]
+            overflow-hidden
+        "
+    >
+
+        {{-- Header --}}
+        <div
+            class="
+                flex
+                items-center
+                gap-4
+                px-7
+                py-6
+                border-b
+                border-slate-100
+            "
+        >
+
+            <div
+                class="
+                    w-11
+                    h-11
+                    rounded-2xl
+                    bg-[#F28C28]
+                    text-white
+                    flex
+                    items-center
+                    justify-center
+                    font-semibold
+                "
+            >
+                02
+            </div>
+
+            <div>
+
+                <h2
+                    class="
+                        text-lg
+                        font-semibold
+                        text-[#082F63]
+                    "
+                >
+                    Pengolahan Gabah
+                    <span class="text-[#F28C28]">
+                        (GKP) → Beras Hasil Giling (HGL)
+                    </span>
+                </h2>
+
+                <p class="text-xs text-slate-400 mt-0.5">
+                    Masukkan data hasil pengolahan. Rendemen dihitung otomatis oleh sistem.
+                </p>
+
+            </div>
+
         </div>
 
 
-        {{-- =========================================================
-             SECTION 02 — PENGOLAHAN GABAH (GKP) MENJADI HGL
-             Semua name attribute, x-model, dan rendemen(x-text)
-             PERSIS seperti sebelumnya. Hanya tampilan yang diubah.
-        ========================================================== --}}
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        {{-- Table --}}
+        <div class="p-7">
 
-            <div class="mb-6 flex items-center gap-3">
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#123F7A] text-base font-bold text-white">
-                    02
-                </div>
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-xl">
-                    🌾
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-gray-900">
-                        Pengolahan Gabah (GKP) menjadi Beras Hasil Giling (HGL)
-                    </h3>
-                    <p class="text-xs text-gray-500">
-                        Masukkan data hasil pengolahan. Rendemen (%) dihitung otomatis oleh sistem.
-                    </p>
-                </div>
-            </div>
+            <div
+                class="
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    border-slate-100
+                "
+            >
 
-            {{-- ALUR GKP -> PROSES --}}
-            <div class="flex flex-col items-stretch gap-3 lg:flex-row lg:items-center lg:gap-4">
+                <div class="overflow-x-auto">
 
-                <div class="rounded-2xl border border-amber-100 bg-amber-50/60 p-5 text-center lg:w-52">
-                    <div class="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-white text-2xl shadow-sm">
-                        🌾
-                    </div>
-                    <p class="text-sm font-bold text-gray-800">
-                        Gabah (GKP)
-                    </p>
-                    <div class="relative mt-3">
-                        <input
-                            type="number"
-                            step="0.01"
-                            min="0.01"
-                            name="kuantum_gabah"
-                            x-model.number="gabah"
-                            required
-                            class="input pr-10 text-center"
-                            placeholder="0"
+                    <table class="w-full text-sm">
+
+                        <thead>
+
+                            <tr
+                                class="
+                                    bg-[#F4F7FB]
+                                    text-left
+                                    text-[#082F63]
+                                "
+                            >
+
+                                <th
+                                    class="
+                                        px-5
+                                        py-4
+                                        font-semibold
+                                    "
+                                    colspan="2"
+                                >
+                                    Sebelum Pengolahan
+                                </th>
+
+                                <th
+                                    class="
+                                        px-5
+                                        py-4
+                                        font-semibold
+                                    "
+                                    colspan="2"
+                                >
+                                    Setelah Pengolahan
+                                </th>
+
+                                <th
+                                    class="
+                                        px-5
+                                        py-4
+                                        font-semibold
+                                    "
+                                >
+                                    Rendemen (%)
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody
+                            class="
+                                divide-y
+                                divide-slate-100
+                            "
                         >
-                        <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-gray-400">kg</span>
-                    </div>
-                </div>
 
-                <div class="flex justify-center text-2xl text-slate-300">
-                    <span class="lg:hidden">↓</span>
-                    <span class="hidden lg:inline">→</span>
-                </div>
+                            {{-- GABAH / BERAS --}}
+                            <tr class="hover:bg-slate-50/70 transition">
 
-                <div class="rounded-2xl border border-blue-100 bg-blue-50/60 p-5 text-center lg:w-52">
-                    <div class="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-white text-2xl shadow-sm">
-                        ⚙️
-                    </div>
-                    <p class="text-sm font-bold leading-snug text-[#123F7A]">
-                        Proses<br>Pengolahan
-                    </p>
-                </div>
+                                <td
+                                    class="
+                                        px-5
+                                        py-4
+                                        font-semibold
+                                        text-slate-700
+                                    "
+                                >
+                                    Gabah (GKP)
+                                </td>
 
-                <div class="flex justify-center text-2xl text-slate-300">
-                    <span class="lg:hidden">↓</span>
-                    <span class="hidden lg:inline">→</span>
-                </div>
+                                <td class="px-5 py-4 w-48">
 
-                {{-- OUTPUT: BERAS / MENIR / BEKATUL --}}
-                <div class="flex-1 space-y-3">
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0.01"
+                                        name="kuantum_gabah"
+                                        x-model.number="gabah"
+                                        required
+                                        class="input"
+                                        placeholder="0.00"
+                                    >
 
-                    <div class="flex flex-wrap items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                        <span class="text-lg">🍚</span>
-                        <span class="w-24 shrink-0 text-sm font-semibold text-gray-700">Beras (HGL)</span>
-                        <div class="relative min-w-[120px] flex-1">
-                            <input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                name="kuantum_beras"
-                                x-model.number="beras"
-                                required
-                                class="input py-2 pr-10"
-                                placeholder="0"
-                            >
-                            <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-gray-400">kg</span>
-                        </div>
-                        <span
-                            class="w-24 shrink-0 rounded-lg bg-emerald-50 px-2 py-1.5 text-center text-xs font-bold text-emerald-700"
-                            x-text="'Rendemen ' + rendemen(beras) + '%'"
-                        ></span>
-                    </div>
+                                </td>
 
-                    <div class="flex flex-wrap items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                        <span class="text-lg">🌰</span>
-                        <span class="w-24 shrink-0 text-sm font-semibold text-gray-700">Menir</span>
-                        <div class="relative min-w-[120px] flex-1">
-                            <input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                name="kuantum_menir"
-                                x-model.number="menir"
-                                class="input py-2 pr-10"
-                                placeholder="0"
-                            >
-                            <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-gray-400">kg</span>
-                        </div>
-                        <span
-                            class="w-24 shrink-0 rounded-lg bg-amber-50 px-2 py-1.5 text-center text-xs font-bold text-amber-700"
-                            x-text="'Rendemen ' + rendemen(menir) + '%'"
-                        ></span>
-                    </div>
 
-                    <div class="flex flex-wrap items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                        <span class="text-lg">🟤</span>
-                        <span class="w-24 shrink-0 text-sm font-semibold text-gray-700">Bekatul</span>
-                        <div class="relative min-w-[120px] flex-1">
-                            <input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                name="kuantum_bekatul"
-                                x-model.number="bekatul"
-                                class="input py-2 pr-10"
-                                placeholder="0"
-                            >
-                            <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-gray-400">kg</span>
-                        </div>
-                        <span
-                            class="w-24 shrink-0 rounded-lg bg-orange-50 px-2 py-1.5 text-center text-xs font-bold text-orange-700"
-                            x-text="'Rendemen ' + rendemen(bekatul) + '%'"
-                        ></span>
-                    </div>
+                                <td
+                                    class="
+                                        px-5
+                                        py-4
+                                        font-semibold
+                                        text-slate-700
+                                    "
+                                >
+                                    Beras (HGL)
+                                </td>
+
+                                <td class="px-5 py-4 w-48">
+
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        name="kuantum_beras"
+                                        x-model.number="beras"
+                                        required
+                                        class="input"
+                                        placeholder="0.00"
+                                    >
+
+                                </td>
+
+
+                                <td
+                                    class="
+                                        px-5
+                                        py-4
+                                        font-semibold
+                                        text-[#F28C28]
+                                        whitespace-nowrap
+                                    "
+                                    x-text="rendemen(beras) + ' %'"
+                                ></td>
+
+                            </tr>
+
+
+                            {{-- MENIR --}}
+                            <tr class="hover:bg-slate-50/70 transition">
+
+                                <td
+                                    class="
+                                        px-5
+                                        py-4
+                                    "
+                                ></td>
+
+                                <td
+                                    class="
+                                        px-5
+                                        py-4
+                                    "
+                                ></td>
+
+                                <td
+                                    class="
+                                        px-5
+                                        py-4
+                                        font-semibold
+                                        text-slate-700
+                                    "
+                                >
+                                    Menir
+                                </td>
+
+                                <td class="px-5 py-4">
+
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        name="kuantum_menir"
+                                        x-model.number="menir"
+                                        class="input"
+                                        placeholder="0.00"
+                                    >
+
+                                </td>
+
+                                <td
+                                    class="
+                                        px-5
+                                        py-4
+                                        font-semibold
+                                        text-[#F28C28]
+                                    "
+                                    x-text="rendemen(menir) + ' %'"
+                                ></td>
+
+                            </tr>
+
+
+                            {{-- BEKATUL --}}
+                            <tr class="hover:bg-slate-50/70 transition">
+
+                                <td></td>
+
+                                <td></td>
+
+                                <td
+                                    class="
+                                        px-5
+                                        py-4
+                                        font-semibold
+                                        text-slate-700
+                                    "
+                                >
+                                    Bekatul
+                                </td>
+
+                                <td class="px-5 py-4">
+
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        name="kuantum_bekatul"
+                                        x-model.number="bekatul"
+                                        class="input"
+                                        placeholder="0.00"
+                                    >
+
+                                </td>
+
+                                <td
+                                    class="
+                                        px-5
+                                        py-4
+                                        font-semibold
+                                        text-[#F28C28]
+                                    "
+                                    x-text="rendemen(bekatul) + ' %'"
+                                ></td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
 
                 </div>
 
             </div>
 
-            {{-- INFORMASI --}}
-            <div class="mt-6 flex gap-3 rounded-xl border border-blue-100 bg-blue-50/60 p-4">
-                <span class="text-lg">ℹ️</span>
-                <ul class="list-disc space-y-1 pl-4 text-xs leading-relaxed text-slate-600">
-                    <li>Masukkan berat hasil pengolahan dalam satuan kilogram (kg).</li>
-                    <li>Nilai rendemen (%) di atas hanya pratinjau di sisi browser — nilai final selalu dihitung ulang oleh server saat disimpan.</li>
-                    <li>Pastikan data yang dimasukkan sudah sesuai dengan hasil penimbangan aktual.</li>
-                </ul>
+
+            <div
+                class="
+                    mt-4
+                    flex
+                    items-center
+                    gap-2
+                    text-xs
+                    text-slate-400
+                "
+            >
+                <span
+                    class="
+                        w-5
+                        h-5
+                        rounded-full
+                        bg-orange-50
+                        text-[#F28C28]
+                        flex
+                        items-center
+                        justify-center
+                        font-bold
+                    "
+                >
+                    i
+                </span>
+
+                Rendemen (%) dihitung otomatis oleh sistem.
+
             </div>
 
         </div>
 
+    </div>
 
-        {{-- =========================================================
-             SECTION 03 — INFORMASI GUDANG & MITRA
-        ========================================================== --}}
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
 
-            <div class="mb-6 flex items-center gap-3">
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#123F7A] text-base font-bold text-white">
+
+    {{-- =========================================================
+         03 + 04. PIHAK TERLIBAT & PENANDATANGAN
+    ========================================================== --}}
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+
+        {{-- =====================================================
+             03. PIHAK TERLIBAT
+        ====================================================== --}}
+        <div
+            class="
+                rounded-[28px]
+                bg-white/95
+                backdrop-blur
+                border
+                border-white
+                shadow-[0_15px_45px_rgba(8,47,99,0.08)]
+                overflow-hidden
+            "
+        >
+
+            <div
+                class="
+                    flex
+                    items-center
+                    gap-4
+                    px-7
+                    py-6
+                    border-b
+                    border-slate-100
+                "
+            >
+
+                <div
+                    class="
+                        w-11
+                        h-11
+                        rounded-2xl
+                        bg-[#082F63]
+                        text-white
+                        flex
+                        items-center
+                        justify-center
+                        font-semibold
+                    "
+                >
                     03
                 </div>
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-xl">
-                    🤝
-                </div>
+
                 <div>
-                    <h3 class="text-base font-bold text-gray-900">
-                        Informasi Gudang &amp; Mitra
-                    </h3>
-                    <p class="text-xs text-gray-500">
-                        Pilih gudang dan mitra pengolahan yang terkait dengan BA Rampung ini.
+
+                    <h2
+                        class="
+                            text-lg
+                            font-semibold
+                            text-[#082F63]
+                        "
+                    >
+                        Pihak yang Terlibat
+                    </h2>
+
+                    <p class="text-xs text-slate-400 mt-0.5">
+                        Tentukan gudang dan mitra pengolahan.
                     </p>
-                </div>
-            </div>
 
-            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-
-                <div>
-                    <label class="label">Gudang</label>
-
-                    <div class="relative">
-                        <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">🏠</span>
-                        <select
-                            name="gudang_id"
-                            required
-                            class="input appearance-none pl-10"
-                        >
-                            <option value="">Pilih Gudang</option>
-
-                            @foreach ($gudangs as $g)
-                                <option
-                                    value="{{ $g->id }}"
-                                    @selected(old('gudang_id') == $g->id)
-                                >
-                                    {{ $g->nama_gudang }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="label">Mitra Pengolahan</label>
-
-                    <div class="relative">
-                        <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">🤝</span>
-                        <select
-                            name="mitra_pengolahan_id"
-                            required
-                            class="input appearance-none pl-10"
-                        >
-                            <option value="">Pilih Mitra Pengolahan</option>
-
-                            @foreach ($mitras as $m)
-                                <option
-                                    value="{{ $m->id }}"
-                                    @selected(old('mitra_pengolahan_id') == $m->id)
-                                >
-                                    {{ $m->nama_mitra }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
                 </div>
 
             </div>
+
+
+            <div class="p-7 space-y-5">
+
+                {{-- GUDANG --}}
+                <div>
+
+                    <label class="label">
+                        Pihak Kesatu (Gudang)
+                    </label>
+
+                    <select
+                        name="gudang_id"
+                        required
+                        class="input"
+                    >
+
+                        <option value="">
+                            Pilih Gudang
+                        </option>
+
+                        @foreach ($gudangs as $g)
+
+                            <option
+                                value="{{ $g->id }}"
+                                @selected(old('gudang_id') == $g->id)
+                            >
+                                {{ $g->nama_gudang }}
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                </div>
+
+
+                {{-- MITRA --}}
+                <div>
+
+                    <label class="label">
+                        Pihak Kedua (Mitra Pengolahan)
+                    </label>
+
+                    <select
+                        name="mitra_pengolahan_id"
+                        required
+                        class="input"
+                    >
+
+                        <option value="">
+                            Pilih Mitra Pengolahan
+                        </option>
+
+                        @foreach ($mitras as $m)
+
+                            <option
+                                value="{{ $m->id }}"
+                                @selected(old('mitra_pengolahan_id') == $m->id)
+                            >
+                                {{ $m->nama_mitra }}
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                </div>
+
+
+                {{-- INFO STATUS --}}
+                <div
+                    class="
+                        rounded-2xl
+                        bg-[#F4F7FB]
+                        border
+                        border-blue-100
+                        p-4
+                    "
+                >
+
+                    <div class="flex items-start gap-3">
+
+                        <div
+                            class="
+                                w-9
+                                h-9
+                                rounded-xl
+                                bg-white
+                                text-[#082F63]
+                                flex
+                                items-center
+                                justify-center
+                                shadow-sm
+                                shrink-0
+                            "
+                        >
+                            ✓
+                        </div>
+
+                        <div>
+
+                            <p
+                                class="
+                                    text-sm
+                                    font-semibold
+                                    text-[#082F63]
+                                "
+                            >
+                                Status BA
+                            </p>
+
+                            <p
+                                class="
+                                    text-xs
+                                    text-slate-500
+                                    mt-1
+                                    leading-relaxed
+                                "
+                            >
+                                Status dokumen akan ditentukan otomatis
+                                berdasarkan proses penyimpanan atau pengiriman
+                                verifikasi.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
 
-        {{-- =========================================================
-             SECTION 04 — PENANDATANGANAN & VERIFIKASI
-             Field ini tidak ada di mockup, tapi TETAP DIPERTAHANKAN
-             sesuai instruksi (tidak boleh menghapus field existing).
-             Catatan: duplikat input "Nama Penandatangan" pada file
-             lama (dua input dengan name yang sama) digabung jadi
-             satu field bersih — tidak ada name/value yang hilang.
-        ========================================================== --}}
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
 
-            <div class="mb-6 flex items-center gap-3">
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#123F7A] text-base font-bold text-white">
+        {{-- =====================================================
+             04. PENANDATANGAN
+        ====================================================== --}}
+        <div
+            class="
+                rounded-[28px]
+                bg-white/95
+                backdrop-blur
+                border
+                border-white
+                shadow-[0_15px_45px_rgba(8,47,99,0.08)]
+                overflow-hidden
+            "
+        >
+
+            <div
+                class="
+                    flex
+                    items-center
+                    gap-4
+                    px-7
+                    py-6
+                    border-b
+                    border-slate-100
+                "
+            >
+
+                <div
+                    class="
+                        w-11
+                        h-11
+                        rounded-2xl
+                        bg-[#F28C28]
+                        text-white
+                        flex
+                        items-center
+                        justify-center
+                        font-semibold
+                    "
+                >
                     04
                 </div>
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-xl">
-                    ✍️
-                </div>
+
                 <div>
-                    <h3 class="text-base font-bold text-gray-900">
-                        Penandatanganan &amp; Verifikasi
-                    </h3>
-                    <p class="text-xs text-gray-500">
-                        Penandatangan Pihak Gudang dan pimpinan cabang yang mengetahui.
+
+                    <h2
+                        class="
+                            text-lg
+                            font-semibold
+                            text-[#082F63]
+                        "
+                    >
+                        Penandatanganan
+                    </h2>
+
+                    <p class="text-xs text-slate-400 mt-0.5">
+                        Data penandatangan pihak kesatu.
                     </p>
+
                 </div>
+
             </div>
 
-            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
 
+            <div class="p-7 space-y-5">
+
+                {{-- NAMA PENANDATANGAN --}}
                 <div>
-                    <label class="label">Nama Penandatangan</label>
+
+                    <label class="label">
+                        Nama Penandatangan
+                    </label>
+
                     <input
-                        list="pegawai-list"
                         type="text"
                         name="nama_penandatangan"
                         value="{{ old('nama_penandatangan') }}"
                         required
                         class="input"
-                        placeholder="Pilih atau ketik nama pegawai"
+                        placeholder="Masukkan nama penandatangan"
                     >
+
                 </div>
 
+
+                {{-- JABATAN --}}
                 <div>
-                    <label class="label">Jabatan</label>
+
+                    <label class="label">
+                        Jabatan
+                    </label>
+
                     <input
                         type="text"
                         name="jabatan_penandatangan"
                         value="{{ old('jabatan_penandatangan', 'Pengelola Gudang') }}"
                         required
                         class="input"
+                        placeholder="Masukkan jabatan"
                     >
+
                 </div>
 
-                <div class="md:col-span-2">
-                    <label class="label">Pimpinan Cabang BULOG (Mengetahui)</label>
 
-                    <div class="relative">
-                        <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">👔</span>
-                        <select
-                            name="pimpinan_cabang_id"
-                            required
-                            class="input appearance-none pl-10"
+                {{-- MENGETAHUI --}}
+                <div
+                    class="
+                        pt-4
+                        border-t
+                        border-slate-100
+                    "
+                >
+
+                    <div class="flex items-center gap-3 mb-4">
+
+                        <div
+                            class="
+                                w-9
+                                h-9
+                                rounded-xl
+                                bg-orange-50
+                                text-[#F28C28]
+                                flex
+                                items-center
+                                justify-center
+                            "
                         >
-                            <option value="">Pilih Pimpinan Cabang</option>
+                            ✓
+                        </div>
 
-                            @foreach ($pimpinans as $p)
-                                <option
-                                    value="{{ $p->id }}"
-                                    @selected(old('pimpinan_cabang_id') == $p->id)
-                                >
-                                    {{ $p->nama }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div>
+
+                            <h3
+                                class="
+                                    font-semibold
+                                    text-[#082F63]
+                                "
+                            >
+                                05. Mengetahui
+                            </h3>
+
+                            <p
+                                class="
+                                    text-xs
+                                    text-slate-400
+                                "
+                            >
+                                Pimpinan Cabang BULOG
+                            </p>
+
+                        </div>
+
                     </div>
+
+
+                    <label class="label">
+                        Pimpinan Cabang BULOG
+                    </label>
+
+                    <select
+                        name="pimpinan_cabang_id"
+                        required
+                        class="input"
+                    >
+
+                        <option value="">
+                            Pilih Pimpinan Cabang
+                        </option>
+
+                        @foreach ($pimpinans as $p)
+
+                            <option
+                                value="{{ $p->id }}"
+                                @selected(old('pimpinan_cabang_id') == $p->id)
+                            >
+                                {{ $p->nama }}
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
                 </div>
 
             </div>
+
         </div>
 
-
-        {{-- =========================================================
-             CATATAN (OPSIONAL)
-        ========================================================== --}}
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-            <label class="label">Catatan (opsional)</label>
-            <textarea
-                name="catatan"
-                rows="2"
-                class="input"
-            >{{ old('catatan') }}</textarea>
-        </div>
+    </div>
 
 
-        {{-- =========================================================
-             ACTION BAR
-             name="action" value="draft"/"submit" DIPERTAHANKAN PERSIS
-             (fungsi Simpan Draft & Simpan+Kirim Verifikasi existing).
-        ========================================================== --}}
-        <div class="flex flex-col-reverse gap-3 pb-2 sm:flex-row sm:items-center sm:justify-between">
 
-            <a
-                href="{{ route('ba-rampung.index') }}"
-                class="inline-flex items-center justify-center gap-2 rounded-xl border border-[#123F7A] bg-white px-5 py-3 text-sm font-bold text-[#123F7A] transition hover:bg-blue-50"
+    {{-- =========================================================
+         06. CATATAN
+    ========================================================== --}}
+    <div
+        class="
+            rounded-[28px]
+            bg-white/95
+            backdrop-blur
+            border
+            border-white
+            shadow-[0_15px_45px_rgba(8,47,99,0.08)]
+            p-7
+        "
+    >
+
+        <div class="flex items-center gap-3 mb-4">
+
+            <div
+                class="
+                    w-10
+                    h-10
+                    rounded-xl
+                    bg-slate-100
+                    text-[#082F63]
+                    flex
+                    items-center
+                    justify-center
+                "
             >
-                ✕ Batal
-            </a>
+                📝
+            </div>
 
-            <div class="flex flex-col gap-3 sm:flex-row">
+            <div>
 
-                <button
-                    type="submit"
-                    name="action"
-                    value="draft"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                <h3
+                    class="
+                        font-semibold
+                        text-[#082F63]
+                    "
                 >
-                    💾 Simpan Draft
-                </button>
+                    Catatan
+                </h3>
 
-                <button
-                    type="submit"
-                    name="action"
-                    value="submit"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#123F7A] px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-[#0d3263]"
-                >
-                    ✓ Simpan BA Rampung
-                </button>
+                <p class="text-xs text-slate-400">
+                    Tambahkan catatan jika diperlukan.
+                </p>
 
             </div>
 
         </div>
 
-    </form>
 
-</div>
+        <textarea
+            name="catatan"
+            rows="4"
+            class="input resize-none"
+            placeholder="Tulis catatan tambahan..."
+        >{{ old('catatan') }}</textarea>
+
+    </div>
+
+
+
+    {{-- =========================================================
+         ACTION BUTTON
+    ========================================================== --}}
+    <div
+        class="
+            flex
+            flex-col-reverse
+            sm:flex-row
+            sm:items-center
+            sm:justify-between
+            gap-4
+            pt-2
+        "
+    >
+
+        <a
+            href="{{ route('ba-rampung.index') }}"
+            class="
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                rounded-2xl
+                border
+                border-slate-200
+                bg-white
+                px-6
+                py-3.5
+                text-sm
+                font-semibold
+                text-slate-600
+                shadow-sm
+                transition
+                hover:border-[#082F63]
+                hover:text-[#082F63]
+            "
+        >
+            ← Kembali
+        </a>
+
+
+        <div
+            class="
+                flex
+                flex-col
+                sm:flex-row
+                gap-3
+            "
+        >
+
+            <button
+                type="submit"
+                name="action"
+                value="draft"
+                class="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-2xl
+                    border
+                    border-[#082F63]
+                    bg-white
+                    px-6
+                    py-3.5
+                    text-sm
+                    font-semibold
+                    text-[#082F63]
+                    shadow-sm
+                    transition
+                    hover:bg-[#082F63]
+                    hover:text-white
+                "
+            >
+                💾
+                Simpan Draft
+            </button>
+
+
+            <button
+                type="submit"
+                name="action"
+                value="submit"
+                class="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-2xl
+                    bg-[#F28C28]
+                    px-7
+                    py-3.5
+                    text-sm
+                    font-semibold
+                    text-white
+                    shadow-[0_8px_25px_rgba(242,140,40,0.25)]
+                    transition
+                    hover:bg-[#e67d18]
+                    hover:-translate-y-0.5
+                "
+            >
+                🖨️
+                Simpan &amp; Kirim Verifikasi
+            </button>
+
+        </div>
+
+    </div>
+
+
+</form>
 
 @endsection

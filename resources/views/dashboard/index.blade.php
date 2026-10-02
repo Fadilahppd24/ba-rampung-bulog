@@ -48,94 +48,10 @@
                     Pantau dan kelola proses pengolahan gabah menjadi beras
                     hasil giling dengan lebih mudah, cepat, dan terintegrasi.
                 </p>
-
-                <div class="mt-8 flex flex-wrap gap-3">
-
-                    <a
-                        href="{{ route('ba-rampung.create') }}"
-                        class="
-                            inline-flex items-center gap-3
-                            rounded-full
-                            bg-white
-                            px-6 py-3
-                            text-sm font-semibold
-                            text-[#123F7A]
-                            shadow-lg
-                            hover:bg-orange-50
-                            transition
-                        "
-                    >
-                        <span>＋</span>
-                        Buat BA Rampung
-                        <span class="text-lg">→</span>
-                    </a>
-
-                    <a
-                        href="{{ route('ba-rampung.index') }}"
-                        class="
-                            inline-flex items-center
-                            rounded-full
-                            border border-white/40
-                            bg-white/10
-                            px-6 py-3
-                            text-sm font-medium
-                            text-white
-                            backdrop-blur
-                            hover:bg-white/20
-                            transition
-                        "
-                    >
-                        Lihat Data BA
-                    </a>
-
-                </div>
-
             </div>
 
 
-            {{-- QUOTE --}}
-            <div
-                class="
-                    quote-box
-                    hero-quote
-                    hidden
-                    lg:block
-                    rounded-3xl
-                    p-6
-                    text-white
-                "
-            >
 
-                <div class="text-3xl opacity-70 dashboard-display">
-                    “
-                </div>
-
-                <p
-                    class="
-                        dashboard-display
-                        text-2xl
-                        leading-tight
-                        mt-1
-                    "
-                >
-                    Pangan hari ini,
-                    <br>
-                    untuk masa depan
-                    <br>
-                    yang lebih baik.
-                </p>
-
-                <div class="mt-5 h-px bg-white/30"></div>
-
-                <p class="mt-4 text-sm font-semibold">
-                    Perum BULOG
-                </p>
-
-                <p class="text-xs text-white/60 mt-1">
-                    Mengantarkan Kebaikan
-                </p>
-
-            </div>
 
         </div>
 
