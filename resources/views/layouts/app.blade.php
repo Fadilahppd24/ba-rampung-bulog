@@ -392,29 +392,15 @@
                     </a>
 
 
-                    {{-- ADMINISTRASI --}}
+                    {{-- PENGATURAN --}}
 
                     @if(auth()->user()?->isAdminKantor())
-                        <div class="relative group">
-                            <a href="#" class="dashboard-nav-link inline-flex items-center gap-1">
-                                Administrasi
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="m6 9 6 6 6-6"/>
-                                </svg>
-                            </a>
-
-                            <div class="absolute right-0 top-full z-[100] hidden min-w-[220px] pt-2 group-hover:block">
-                                <div class="rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
-                                    <a href="{{ route('pengaturan.umum') }}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#123F7A]">Pengaturan Umum</a>
-                                    @if(Route::has('users.index'))
-                                        <a href="{{ route('users.index') }}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#123F7A]">Manajemen User</a>
-                                    @endif
-                                    @if(Route::has('aktivitas.index'))
-                                        <a href="{{ route('aktivitas.index') }}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#123F7A]">Log Aktivitas</a>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
+                        <a
+                            href="{{ route('pengaturan.umum') }}"
+                            class="dashboard-nav-link {{ request()->routeIs('pengaturan.*') ? 'dashboard-nav-active' : '' }}"
+                        >
+                            Pengaturan
+                        </a>
                     @endif
 
                 </nav>
@@ -719,7 +705,7 @@
                             href="{{ route('pengaturan.umum') }}"
                             class="mobile-dashboard-link"
                         >
-                            Administrasi
+                            Pengaturan
                         </a>
 
                     @endif
