@@ -51,7 +51,183 @@
                 background-attachment: scroll;
             }
         }
+
+        /* =========================================================
+         * DARK / LIGHT MODE
+         * Hanya mengubah tampilan. Backend, route, form dan database
+         * tidak diubah.
+         * ========================================================= */
+
+        html {
+            color-scheme: light;
+        }
+
+        html.dark-theme {
+            color-scheme: dark;
+        }
+
+        html.dark-theme body {
+            background-color: #071a2e !important;
+            color: #e7eef7 !important;
+        }
+
+        html.dark-theme .ba-rampung-fixed-bg {
+            background-image:
+                linear-gradient(
+                    180deg,
+                    rgba(3, 17, 33, 0.28) 0%,
+                    rgba(3, 17, 33, 0.48) 48%,
+                    rgba(3, 17, 33, 0.88) 100%
+                ),
+                url('/images/dashboard-bulog.jpg');
+        }
+
+        /* Card putih */
+        html.dark-theme .bg-white {
+            background-color: rgba(10, 31, 54, 0.88) !important;
+            color: #e7eef7;
+        }
+
+        html.dark-theme [class~="bg-white/80"] {
+            background-color: rgba(7, 26, 46, 0.82) !important;
+        }
+
+        html.dark-theme [class~="bg-white/95"] {
+            background-color: rgba(7, 26, 46, 0.96) !important;
+        }
+
+        /* Teks */
+        html.dark-theme .text-gray-900,
+        html.dark-theme .text-gray-800,
+        html.dark-theme .text-gray-700,
+        html.dark-theme .text-slate-900,
+        html.dark-theme .text-slate-800,
+        html.dark-theme .text-slate-700,
+        html.dark-theme .text-slate-600 {
+            color: #e7eef7 !important;
+        }
+
+        html.dark-theme .text-slate-500,
+        html.dark-theme .text-gray-500,
+        html.dark-theme .text-slate-400,
+        html.dark-theme .text-gray-400 {
+            color: #9fb1c7 !important;
+        }
+
+        /* Border */
+        html.dark-theme .border-slate-200,
+        html.dark-theme .border-gray-200 {
+            border-color: rgba(148, 163, 184, 0.20) !important;
+        }
+
+        /* Dropdown */
+        html.dark-theme .group-hover\:block > div,
+        html.dark-theme .absolute .bg-white {
+            background-color: #0b2949 !important;
+            border-color: rgba(148, 163, 184, 0.20) !important;
+        }
+
+        html.dark-theme .hover\:bg-slate-50:hover,
+        html.dark-theme .bg-slate-50 {
+            background-color: rgba(148, 163, 184, 0.10) !important;
+        }
+
+        /* Input / select / textarea */
+        html.dark-theme input,
+        html.dark-theme select,
+        html.dark-theme textarea {
+            background-color: rgba(5, 24, 43, 0.78) !important;
+            color: #e7eef7 !important;
+            border-color: rgba(148, 163, 184, 0.28) !important;
+        }
+
+        html.dark-theme input::placeholder,
+        html.dark-theme textarea::placeholder {
+            color: #7890aa !important;
+        }
+
+        html.dark-theme option {
+            background-color: #0b2949;
+            color: #e7eef7;
+        }
+
+        /* Tabel */
+        html.dark-theme table {
+            color: #e7eef7;
+        }
+
+        html.dark-theme thead,
+        html.dark-theme [class*="bg-gray-50"] {
+            background-color: rgba(148, 163, 184, 0.06) !important;
+        }
+
+        html.dark-theme tr {
+            border-color: rgba(148, 163, 184, 0.14) !important;
+        }
+
+        /* Footer */
+        html.dark-theme footer {
+            background-color: rgba(7, 26, 46, 0.88) !important;
+            border-color: rgba(148, 163, 184, 0.16) !important;
+            color: #9fb1c7 !important;
+        }
+
+        /* Tombol mode */
+        .theme-toggle {
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            border: 1px solid rgba(255,255,255,.35);
+            background: rgba(255,255,255,.12);
+            color: #fff;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: .2s ease;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,.22);
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle .theme-icon-sun {
+            display: inline-flex;
+        }
+
+        .theme-toggle .theme-icon-moon {
+            display: none;
+        }
+
+        html.dark-theme .theme-toggle .theme-icon-sun {
+            display: none;
+        }
+
+        html.dark-theme .theme-toggle .theme-icon-moon {
+            display: inline-flex;
+        }
+
+        html.dark-theme .theme-toggle {
+            border-color: rgba(255,255,255,.20);
+            background: rgba(255,255,255,.10);
+        }
+
     </style>
+
+
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('bulog-theme') === 'dark') {
+                    document.documentElement.classList.add('dark-theme');
+                }
+            } catch (e) {}
+        })();
+    </script>
 
 </head>
 
@@ -257,60 +433,31 @@
                 >
 
 
-                    {{-- SEARCH --}}
 
-                    <div
-                        class="
-                            flex
-                            items-center
-                            gap-2
-                            rounded-full
-                            border
-                            border-white/40
-                            bg-white/10
-                            backdrop-blur-md
-                            px-4
-                            py-2
-                            w-[215px]
-                        "
+
+
+
+                    {{-- THEME TOGGLE --}}
+
+                    <button
+                        type="button"
+                        id="themeToggle"
+                        class="theme-toggle"
+                        aria-label="Ganti mode tampilan"
+                        title="Ganti mode tampilan"
                     >
-
-                        <svg
-                            class="h-4 w-4 text-white/80"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <circle
-                                cx="11"
-                                cy="11"
-                                r="7"
-                                stroke-width="2"
-                            />
-
-                            <path
-                                d="m20 20-4-4"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                            />
-                        </svg>
-
-                        <input
-                            type="text"
-                            placeholder="Cari data, gudang, atau mitra..."
-                            class="
-                                w-full
-                                bg-transparent
-                                text-xs
-                                text-white
-                                placeholder:text-white/60
-                                outline-none
-                            "
-                        >
-
-                    </div>
-
-
+                        <span class="theme-icon-sun" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <circle cx="12" cy="12" r="4"></circle>
+                                <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+                            </svg>
+                        </span>
+                        <span class="theme-icon-moon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.7 6.7 0 0 0 21 12.8Z"></path>
+                            </svg>
+                        </span>
+                    </button>
 
                     {{-- NOTIFICATION --}}
 
@@ -512,6 +659,29 @@
                     backdrop-blur-xl
                 "
             >
+
+                <div class="mb-3 flex items-center justify-between rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-white">
+                    <span class="text-sm font-semibold">Mode Tampilan</span>
+                    <button
+                        type="button"
+                        id="themeToggleMobile"
+                        class="theme-toggle"
+                        aria-label="Ganti mode tampilan"
+                        title="Ganti mode tampilan"
+                    >
+                        <span class="theme-icon-sun" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <circle cx="12" cy="12" r="4"></circle>
+                                <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+                            </svg>
+                        </span>
+                        <span class="theme-icon-moon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.7 6.7 0 0 0 21 12.8Z"></path>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
 
                 <div class="space-y-1">
 
@@ -818,6 +988,31 @@
 
 @endif
 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const root = document.documentElement;
+            const toggles = [
+                document.getElementById('themeToggle'),
+                document.getElementById('themeToggleMobile')
+            ].filter(Boolean);
+
+            function setTheme(theme) {
+                root.classList.toggle('dark-theme', theme === 'dark');
+
+                try {
+                    localStorage.setItem('bulog-theme', theme);
+                } catch (e) {}
+            }
+
+            toggles.forEach(function (toggle) {
+                toggle.addEventListener('click', function () {
+                    const isDark = root.classList.contains('dark-theme');
+                    setTheme(isDark ? 'light' : 'dark');
+                });
+            });
+        });
+    </script>
 
 </body>
 

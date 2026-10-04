@@ -4,12 +4,625 @@
 
 @section('content')
 
-<div class="space-y-6">
+<style>
+    /* =========================================================
+       MASTER DATA — GUDANG : LIGHT / DARK MODE + ACCORDION
+       Tema sama dengan halaman Daftar BA Rampung.
+       Hanya tampilan; data, route, dan aksi tidak diubah.
+       ========================================================= */
+
+    .gd-page {
+        --ba-overlay-top: rgba(7, 20, 38, .62);
+        --ba-overlay-bottom: rgba(7, 20, 38, .50);
+        position: relative;
+    }
+
+    /* Overlay mode gelap (gambar latar dari layout tetap terlihat) */
+    .gd-page::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background: linear-gradient(180deg, var(--ba-overlay-top), var(--ba-overlay-bottom));
+        opacity: 0;
+        transition: opacity .3s ease;
+    }
+
+    .gd-page > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ---------------- LIGHT MODE ---------------- */
+
+    .gd-page .gd-panel,
+    .gd-page .gd-card {
+        position: relative;
+        background: rgba(250,251,253,.96);
+        border-color: rgba(15,43,82,.07);
+        transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    .gd-page .gd-panel {
+        box-shadow: 0 12px 35px rgba(15,23,42,.09);
+    }
+
+    .gd-page .gd-panel::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 3px;
+        z-index: 2;
+        pointer-events: none;
+        background: linear-gradient(90deg, #F28C28 0, #F28C28 84px, #123F7A 84px, rgba(18,63,122,.85) 100%);
+    }
+
+    .gd-page .gd-panel .dashboard-kicker::before {
+        content: "";
+        display: inline-block;
+        width: 18px;
+        height: 2px;
+        margin-right: .6rem;
+        vertical-align: middle;
+        border-radius: 2px;
+        background: #F28C28;
+    }
+
+    .gd-page input:focus,
+    .gd-page select:focus {
+        border-color: #F28C28 !important;
+        box-shadow: 0 0 0 3px rgba(242,140,40,.18) !important;
+    }
+
+    /* ---- Accordion ---- */
+    .gd-acc {
+        display: flex;
+        flex-direction: column;
+        gap: .75rem;
+        padding: 1.25rem 1.5rem 1.5rem;
+    }
+
+    .gd-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .75rem;
+        flex-wrap: wrap;
+    }
+
+    .gd-ghost-btn {
+        border: 1px solid #D9E2EC;
+        border-radius: .7rem;
+        background: transparent;
+        padding: .4rem .85rem;
+        font-size: .75rem;
+        font-weight: 700;
+        color: #123F7A;
+        transition: border-color .2s ease, color .2s ease, background-color .2s ease;
+    }
+
+    .gd-ghost-btn:hover {
+        border-color: #F28C28;
+        color: #C2610A;
+        background: rgba(242,140,40,.08);
+    }
+
+    .gd-group {
+        overflow: hidden;
+        border: 1px solid #E3EAF3;
+        border-radius: 1.1rem;
+        background: #fff;
+        transition: border-color .25s ease, box-shadow .25s ease;
+    }
+
+    .gd-group.is-open {
+        border-color: rgba(242,140,40,.50);
+        box-shadow: 0 10px 28px rgba(15,23,42,.07);
+    }
+
+    .gd-group-head {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: .9rem;
+        padding: 1rem 1.15rem;
+        text-align: left;
+        background: transparent;
+        cursor: pointer;
+        transition: background-color .2s ease;
+    }
+
+    .gd-group-head:hover {
+        background: rgba(18,63,122,.035);
+    }
+
+    .gd-group-head:focus-visible {
+        outline: 2px solid #F28C28;
+        outline-offset: -2px;
+    }
+
+    .gd-chev {
+        display: inline-flex;
+        height: 1.85rem;
+        width: 1.85rem;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: .65rem;
+        background: #EEF3FA;
+        color: #123F7A;
+        transition: transform .25s ease, background-color .2s ease, color .2s ease;
+    }
+
+    .gd-group.is-open .gd-chev {
+        transform: rotate(90deg);           /* ▶ tertutup  →  ▼ terbuka */
+        background: #F28C28;
+        color: #fff;
+    }
+
+    .gd-ware-icon {
+        display: inline-flex;
+        height: 2.5rem;
+        width: 2.5rem;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: .85rem;
+        background: #EAF1FB;
+        color: #123F7A;
+    }
+
+    .gd-group-name {
+        font-weight: 700;
+        color: #0B2545;
+        overflow-wrap: anywhere;
+    }
+
+    .gd-badge-utama {
+        border-radius: 999px;
+        background: #EAF1FB;
+        padding: .2rem .65rem;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: #123F7A;
+    }
+
+    .gd-count {
+        display: inline-flex;
+        flex-shrink: 0;
+        align-items: baseline;
+        gap: .35rem;
+        border-radius: 999px;
+        background: rgba(242,140,40,.12);
+        padding: .3rem .8rem;
+        font-size: .85rem;
+        font-weight: 800;
+        color: #B45309;
+    }
+
+    .gd-count-label {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+    }
+
+    /* animasi buka / tutup (tanpa plugin) */
+    .gd-panel-wrap {
+        display: grid;
+        grid-template-rows: 1fr;
+        transition: grid-template-rows .3s ease;
+    }
+
+    .gd-panel-wrap.is-collapsed {
+        grid-template-rows: 0fr;
+    }
+
+    .gd-panel-inner {
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .gd-panel-wrap.is-collapsed .gd-panel-inner {
+        visibility: hidden;
+        transition: visibility 0s linear .3s;
+    }
+
+    .gd-filial-list {
+        border-top: 1px solid #E3EAF3;
+        background: #F8FAFC;
+    }
+
+    .gd-empty-filial {
+        padding: 1.25rem 1.5rem;
+        font-size: .8rem;
+        color: #94A3B8;
+    }
+
+    /* baris filial */
+    .gd-cols,
+    .gd-row {
+        display: grid;
+        align-items: center;
+        gap: .6rem 1rem;
+    }
+
+    .gd-cols {
+        display: none;
+        padding: .7rem 1.15rem;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: #64748B;
+        background: #F1F5FA;
+        border-bottom: 2px solid rgba(242,140,40,.28);
+    }
+
+    .gd-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: .95rem 1.15rem;
+        border-top: 1px solid #E9EEF5;
+        transition: background-color .15s ease;
+    }
+
+    .gd-filial-list > .gd-row:first-of-type {
+        border-top: 0;
+    }
+
+    .gd-row:hover {
+        background: #F2F6FB;
+        box-shadow: inset 3px 0 0 #F28C28;
+    }
+
+    .gd-cell {
+        min-width: 0;
+        font-size: .875rem;
+    }
+
+    .gd-cell[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: .15rem;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: #94A3B8;
+    }
+
+    .gd-no {
+        display: none;
+        color: #94A3B8;
+    }
+
+    .gd-nama {
+        grid-column: 1 / -1;
+    }
+
+    .gd-aksi {
+        grid-column: 1 / -1;
+    }
+
+    @media (min-width: 640px) {
+        .gd-row {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (min-width: 1024px) {
+
+        .gd-cols,
+        .gd-row {
+            grid-template-columns: 2.25rem 6.5rem minmax(0, 2.2fr) minmax(0, 1fr) minmax(0, 1fr) 7.5rem 6rem 9rem;
+        }
+
+        .gd-cols {
+            display: grid;
+        }
+
+        .gd-no {
+            display: block;
+        }
+
+        .gd-nama,
+        .gd-aksi {
+            grid-column: auto;
+        }
+
+        .gd-cell[data-label]::before {
+            display: none;
+        }
+    }
+
+    @media (max-width: 639px) {
+        .gd-acc {
+            padding: 1rem;
+        }
+
+        .gd-group-head {
+            padding: .85rem .9rem;
+            gap: .65rem;
+        }
+
+        .gd-ware-icon {
+            display: none;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .gd-panel-wrap,
+        .gd-chev,
+        .gd-group,
+        .gd-row {
+            transition: none;
+        }
+    }
+
+
+    /* ---------------- DARK MODE ----------------
+       Aktif jika .gd-page diberi class "is-dark" oleh script di bawah
+       (mengikuti mode gelap layout) atau jika penanda tema gelap umum
+       ada di <html>/<body>. Semua aturan terkunci di dalam .gd-page,
+       sehingga mode terang tidak terpengaruh. Background image dari
+       layout TIDAK diganti — hanya diberi overlay. */
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page)::before {
+        opacity: 1;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) {
+        color: #E5E7EB;
+        color-scheme: dark;
+    }
+
+    /* hero */
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-hero {
+        background-color: rgba(8,24,46,.50) !important;
+        border-color: rgba(148,163,184,.20) !important;
+        box-shadow: 0 20px 60px rgba(0,0,0,.35) !important;
+    }
+
+    /* card & panel */
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-panel,
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-card {
+        background: rgba(16,28,45,.95) !important;
+        border-color: #263B55 !important;
+        box-shadow: 0 14px 36px rgba(0,0,0,.30) !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-panel::before {
+        background: linear-gradient(90deg, #F28C28 0, #F28C28 84px, rgba(96,165,250,.55) 84px, rgba(96,165,250,.10) 100%);
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .border-slate-100,
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .border-slate-200,
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .border-slate-200\/80 {
+        border-color: #263B55 !important;
+    }
+
+    /* teks */
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .text-\[\#0B2545\] {
+        color: #F8FAFC !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .text-\[\#123F7A\] {
+        color: #93C5FD !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-card .text-3xl.text-\[\#123F7A\] {
+        color: #F8FAFC !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .text-slate-300,
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .text-slate-400,
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .text-slate-500 {
+        color: #94A3B8 !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .text-slate-600,
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .text-slate-700 {
+        color: #E2E8F0 !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .text-emerald-600 { color: #6EE7B7 !important; }
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .text-amber-600   { color: #FCD34D !important; }
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .text-indigo-600  { color: #A5B4FC !important; }
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .text-orange-600  { color: #FDBA74 !important; }
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .text-red-500     { color: #FCA5A5 !important; }
+
+    /* permukaan terang lain */
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .bg-white,
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .bg-slate-50 {
+        background-color: #101C2D !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .bg-blue-50   { background-color: rgba(96,165,250,.14) !important; }
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .bg-indigo-50 { background-color: rgba(129,140,248,.16) !important; }
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .bg-emerald-50{ background-color: rgba(52,211,153,.14) !important; }
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .bg-amber-50  { background-color: rgba(245,158,11,.16) !important; }
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .bg-orange-50 { background-color: rgba(242,140,40,.16) !important; }
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .bg-red-50    { background-color: rgba(239,68,68,.16) !important; }
+
+    /* form */
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) label {
+        color: #94A3B8 !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) input[type="text"],
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) select {
+        background-color: #111D2E !important;
+        border-color: #2B405A !important;
+        color: #F8FAFC !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) input[type="text"]:focus,
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) select:focus {
+        background-color: #0F1A2B !important;
+        border-color: #F28C28 !important;
+        box-shadow: 0 0 0 3px rgba(242,140,40,.22) !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) input::placeholder {
+        color: #94A3B8 !important;
+        opacity: 1;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) option {
+        background: #101C2D;
+        color: #F8FAFC;
+    }
+
+    /* tombol */
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .bg-\[\#123F7A\] {
+        background-color: #1F5AA6 !important;
+        color: #fff !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .hover\:bg-\[\#0d3263\]:hover {
+        background-color: #F28C28 !important;
+        color: #fff !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) a.bg-white,
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) a.bg-white.hover\:bg-slate-50 {
+        background-color: transparent !important;
+        border-color: #2B405A !important;
+        color: #E2E8F0 !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .hover\:bg-slate-50:hover {
+        background-color: rgba(255,255,255,.06) !important;
+    }
+
+    /* tombol aksi (lihat / edit / status) */
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .hover\:bg-\[\#123F7A\]:hover { background-color: #1F5AA6 !important; }
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .hover\:bg-orange-500:hover   { background-color: #F28C28 !important; }
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .hover\:bg-red-500:hover      { background-color: #EF4444 !important; }
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .hover\:bg-emerald-500:hover  { background-color: #10B981 !important; }
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .hover\:text-white:hover      { color: #fff !important; }
+
+    /* accordion */
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-ghost-btn {
+        border-color: #2B405A;
+        color: #93C5FD;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-ghost-btn:hover {
+        border-color: #F28C28;
+        color: #fff;
+        background: rgba(242,140,40,.14);
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-group {
+        background: #101C2D;
+        border-color: #263B55;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-group.is-open {
+        border-color: rgba(242,140,40,.55);
+        box-shadow: 0 10px 28px rgba(0,0,0,.35);
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-group-head:hover {
+        background: rgba(96,165,250,.07);
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-chev {
+        background: rgba(96,165,250,.14);
+        color: #93C5FD;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-group.is-open .gd-chev {
+        background: #F28C28;
+        color: #fff;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-ware-icon {
+        background: rgba(96,165,250,.14);
+        color: #93C5FD;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-group-name {
+        color: #F8FAFC;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-badge-utama {
+        background: rgba(96,165,250,.14);
+        color: #93C5FD;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-count {
+        background: rgba(242,140,40,.16);
+        color: #FDBA74;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-filial-list {
+        background: #132238;
+        border-top-color: #263B55;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-cols {
+        background: rgba(11,23,40,.55);
+        color: #94A3B8;
+        border-bottom-color: rgba(242,140,40,.35);
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-row {
+        border-top-color: rgba(148,163,184,.14);
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-row:hover {
+        background: rgba(255,255,255,.04);
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-no,
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-cell[data-label]::before,
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-empty-filial {
+        color: #94A3B8;
+    }
+
+    /* badge status (x-status-badge): warna status dipertahankan */
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) .gd-status > * {
+        background-color: rgba(255,255,255,.08) !important;
+        background-color: color-mix(in srgb, currentColor 18%, transparent) !important;
+        border-color: color-mix(in srgb, currentColor 40%, transparent) !important;
+        filter: brightness(1.6) saturate(1.1);
+    }
+
+    /* pagination */
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) nav[role="navigation"] a,
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) nav[role="navigation"] span[aria-current] > span,
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) nav[role="navigation"] span[aria-disabled] > span {
+        background-color: #101C2D !important;
+        border-color: rgba(148,163,184,.22) !important;
+        color: #CBD5E1 !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) nav[role="navigation"] a:hover {
+        background-color: rgba(242,140,40,.14) !important;
+        border-color: #F28C28 !important;
+        color: #fff !important;
+    }
+
+    :is(.gd-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .gd-page) nav[role="navigation"] span[aria-current] > span {
+        background-color: #1F5AA6 !important;
+        color: #fff !important;
+    }
+</style>
+
+<div class="gd-page space-y-6">
 
     {{-- =========================================================
          HERO / HEADER
     ========================================================== --}}
-    <section class="relative overflow-hidden rounded-[2rem] border border-white/20 bg-[#0B315F]/20 shadow-xl">
+    <section class="gd-hero relative overflow-hidden rounded-[2rem] border border-white/20 bg-[#0B315F]/20 shadow-xl">
 
         {{-- Overlay supaya tulisan tetap terbaca --}}
         <div class="absolute inset-0 bg-gradient-to-r from-[#06254A]/75 via-[#0B3D73]/45 to-transparent"></div>
@@ -65,7 +678,7 @@
                             href="{{ route('gudang.create') }}"
                             class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#123F7A] px-5 py-3 text-sm font-bold text-white shadow-lg transition duration-200 hover:-translate-y-0.5 hover:bg-[#0d3263]"
                         >
-                            <span class="text-lg leading-none">＋</span>
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 5v14M5 12h14"/></svg>
                             Tambah Gudang
                         </a>
 
@@ -87,7 +700,7 @@
     <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
         {{-- TOTAL --}}
-        <div class="group rounded-[1.35rem] border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+        <div class="gd-card group rounded-[1.35rem] border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
 
             <div class="flex items-start justify-between">
 
@@ -107,8 +720,8 @@
 
                 </div>
 
-                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-lg transition group-hover:scale-105">
-                    🏭
+                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-[#123F7A] transition group-hover:scale-105">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 21V9l9-5 9 5v12"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 21v-7h10v7M7 17h10"/></svg>
                 </div>
 
             </div>
@@ -117,7 +730,7 @@
 
 
         {{-- AKTIF --}}
-        <div class="group rounded-[1.35rem] border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+        <div class="gd-card group rounded-[1.35rem] border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
 
             <div class="flex items-start justify-between">
 
@@ -141,8 +754,8 @@
 
                 </div>
 
-                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-lg">
-                    ✓
+                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 13l4 4L19 7"/></svg>
                 </div>
 
             </div>
@@ -151,7 +764,7 @@
 
 
         {{-- DOKUMEN --}}
-        <div class="group rounded-[1.35rem] border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+        <div class="gd-card group rounded-[1.35rem] border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
 
             <div class="flex items-start justify-between">
 
@@ -171,8 +784,8 @@
 
                 </div>
 
-                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-lg">
-                    📄
+                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h6.5L19 6.5V19a2 2 0 01-2 2z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 3v4h4"/></svg>
                 </div>
 
             </div>
@@ -181,7 +794,7 @@
 
 
         {{-- PROSES --}}
-        <div class="group rounded-[1.35rem] border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+        <div class="gd-card group rounded-[1.35rem] border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
 
             <div class="flex items-start justify-between">
 
@@ -201,8 +814,8 @@
 
                 </div>
 
-                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-lg">
-                    ⏳
+                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke-width="1.8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 7v5l3 2"/></svg>
                 </div>
 
             </div>
@@ -216,7 +829,7 @@
     {{-- =========================================================
          FILTER
     ========================================================== --}}
-    <section class="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-lg">
+    <section class="gd-panel overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-lg">
 
         <form
             method="GET"
@@ -228,8 +841,8 @@
 
                 <div class="flex items-center gap-3">
 
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-lg">
-                        🔍
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#123F7A]">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 20l-3.5-3.5"/></svg>
                     </div>
 
                     <div>
@@ -259,7 +872,7 @@
                             href="{{ route('gudang.index') }}"
                             class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
                         >
-                            ↺
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 4v6h6"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 12a8 8 0 10-2.3 5.7"/></svg>
                             Reset
                         </a>
 
@@ -270,7 +883,7 @@
                         type="submit"
                         class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#123F7A] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#0d3263]"
                     >
-                        🔍
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 20l-3.5-3.5"/></svg>
                         Cari
                     </button>
 
@@ -292,7 +905,7 @@
                     <div class="relative">
 
                         <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                            ⌕
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 20l-3.5-3.5"/></svg>
                         </span>
 
                         <input
@@ -350,15 +963,15 @@
     {{-- =========================================================
          DATA GUDANG
     ========================================================== --}}
-    <section class="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-lg">
+    <section class="gd-panel overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-lg">
 
         {{-- HEADER TABLE --}}
         <div class="flex flex-col gap-4 border-b border-slate-100 px-5 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
 
             <div class="flex items-center gap-3">
 
-                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-lg">
-                    🏭
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#123F7A]">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 21V9l9-5 9 5v12"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 21v-7h10v7M7 17h10"/></svg>
                 </div>
 
                 <div>
@@ -386,7 +999,7 @@
                     href="{{ route('gudang.create') }}"
                     class="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-[#123F7A] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#0d3263] lg:self-center"
                 >
-                    <span class="text-lg leading-none">＋</span>
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 5v14M5 12h14"/></svg>
                     Tambah Gudang
                 </a>
 
@@ -396,306 +1009,274 @@
 
 
 
-        {{-- TABLE --}}
-        <div class="overflow-x-auto">
+        {{-- =====================================================
+             DAFTAR GUDANG — ACCORDION
+             Gudang induk ditampilkan lebih dulu; klik untuk membuka
+             gudang filial di bawahnya. Data diambil dari $gudangs
+             yang sama (hubungan: gudang_induk_id / gudangInduk).
+        ====================================================== --}}
+        @php
+            $gdGroups = [];
 
-            <table class="w-full min-w-[1050px] text-sm">
+            foreach ($gudangs as $gdRow) {
 
-                <thead>
+                if (is_null($gdRow->gudang_induk_id)) {
 
-                    <tr class="border-b border-slate-100 bg-[#F5F8FD] text-left text-[10px] uppercase tracking-[.12em] text-slate-500">
+                    $gdKey = $gdRow->id;
 
-                        <th class="px-5 py-4 font-bold">
-                            No.
-                        </th>
+                    if (! isset($gdGroups[$gdKey])) {
+                        $gdGroups[$gdKey] = ['induk' => $gdRow, 'filial' => []];
+                    } else {
+                        $gdGroups[$gdKey]['induk'] = $gdRow;
+                    }
 
-                        <th class="px-5 py-4 font-bold">
-                            Kode
-                        </th>
+                } else {
 
-                        <th class="px-5 py-4 font-bold">
-                            Nama Gudang
-                        </th>
+                    $gdKey = $gdRow->gudang_induk_id;
 
-                        <th class="px-5 py-4 font-bold">
-                            Gudang Induk
-                        </th>
+                    if (! isset($gdGroups[$gdKey])) {
+                        $gdGroups[$gdKey] = ['induk' => null, 'filial' => []];
+                    }
 
-                        <th class="px-5 py-4 font-bold">
-                            Kecamatan
-                        </th>
+                    $gdGroups[$gdKey]['filial'][] = $gdRow;
+                }
+            }
 
-                        <th class="px-5 py-4 font-bold">
-                            Desa
-                        </th>
+            // Saat pencarian / filter aktif, grup langsung terbuka agar hasilnya terlihat
+            $gdAutoOpen = (bool) (request('gudang_utama_id') || request('search'));
+        @endphp
 
-                        <th class="px-5 py-4 font-bold">
-                            Kapasitas
-                        </th>
+        <div x-data class="gd-acc">
 
-                        <th class="px-5 py-4 font-bold">
-                            Status
-                        </th>
+            @if(count($gdGroups) > 0)
 
-                        <th class="px-5 py-4 text-right font-bold">
-                            Aksi
-                        </th>
+                <div class="gd-toolbar">
 
-                    </tr>
+                    <p class="text-xs text-slate-400">
+                        {{ count($gdGroups) }} gudang utama
+                    </p>
 
-                </thead>
+                    <div class="flex items-center gap-2">
+
+                        <button
+                            type="button"
+                            class="gd-ghost-btn"
+                            @click="$dispatch('gudang-toggle-all', true)"
+                        >
+                            Buka Semua
+                        </button>
+
+                        <button
+                            type="button"
+                            class="gd-ghost-btn"
+                            @click="$dispatch('gudang-toggle-all', false)"
+                        >
+                            Tutup Semua
+                        </button>
+
+                    </div>
+
+                </div>
+
+            @endif
 
 
+            @forelse($gdGroups as $group)
 
-                <tbody class="divide-y divide-slate-100">
+                @php
+                    $induk       = $group['induk'];
+                    $firstFilial = $group['filial'][0] ?? null;
 
-                    @forelse($gudangs as $i => $gudang)
+                    $indukNama = $induk->nama_gudang
+                        ?? optional(optional($firstFilial)->gudangInduk)->nama_gudang
+                        ?? '-';
+
+                    $indukKode = $induk->kode_gudang
+                        ?? optional(optional($firstFilial)->gudangInduk)->kode_gudang;
+                @endphp
 
 
-                        {{-- =================================================
-                             GUDANG UTAMA
-                        ================================================== --}}
-                        @if(is_null($gudang->gudang_induk_id))
+                {{-- =================================================
+                     GUDANG UTAMA (INDUK)
+                ================================================== --}}
+                <div
+                    x-data="{ open: @json($gdAutoOpen) }"
+                    @gudang-toggle-all.window="open = $event.detail"
+                    :class="{ 'is-open': open }"
+                    class="gd-group {{ $gdAutoOpen ? 'is-open' : '' }}"
+                >
 
-                            <tr class="bg-[#F8FAFD]">
+                    <button
+                        type="button"
+                        class="gd-group-head"
+                        @click="open = !open"
+                        :aria-expanded="open.toString()"
+                        aria-expanded="{{ $gdAutoOpen ? 'true' : 'false' }}"
+                    >
 
-                                <td colspan="9" class="px-5 py-4">
+                        <span class="gd-chev">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/></svg>
+                        </span>
 
-                                    <div class="flex items-center gap-3">
+                        <span class="gd-ware-icon">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 21V9l9-5 9 5v12"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 21v-7h10v7M7 17h10"/></svg>
+                        </span>
 
-                                        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100 text-base">
-                                            🏭
-                                        </div>
+                        <span class="min-w-0 flex-1">
 
-                                        <div>
+                            <span class="flex flex-wrap items-center gap-2">
 
-                                            <div class="flex items-center gap-2">
+                                <span class="gd-group-name">
+                                    {{ $indukNama }}
+                                </span>
 
-                                                <p class="font-bold text-[#0B2545]">
-                                                    {{ $gudang->nama_gudang }}
-                                                </p>
+                                <span class="gd-badge-utama">
+                                    Gudang Utama
+                                </span>
 
-                                                <span class="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#123F7A]">
-                                                    Gudang Utama
+                            </span>
+
+                            @if($indukKode)
+
+                                <span class="mt-0.5 block text-xs text-slate-400">
+                                    {{ $indukKode }}
+                                </span>
+
+                            @endif
+
+                        </span>
+
+                        <span class="gd-count">
+                            {{ count($group['filial']) }}
+                            <span class="gd-count-label">Filial</span>
+                        </span>
+
+                    </button>
+
+
+                    {{-- =============================================
+                         GUDANG FILIAL
+                    ============================================== --}}
+                    <div
+                        class="gd-panel-wrap {{ $gdAutoOpen ? '' : 'is-collapsed' }}"
+                        :class="{ 'is-collapsed': !open }"
+                    >
+
+                        <div class="gd-panel-inner">
+
+                            <div class="gd-filial-list">
+
+                                @if(count($group['filial']) > 0)
+
+                                    <div class="gd-cols" aria-hidden="true">
+                                        <span>No.</span>
+                                        <span>Kode</span>
+                                        <span>Nama Gudang</span>
+                                        <span>Kecamatan</span>
+                                        <span>Desa</span>
+                                        <span>Kapasitas</span>
+                                        <span>Status</span>
+                                        <span class="text-right">Aksi</span>
+                                    </div>
+
+
+                                    @foreach($group['filial'] as $filial)
+
+                                        <div class="gd-row">
+
+                                            {{-- NO --}}
+                                            <div class="gd-cell gd-no">
+                                                {{ $loop->iteration }}
+                                            </div>
+
+
+                                            {{-- KODE --}}
+                                            <div class="gd-cell gd-kode" data-label="Kode">
+
+                                                <span class="font-bold text-[#123F7A]">
+                                                    {{ $filial->kode_gudang }}
                                                 </span>
 
                                             </div>
 
-                                            <p class="mt-0.5 text-xs text-slate-400">
-                                                {{ $gudang->kode_gudang }}
-                                            </p>
 
-                                        </div>
+                                            {{-- NAMA --}}
+                                            <div class="gd-cell gd-nama">
 
-                                    </div>
+                                                <p class="font-semibold text-[#0B2545]">
+                                                    {{ $filial->nama_gudang }}
+                                                </p>
 
-                                </td>
+                                                @if($filial->alamat)
 
-                            </tr>
+                                                    <p class="mt-0.5 truncate text-xs text-slate-400" title="{{ $filial->alamat }}">
+                                                        {{ $filial->alamat }}
+                                                    </p>
 
+                                                @endif
 
-                        {{-- =================================================
-                             GUDANG FILIAL
-                        ================================================== --}}
-                        @else
-
-                            <tr class="group transition hover:bg-[#F8FAFD]">
-
-                                {{-- NO --}}
-                                <td class="px-5 py-5 text-slate-400">
-                                    {{ $i + 1 }}
-                                </td>
+                                            </div>
 
 
-                                {{-- KODE --}}
-                                <td class="px-5 py-5">
-
-                                    <span class="font-bold text-[#123F7A]">
-                                        {{ $gudang->kode_gudang }}
-                                    </span>
-
-                                </td>
+                                            {{-- KECAMATAN --}}
+                                            <div class="gd-cell text-slate-600" data-label="Kecamatan">
+                                                {{ $filial->kecamatan ?? '-' }}
+                                            </div>
 
 
-                                {{-- NAMA --}}
-                                <td class="px-5 py-5">
-
-                                    <div class="pl-2">
-
-                                        <div class="flex items-center gap-2">
-
-                                            <span class="text-slate-300">
-                                                ↳
-                                            </span>
-
-                                            <p class="font-semibold text-[#0B2545]">
-                                                {{ $gudang->nama_gudang }}
-                                            </p>
-
-                                        </div>
+                                            {{-- DESA --}}
+                                            <div class="gd-cell text-slate-600" data-label="Desa">
+                                                {{ $filial->desa ?? '-' }}
+                                            </div>
 
 
-                                        @if($gudang->alamat)
+                                            {{-- KAPASITAS --}}
+                                            <div class="gd-cell" data-label="Kapasitas">
 
-                                            <p class="mt-1 max-w-[230px] truncate pl-5 text-xs text-slate-400">
-                                                {{ $gudang->alamat }}
-                                            </p>
+                                                @if($filial->kapasitas !== null)
 
-                                        @endif
+                                                    <span class="font-medium text-slate-700">
+                                                        {{ number_format($filial->kapasitas, 2, ',', '.') }}
+                                                    </span>
 
-                                    </div>
+                                                    <span class="text-xs text-slate-400">
+                                                        Ton
+                                                    </span>
 
-                                </td>
+                                                @else
 
+                                                    <span class="text-slate-400">
+                                                        -
+                                                    </span>
 
-                                {{-- GUDANG INDUK --}}
-                                <td class="px-5 py-5">
+                                                @endif
 
-                                    <span class="text-slate-600">
-                                        {{ $gudang->gudangInduk->nama_gudang ?? '-' }}
-                                    </span>
-
-                                </td>
-
-
-                                {{-- KECAMATAN --}}
-                                <td class="px-5 py-5 text-slate-600">
-                                    {{ $gudang->kecamatan ?? '-' }}
-                                </td>
+                                            </div>
 
 
-                                {{-- DESA --}}
-                                <td class="px-5 py-5 text-slate-600">
-                                    {{ $gudang->desa ?? '-' }}
-                                </td>
+                                            {{-- STATUS --}}
+                                            <div class="gd-cell gd-status" data-label="Status">
 
-
-                                {{-- KAPASITAS --}}
-                                <td class="px-5 py-5">
-
-                                    @if($gudang->kapasitas !== null)
-
-                                        <span class="font-medium text-slate-700">
-                                            {{ number_format($gudang->kapasitas, 2, ',', '.') }}
-                                        </span>
-
-                                        <span class="text-xs text-slate-400">
-                                            Ton
-                                        </span>
-
-                                    @else
-
-                                        <span class="text-slate-400">
-                                            -
-                                        </span>
-
-                                    @endif
-
-                                </td>
-
-
-                                {{-- STATUS --}}
-                                <td class="px-5 py-5">
-
-                                    <x-status-badge
-                                        :color="$gudang->status === 'aktif' ? 'green' : 'gray'"
-                                        :label="ucfirst($gudang->status)"
-                                    />
-
-                                </td>
-
-
-                                {{-- AKSI --}}
-                                <td class="px-5 py-5">
-
-                                    <div class="flex items-center justify-end gap-2">
-
-
-                                        {{-- LIHAT --}}
-                                        <a
-                                            href="{{ route('gudang.show', $gudang) }}"
-                                            title="Lihat Gudang"
-                                            class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-[#123F7A] transition hover:bg-[#123F7A] hover:text-white"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="h-4 w-4"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                                stroke-width="1.8"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z"
+                                                <x-status-badge
+                                                    :color="$filial->status === 'aktif' ? 'green' : 'gray'"
+                                                    :label="ucfirst($filial->status)"
                                                 />
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                                                />
-                                            </svg>
-                                        </a>
+
+                                            </div>
 
 
+                                            {{-- AKSI --}}
+                                            <div class="gd-cell gd-aksi">
 
-                                        @role('admin_kantor')
-
-
-                                            {{-- EDIT --}}
-                                            <a
-                                                href="{{ route('gudang.edit', $gudang) }}"
-                                                title="Edit Gudang"
-                                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-600 transition hover:bg-orange-500 hover:text-white"
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    class="h-4 w-4"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                    stroke-width="1.8"
-                                                >
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 15.07a4.5 4.5 0 0 1-1.897 1.13L6 17l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-7.931Z"
-                                                    />
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        d="M19.5 7.5 16.5 4.5"
-                                                    />
-                                                </svg>
-                                            </a>
+                                                <div class="flex items-center justify-end gap-2">
 
 
-
-                                            {{-- TOGGLE STATUS --}}
-                                            <form
-                                                method="POST"
-                                                action="{{ route('gudang.toggle-status', $gudang) }}"
-                                                class="inline"
-                                            >
-
-                                                @csrf
-
-                                                @method('PATCH')
-
-                                                <button
-                                                    type="submit"
-                                                    title="{{ $gudang->status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan' }}"
-                                                    class="flex h-9 w-9 items-center justify-center rounded-xl transition
-                                                    {{ $gudang->status === 'aktif'
-                                                        ? 'bg-red-50 text-red-500 hover:bg-red-500 hover:text-white'
-                                                        : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white'
-                                                    }}"
-                                                    onclick="return confirm('Apakah Anda yakin ingin mengubah status gudang ini?')"
-                                                >
-
-                                                    @if($gudang->status === 'aktif')
-
+                                                    {{-- LIHAT --}}
+                                                    <a
+                                                        href="{{ route('gudang.show', $filial) }}"
+                                                        title="Lihat Gudang"
+                                                        class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-[#123F7A] transition hover:bg-[#123F7A] hover:text-white"
+                                                    >
                                                         <svg
                                                             xmlns="http://www.w3.org/2000/svg"
                                                             class="h-4 w-4"
@@ -707,90 +1288,176 @@
                                                             <path
                                                                 stroke-linecap="round"
                                                                 stroke-linejoin="round"
-                                                                d="M18.364 18.364A9 9 0 1 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
+                                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z"
                                                             />
-                                                        </svg>
-
-                                                    @else
-
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            class="h-4 w-4"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            stroke="currentColor"
-                                                            stroke-width="1.8"
-                                                        >
                                                             <path
                                                                 stroke-linecap="round"
                                                                 stroke-linejoin="round"
-                                                                d="m4.5 12.75 6 6 9-13.5"
+                                                                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                                                             />
                                                         </svg>
-
-                                                    @endif
-
-                                                </button>
-
-                                            </form>
+                                                    </a>
 
 
-                                        @endrole
 
-                                    </div>
-
-                                </td>
-
-                            </tr>
-
-                        @endif
+                                                    @role('admin_kantor')
 
 
-                    @empty
+                                                        {{-- EDIT --}}
+                                                        <a
+                                                            href="{{ route('gudang.edit', $filial) }}"
+                                                            title="Edit Gudang"
+                                                            class="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-600 transition hover:bg-orange-500 hover:text-white"
+                                                        >
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                class="h-4 w-4"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                                stroke-width="1.8"
+                                                            >
+                                                                <path
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 15.07a4.5 4.5 0 0 1-1.897 1.13L6 17l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-7.931Z"
+                                                                />
+                                                                <path
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                    d="M19.5 7.5 16.5 4.5"
+                                                                />
+                                                            </svg>
+                                                        </a>
 
-                        {{-- EMPTY STATE --}}
-                        <tr>
 
-                            <td colspan="9" class="px-5 py-16 text-center">
 
-                                <div class="mx-auto flex max-w-sm flex-col items-center">
+                                                        {{-- TOGGLE STATUS --}}
+                                                        <form
+                                                            method="POST"
+                                                            action="{{ route('gudang.toggle-status', $filial) }}"
+                                                            class="inline"
+                                                        >
 
-                                    <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-3xl">
-                                        🏭
-                                    </div>
+                                                            @csrf
 
-                                    <p class="mt-4 font-bold text-[#0B2545]">
-                                        Belum ada data gudang
+                                                            @method('PATCH')
+
+                                                            <button
+                                                                type="submit"
+                                                                title="{{ $filial->status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan' }}"
+                                                                class="flex h-9 w-9 items-center justify-center rounded-xl transition
+                                                                {{ $filial->status === 'aktif'
+                                                                    ? 'bg-red-50 text-red-500 hover:bg-red-500 hover:text-white'
+                                                                    : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white'
+                                                                }}"
+                                                                onclick="return confirm('Apakah Anda yakin ingin mengubah status gudang ini?')"
+                                                            >
+
+                                                                @if($filial->status === 'aktif')
+
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        class="h-4 w-4"
+                                                                        fill="none"
+                                                                        viewBox="0 0 24 24"
+                                                                        stroke="currentColor"
+                                                                        stroke-width="1.8"
+                                                                    >
+                                                                        <path
+                                                                            stroke-linecap="round"
+                                                                            stroke-linejoin="round"
+                                                                            d="M18.364 18.364A9 9 0 1 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
+                                                                        />
+                                                                    </svg>
+
+                                                                @else
+
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        class="h-4 w-4"
+                                                                        fill="none"
+                                                                        viewBox="0 0 24 24"
+                                                                        stroke="currentColor"
+                                                                        stroke-width="1.8"
+                                                                    >
+                                                                        <path
+                                                                            stroke-linecap="round"
+                                                                            stroke-linejoin="round"
+                                                                            d="m4.5 12.75 6 6 9-13.5"
+                                                                        />
+                                                                    </svg>
+
+                                                                @endif
+
+                                                            </button>
+
+                                                        </form>
+
+
+                                                    @endrole
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    @endforeach
+
+                                @else
+
+                                    <p class="gd-empty-filial">
+                                        Belum ada gudang filial yang ditampilkan untuk gudang utama ini.
                                     </p>
 
-                                    <p class="mt-1 text-sm text-slate-400">
-                                        Belum terdapat data gudang yang dapat ditampilkan.
-                                    </p>
+                                @endif
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            @empty
+
+                {{-- EMPTY STATE --}}
+                <div class="px-5 py-16 text-center">
+
+                    <div class="mx-auto flex max-w-sm flex-col items-center">
+
+                        <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-[#123F7A]">
+                            <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 21V9l9-5 9 5v12"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 21v-7h10v7M7 17h10"/></svg>
+                        </div>
+
+                        <p class="mt-4 font-bold text-[#0B2545]">
+                            Belum ada data gudang
+                        </p>
+
+                        <p class="mt-1 text-sm text-slate-400">
+                            Belum terdapat data gudang yang dapat ditampilkan.
+                        </p>
 
 
-                                    @role('admin_kantor')
+                        @role('admin_kantor')
 
-                                        <a
-                                            href="{{ route('gudang.create') }}"
-                                            class="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#123F7A] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d3263]"
-                                        >
-                                            ＋
-                                            Tambah Gudang
-                                        </a>
+                            <a
+                                href="{{ route('gudang.create') }}"
+                                class="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#123F7A] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d3263]"
+                            >
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 5v14M5 12h14"/></svg>
+                                Tambah Gudang
+                            </a>
 
-                                    @endrole
+                        @endrole
 
-                                </div>
+                    </div>
 
-                            </td>
+                </div>
 
-                        </tr>
-
-                    @endforelse
-
-                </tbody>
-
-            </table>
+            @endforelse
 
         </div>
 
@@ -820,5 +1487,145 @@
     </section>
 
 </div>
+
+{{-- =========================================================
+    DETEKSI MODE GELAP (khusus tampilan)
+    Menambah / menghapus class "is-dark" pada .gd-page mengikuti
+    mode yang sedang aktif di layout (tombol toggle di navbar).
+    Tidak berkaitan dengan data atau aksi gudang.
+========================================================= --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const page = document.querySelector('.gd-page');
+    if (!page) return;
+
+    // ---------- penanda tema pada html / body / pembungkus ----------
+    const CLASS_OK  = /(dark|night)/i;
+    const CLASS_BAD = /:|^(bg|text|border|btn|navbar|table|fill|stroke|ring|from|to|via|hover|focus|placeholder|divide|shadow|outline|alert|badge)[-_]/i;
+    const ATTR_OK   = /^(dark|night)([-_ ]?(mode|theme))?$/i;
+
+    function elementIsDark(el) {
+
+        for (const t of el.classList) {
+            if (CLASS_OK.test(t) && !CLASS_BAD.test(t)) return true;
+        }
+
+        for (const a of el.attributes) {
+            if ((a.name.startsWith('data-') || a.name === 'theme') && ATTR_OK.test((a.value || '').trim())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function markerDark() {
+
+        for (let el = page.parentElement; el; el = el.parentElement) {
+            if (elementIsDark(el)) return true;
+        }
+
+        const root = getComputedStyle(document.documentElement).colorScheme || '';
+        const body = getComputedStyle(document.body).colorScheme || '';
+
+        return root.trim() === 'dark' || body.trim() === 'dark';
+    }
+
+    // ---------- probe: bagaimana layout me-render utilitas terang ----------
+    // Probe diletakkan DI LUAR .gd-page agar tidak terkena aturan gelap
+    // milik halaman ini (jika di dalam, mode gelap akan "terkunci").
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 1;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+    function rgba(color) {
+        ctx.clearRect(0, 0, 1, 1);
+        ctx.fillStyle = '#000';
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, 1, 1);
+        const d = ctx.getImageData(0, 0, 1, 1).data;
+        return { r: d[0], g: d[1], b: d[2], a: d[3] / 255 };
+    }
+
+    function luminance(c) {
+        return (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255;
+    }
+
+    const probes = {
+        bg: document.createElement('span'),
+        t1: document.createElement('span'),
+        t2: document.createElement('span')
+    };
+
+    probes.bg.className = 'bg-white';
+    probes.t1.className = 'text-slate-700';
+    probes.t2.className = 'text-gray-700';
+
+    Object.values(probes).forEach(function (p) {
+        p.hidden = true;
+        p.setAttribute('aria-hidden', 'true');
+        page.parentElement.insertBefore(p, page);
+    });
+
+    function probeDark() {
+
+        const bg = rgba(getComputedStyle(probes.bg).backgroundColor);
+        if (bg.a > 0.5 && luminance(bg) < 0.45) return true;
+
+        const t1 = rgba(getComputedStyle(probes.t1).color);
+        if (t1.a > 0.5 && luminance(t1) > 0.6) return true;
+
+        const t2 = rgba(getComputedStyle(probes.t2).color);
+        if (t2.a > 0.5 && luminance(t2) > 0.6) return true;
+
+        return false;
+    }
+
+    function isDark() {
+        return markerDark() || probeDark();
+    }
+
+    // ---------- sinkronisasi dua arah ----------
+    let last = null;
+
+    function sync() {
+
+        const dark = isDark();
+
+        if (dark === last) return;
+
+        last = dark;
+        page.classList.toggle('is-dark', dark);
+    }
+
+    let raf = null;
+
+    function schedule() {
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(sync);
+    }
+
+    sync();
+
+    const observer = new MutationObserver(schedule);
+
+    for (let el = page.parentElement; el; el = el.parentElement) {
+        observer.observe(el, { attributes: true });
+    }
+
+    // cadangan: cek ulang setelah klik (tombol tema), perubahan storage, preferensi sistem
+    document.addEventListener('click', function () {
+        [50, 250, 600].forEach(function (ms) { setTimeout(schedule, ms); });
+    });
+
+    window.addEventListener('storage', schedule);
+
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', schedule);
+    }
+
+});
+</script>
 
 @endsection

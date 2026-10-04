@@ -249,6 +249,377 @@
             bottom: 1.5rem;
         }
     }
+
+
+    /* =========================================================
+       LIGHT MODE — PENYEMPURNAAN
+       Off-white lembut, navy BULOG, aksen oranye secukupnya
+       ========================================================= */
+    .ba-rampung-page .ba-info-card,
+    .ba-rampung-page .ba-filter-card,
+    .ba-rampung-page .ba-result-card {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(15,43,82,.07);
+        box-shadow: 0 12px 35px rgba(15,23,42,.09);
+        transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .ba-rampung-page .ba-info-card   { background: rgba(250,251,253,.94); }
+    .ba-rampung-page .ba-filter-card { background: rgba(250,251,253,.95); }
+    .ba-rampung-page .ba-result-card { background: rgba(250,251,253,.96); }
+
+    /* garis atas card: segmen oranye + navy */
+    .ba-rampung-page .ba-info-card::before,
+    .ba-rampung-page .ba-filter-card::before,
+    .ba-rampung-page .ba-result-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 3px;
+        z-index: 2;
+        pointer-events: none;
+        background: linear-gradient(90deg, #F28C28 0, #F28C28 84px, #123F7A 84px, rgba(18,63,122,.85) 100%);
+    }
+
+    /* garis kecil oranye pada label kicker di dalam card */
+    .ba-rampung-page .ba-info-card .dashboard-kicker::before,
+    .ba-rampung-page .ba-filter-card .dashboard-kicker::before,
+    .ba-rampung-page .ba-result-card .dashboard-kicker::before {
+        content: "";
+        display: inline-block;
+        width: 18px;
+        height: 2px;
+        margin-right: .6rem;
+        vertical-align: middle;
+        border-radius: 2px;
+        background: #F28C28;
+    }
+
+    .ba-rampung-page .ba-filter-head {
+        border-bottom-color: rgba(15,43,82,.07);
+        background: rgba(241,245,250,.9);
+    }
+
+    .ba-rampung-page .ba-filter-input {
+        background: #FDFEFF;
+        border-color: #D9E1EC;
+    }
+
+    .ba-rampung-page .ba-filter-input:focus {
+        border-color: #F28C28;
+        box-shadow: 0 0 0 3px rgba(242,140,40,.18);
+    }
+
+    .ba-rampung-page .ba-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        background: #F1F5FA;
+        border: 1px solid rgba(15,43,82,.08);
+    }
+
+    .ba-rampung-page .ba-count-badge::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #F28C28;
+    }
+
+    .ba-rampung-page .ba-table tbody {
+        background: transparent;
+    }
+
+    .ba-rampung-page .ba-table th {
+        background: #F1F5FA;
+        border-bottom: 2px solid rgba(242,140,40,.30);
+    }
+
+    .ba-rampung-page .ba-table td {
+        border-top-color: #E9EEF5;
+    }
+
+    .ba-rampung-page .ba-table tbody tr:hover {
+        background: #F5F8FC;
+    }
+
+    .ba-rampung-page .ba-table tbody tr:hover td:first-child {
+        box-shadow: inset 3px 0 0 #F28C28;
+    }
+
+
+    /* =========================================================
+       DARK MODE
+       Aktif jika .ba-rampung-page diberi class "is-dark" oleh
+       script di bagian bawah file (mendeteksi mode gelap layout),
+       atau jika penanda tema gelap umum ada di <html>/<body>.
+       Semua aturan terkunci di dalam .ba-rampung-page, sehingga
+       mode terang tidak terpengaruh.
+       ========================================================= */
+
+    /* ---------------------------------------------------------
+       BACKGROUND IMAGE TETAP ADA.
+       Mode gelap hanya menambah overlay navy transparan di atas
+       gambar (pseudo-element terpisah). Tidak ada background-image
+       atau background solid yang ditimpa.
+       Atur kekuatan gelap lewat dua variabel di bawah.
+       --------------------------------------------------------- */
+    .ba-rampung-page {
+        --ba-overlay-top: rgba(7, 20, 38, .62);
+        --ba-overlay-bottom: rgba(7, 20, 38, .50);
+        position: relative;
+    }
+
+    .ba-rampung-page::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background: linear-gradient(180deg, var(--ba-overlay-top), var(--ba-overlay-bottom));
+        opacity: 0;                      /* mode terang: overlay tidak terlihat */
+        transition: opacity .3s ease;
+    }
+
+    .ba-rampung-page > * {
+        position: relative;
+        z-index: 1;                      /* konten selalu di atas overlay */
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page)::before {
+        opacity: 1;                      /* mode gelap: overlay aktif */
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) {
+        color: #E5E7EB;
+        color-scheme: dark;
+    }
+
+    /* ---- Hero ---- */
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-hero {
+        border-color: rgba(148,163,184,.18);
+        background: linear-gradient(90deg, rgba(8,24,46,.80), rgba(14,48,96,.52), rgba(18,63,122,.18));
+        box-shadow: 0 18px 45px rgba(0,0,0,.35);
+    }
+
+    /* ---- Card utama ---- */
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-info-card,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-filter-card,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-result-card {
+        background: rgba(16,28,45,.95) !important;
+        border-color: #263B55 !important;
+        box-shadow: 0 14px 36px rgba(0,0,0,.30) !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-info-card::before,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-filter-card::before,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-result-card::before {
+        background: linear-gradient(90deg, #F28C28 0, #F28C28 84px, rgba(96,165,250,.55) 84px, rgba(96,165,250,.10) 100%);
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-filter-head {
+        background: rgba(19,34,56,.96) !important;
+        border-bottom-color: #263B55 !important;
+    }
+
+    /* ---- Form ---- */
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-label {
+        color: #94A3B8;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-filter-input {
+        background-color: #0B1728 !important;
+        border-color: #263B55 !important;
+        color: #F8FAFC !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-filter-input:focus {
+        border-color: #F28C28 !important;
+        box-shadow: 0 0 0 3px rgba(242,140,40,.22) !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-filter-input::placeholder {
+        color: #94A3B8 !important;
+        opacity: 1;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-filter-input option {
+        background: #101C2D;
+        color: #E5E7EB;
+    }
+
+    /* ---- Tabel ---- */
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-table th {
+        background: rgba(19,34,56,.96) !important;
+        color: #94A3B8 !important;
+        border-bottom: 2px solid rgba(242,140,40,.35) !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-table tbody,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-table tbody.bg-white {
+        background: transparent !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-table tbody tr {
+        background: transparent !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-table td {
+        border-top-color: rgba(148,163,184,.12) !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-table tbody tr:hover {
+        background: rgba(255,255,255,.04) !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-table tbody tr:hover td:first-child {
+        box-shadow: inset 3px 0 0 #F28C28;
+    }
+
+    /* ---- Teks ---- */
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .text-\[\#0B2545\] {
+        color: #F8FAFC !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .text-\[\#123F7A\] {
+        color: #93C5FD !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .text-slate-400,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .text-slate-500,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .text-gray-400,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .text-gray-500 {
+        color: #94A3B8 !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .text-slate-600,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .text-slate-700,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .text-slate-800,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .text-gray-600,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .text-gray-700 {
+        color: #CBD5E1 !important;
+    }
+
+    /* ---- Background / border utilitas terang ---- */
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .bg-white,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .bg-slate-50,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .bg-gray-50 {
+        background-color: #101C2D !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .bg-\[\#F5F8FD\],
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .bg-slate-100,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .bg-gray-100 {
+        background-color: #132238 !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .bg-\[\#123F7A\]\/10 {
+        background-color: rgba(96,165,250,.14) !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .border-slate-100,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .border-slate-200,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .border-gray-100,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .border-gray-200,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .border-gray-300 {
+        border-color: rgba(148,163,184,.18) !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-count-badge {
+        background: #132238 !important;
+        border-color: rgba(148,163,184,.18) !important;
+    }
+
+    /* ---- Tombol ---- */
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .bg-\[\#123F7A\] {
+        background-color: #1F5AA6 !important;
+        color: #fff !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:bg-\[\#0B315F\]:hover {
+        background-color: #F28C28 !important;
+        color: #fff !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) a.border-\[\#123F7A\] {
+        border-color: rgba(96,165,250,.6) !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:bg-\[\#123F7A\]\/5:hover {
+        background-color: rgba(96,165,250,.14) !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:bg-slate-50:hover,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:bg-gray-50:hover {
+        background-color: rgba(255,255,255,.06) !important;
+    }
+
+    /* tombol reset */
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) a.bg-white {
+        background-color: transparent !important;
+    }
+
+    /* tombol aksi lihat / edit / PDF / hapus */
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .h-9.w-9 {
+        background-color: rgba(255,255,255,.03) !important;
+        border-color: rgba(148,163,184,.28) !important;
+        color: #CBD5E1 !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .h-9.w-9:hover {
+        background-color: rgba(255,255,255,.07) !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:border-\[\#123F7A\]:hover { border-color: #60A5FA !important; }
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:text-\[\#123F7A\]:hover  { color: #93C5FD !important; }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:border-amber-400:hover   { border-color: #FBBF24 !important; }
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:bg-amber-50:hover        { background-color: rgba(245,158,11,.16) !important; }
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:text-amber-600:hover     { color: #FBBF24 !important; }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:border-rose-400:hover    { border-color: #FB7185 !important; }
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:bg-rose-50:hover         { background-color: rgba(244,63,94,.16) !important; }
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:text-rose-600:hover      { color: #FDA4AF !important; }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:border-red-400:hover     { border-color: #F87171 !important; }
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:bg-red-50:hover          { background-color: rgba(239,68,68,.16) !important; }
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .hover\:text-red-600:hover       { color: #FCA5A5 !important; }
+
+    /* ---- Badge status (x-status-badge): warna status dipertahankan ---- */
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-table td:nth-child(6) > * {
+        background-color: rgba(255,255,255,.08) !important;
+        background-color: color-mix(in srgb, currentColor 18%, transparent) !important;
+        border-color: color-mix(in srgb, currentColor 40%, transparent) !important;
+        filter: brightness(1.6) saturate(1.1);
+    }
+
+    /* ---- Pagination ---- */
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) nav[role="navigation"] a,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) nav[role="navigation"] span[aria-current] > span,
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) nav[role="navigation"] span[aria-disabled] > span {
+        background-color: #101C2D !important;
+        border-color: rgba(148,163,184,.22) !important;
+        color: #CBD5E1 !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) nav[role="navigation"] a:hover {
+        background-color: rgba(242,140,40,.14) !important;
+        border-color: #F28C28 !important;
+        color: #fff !important;
+    }
+
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) nav[role="navigation"] span[aria-current] > span {
+        background-color: #1F5AA6 !important;
+        color: #fff !important;
+    }
+
+    /* ---- Empty state ---- */
+    :is(.ba-rampung-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-rampung-page) .ba-table tbody td[colspan] .bg-\[\#F5F8FD\] {
+        background-color: #132238 !important;
+    }
 </style>
 
 
@@ -661,7 +1032,7 @@
 
             @if(method_exists($baList, 'total'))
 
-                <div class="rounded-xl bg-[#F5F8FD] px-4 py-2 text-sm font-semibold text-[#123F7A]">
+                <div class="ba-count-badge rounded-xl bg-[#F5F8FD] px-4 py-2 text-sm font-semibold text-[#123F7A]">
 
                     {{ number_format($baList->total()) }} Data
 
@@ -994,5 +1365,147 @@
     </section>
 
 </div>
+
+{{-- =========================================================
+    DETEKSI MODE GELAP (khusus tampilan)
+    Menambah / menghapus class "is-dark" pada .ba-rampung-page
+    mengikuti mode yang sedang aktif di layout. Tidak berkaitan
+    dengan filter, pencarian, export, pagination, maupun aksi.
+========================================================= --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const page = document.querySelector('.ba-rampung-page');
+    if (!page) return;
+
+    // ---------- penanda tema pada html / body / pembungkus ----------
+    const CLASS_OK  = /(dark|night)/i;
+    const CLASS_BAD = /:|^(bg|text|border|btn|navbar|table|fill|stroke|ring|from|to|via|hover|focus|placeholder|divide|shadow|outline|alert|badge)[-_]/i;
+    const ATTR_OK   = /^(dark|night)([-_ ]?(mode|theme))?$/i;
+
+    function elementIsDark(el) {
+
+        for (const t of el.classList) {
+            if (CLASS_OK.test(t) && !CLASS_BAD.test(t)) return true;
+        }
+
+        for (const a of el.attributes) {
+            if ((a.name.startsWith('data-') || a.name === 'theme') && ATTR_OK.test((a.value || '').trim())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function markerDark() {
+
+        for (let el = page.parentElement; el; el = el.parentElement) {
+            if (elementIsDark(el)) return true;
+        }
+
+        const root = getComputedStyle(document.documentElement).colorScheme || '';
+        const body = getComputedStyle(document.body).colorScheme || '';
+
+        return root.trim() === 'dark' || body.trim() === 'dark';
+    }
+
+    // ---------- probe: bagaimana layout me-render utilitas terang ----------
+    // Jika layout menggelapkan "bg-white" atau menerangkan "text-slate-700",
+    // berarti mode gelap sedang aktif (apa pun penandanya).
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 1;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+    function rgba(color) {
+        ctx.clearRect(0, 0, 1, 1);
+        ctx.fillStyle = '#000';
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, 1, 1);
+        const d = ctx.getImageData(0, 0, 1, 1).data;
+        return { r: d[0], g: d[1], b: d[2], a: d[3] / 255 };
+    }
+
+    function luminance(c) {
+        return (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255;
+    }
+
+    const probes = {
+        bg:   document.createElement('span'),
+        t1:   document.createElement('span'),
+        t2:   document.createElement('span')
+    };
+
+    probes.bg.className = 'bg-white';
+    probes.t1.className = 'text-slate-700';
+    probes.t2.className = 'text-gray-700';
+
+    // Probe diletakkan DI LUAR .ba-rampung-page. Jika di dalam, aturan gelap
+    // milik halaman ikut mengenai probe dan mode gelap akan "terkunci".
+    Object.values(probes).forEach(function (p) {
+        p.hidden = true;
+        p.setAttribute('aria-hidden', 'true');
+        page.parentElement.insertBefore(p, page);
+    });
+
+    function probeDark() {
+
+        const bg = rgba(getComputedStyle(probes.bg).backgroundColor);
+        if (bg.a > 0.5 && luminance(bg) < 0.45) return true;
+
+        const t1 = rgba(getComputedStyle(probes.t1).color);
+        if (t1.a > 0.5 && luminance(t1) > 0.6) return true;
+
+        const t2 = rgba(getComputedStyle(probes.t2).color);
+        if (t2.a > 0.5 && luminance(t2) > 0.6) return true;
+
+        return false;
+    }
+
+    function isDark() {
+        return markerDark() || probeDark();
+    }
+
+    // ---------- sinkronisasi ----------
+    let last = null;
+
+    function sync() {
+
+        const dark = isDark();
+
+        if (dark === last) return;
+
+        last = dark;
+        page.classList.toggle('is-dark', dark);
+    }
+
+    let raf = null;
+
+    function schedule() {
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(sync);
+    }
+
+    sync();
+
+    const observer = new MutationObserver(schedule);
+
+    for (let el = page.parentElement; el; el = el.parentElement) {
+        observer.observe(el, { attributes: true });
+    }
+
+    // cadangan: cek ulang setelah klik (tombol tema), perubahan storage, preferensi sistem
+    document.addEventListener('click', function () {
+        [50, 250, 600].forEach(function (ms) { setTimeout(schedule, ms); });
+    });
+
+    window.addEventListener('storage', schedule);
+
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', schedule);
+    }
+
+});
+</script>
 
 @endsection
