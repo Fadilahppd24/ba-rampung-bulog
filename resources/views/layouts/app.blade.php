@@ -250,10 +250,10 @@
      HALAMAN LAIN TETAP MEMAKAI SIDEBAR + HEADER LAMA
 ========================================================= --}}
 
-@if(request()->routeIs('dashboard') || request()->routeIs('ba-rampung.*') || request()->routeIs('gudang.*') || request()->routeIs('mitra.*') || request()->routeIs('pimpinan.*') || request()->routeIs('laporan.*') || request()->routeIs('pengaturan.*'))
+@if(request()->routeIs('dashboard') || request()->routeIs('ba-rampung.*') || request()->routeIs('gudang.*') || request()->routeIs('mitra.*') || request()->routeIs('pimpinan.*') || request()->routeIs('pengaturan.*'))
 
 
-<div class="min-h-screen {{ request()->routeIs('ba-rampung.*') || request()->routeIs('gudang.*') || request()->routeIs('mitra.*') || request()->routeIs('pimpinan.*') || request()->routeIs('laporan.*') || request()->routeIs('pengaturan.*') ? 'ba-rampung-fixed-bg' : '' }}">
+<div class="min-h-screen {{ request()->routeIs('ba-rampung.*') || request()->routeIs('gudang.*') || request()->routeIs('mitra.*') || request()->routeIs('pimpinan.*') || request()->routeIs('pengaturan.*') ? 'ba-rampung-fixed-bg' : '' }}">
 
 
     {{-- NAVBAR DASHBOARD --}}
@@ -380,18 +380,6 @@
                             </div>
                         </div>
                     @endif
-
-
-                    {{-- LAPORAN --}}
-
-                    <a
-                        href="{{ route('laporan.index') }}"
-                        class="dashboard-nav-link"
-                    >
-                        Laporan
-                    </a>
-
-
                     {{-- PENGATURAN --}}
 
                     @if(auth()->user()?->isAdminKantor())
@@ -691,15 +679,7 @@
                     >
                         Master Data
                     </a>
-
-                    <a
-                        href="{{ route('laporan.index') }}"
-                        class="mobile-dashboard-link"
-                    >
-                        Laporan
-                    </a>
-
-                    @if(auth()->user()?->isAdminKantor())
+@if(auth()->user()?->isAdminKantor())
 
                         <a
                             href="{{ route('pengaturan.umum') }}"
@@ -731,7 +711,7 @@
                 px-6
                 pb-10
                 lg:px-10
-                {{ request()->routeIs('ba-rampung.*') || request()->routeIs('gudang.*') || request()->routeIs('mitra.*') || request()->routeIs('pimpinan.*') || request()->routeIs('laporan.*') || request()->routeIs('pengaturan.*') ? 'pt-28' : '' }}
+                {{ request()->routeIs('ba-rampung.*') || request()->routeIs('gudang.*') || request()->routeIs('mitra.*') || request()->routeIs('pimpinan.*') || request()->routeIs('pengaturan.*') ? 'pt-28' : '' }}
             "
         >
 

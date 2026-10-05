@@ -852,66 +852,116 @@
 
 
                 {{-- GUDANG --}}
-                <div>
+                <div class="ba-searchable-filter" data-searchable-filter>
 
                     <label class="ba-label">
                         Gudang
                     </label>
 
-                    <select
-                        name="gudang_id"
-                        class="ba-filter-input"
-                    >
+                    <div class="ba-searchable-wrap">
+                        <input
+                            type="text"
+                            class="ba-filter-input ba-searchable-input"
+                            placeholder="Pilih Gudang"
+                            autocomplete="off"
+                            data-searchable-input
+                            role="combobox"
+                            aria-expanded="false"
+                            aria-autocomplete="list"
+                        >
 
-                        <option value="">
-                            Semua Gudang
-                        </option>
+                        <input
+                            type="hidden"
+                            name="gudang_id"
+                            value="{{ request()->has('gudang_id') ? request('gudang_id') : '__NOT_SELECTED__' }}"
+                            data-searchable-value
+                        >
 
-                        @foreach($gudangs as $gudang)
+                        <button type="button" class="ba-searchable-arrow" data-searchable-toggle aria-label="Buka pilihan gudang">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
 
-                            <option
-                                value="{{ $gudang->id }}"
-                                @selected(request('gudang_id') == $gudang->id)
-                            >
-                                {{ $gudang->nama ?? $gudang->name ?? $gudang->kode ?? $gudang->id }}
-                            </option>
+                        <div class="ba-searchable-menu" data-searchable-menu role="listbox">
+                            <button type="button" class="ba-searchable-option" data-value="" data-label="Semua Gudang" role="option">
+                                Semua Gudang
+                            </button>
 
-                        @endforeach
+                            @foreach($gudangs as $gudang)
+                                <button
+                                    type="button"
+                                    class="ba-searchable-option"
+                                    data-value="{{ $gudang->nama_gudang }}"
+                                    data-label="{{ $gudang->nama_gudang }}"
+                                    role="option"
+                                >
+                                    {{ $gudang->nama_gudang }}
+                                </button>
+                            @endforeach
 
-                    </select>
-
+                            <div class="ba-searchable-empty" data-searchable-empty>
+                                Gudang tidak ditemukan
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
 
                 {{-- MITRA --}}
-                <div>
+                <div class="ba-searchable-filter" data-searchable-filter>
 
                     <label class="ba-label">
                         Mitra Pengolahan
                     </label>
 
-                    <select
-                        name="mitra_id"
-                        class="ba-filter-input"
-                    >
+                    <div class="ba-searchable-wrap">
+                        <input
+                            type="text"
+                            class="ba-filter-input ba-searchable-input"
+                            placeholder="Pilih Mitra"
+                            autocomplete="off"
+                            data-searchable-input
+                            role="combobox"
+                            aria-expanded="false"
+                            aria-autocomplete="list"
+                        >
 
-                        <option value="">
-                            Semua Mitra
-                        </option>
+                        <input
+                            type="hidden"
+                            name="mitra_pengolahan_id"
+                            value="{{ request()->has('mitra_pengolahan_id') ? request('mitra_pengolahan_id') : '__NOT_SELECTED__' }}"
+                            data-searchable-value
+                        >
 
-                        @foreach($mitras as $mitra)
+                        <button type="button" class="ba-searchable-arrow" data-searchable-toggle aria-label="Buka pilihan mitra">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
 
-                            <option
-                                value="{{ $mitra->id }}"
-                                @selected(request('mitra_id') == $mitra->id)
-                            >
-                                {{ $mitra->nama ?? $mitra->name ?? $mitra->kode ?? $mitra->id }}
-                            </option>
+                        <div class="ba-searchable-menu" data-searchable-menu role="listbox">
+                            <button type="button" class="ba-searchable-option" data-value="" data-label="Semua Mitra" role="option">
+                                Semua Mitra
+                            </button>
 
-                        @endforeach
+                            @foreach($mitras as $mitra)
+                                <button
+                                    type="button"
+                                    class="ba-searchable-option"
+                                    data-value="{{ $mitra->nama_mitra }}"
+                                    data-label="{{ $mitra->nama_mitra }}"
+                                    role="option"
+                                >
+                                    {{ $mitra->nama_mitra }}
+                                </button>
+                            @endforeach
 
-                    </select>
-
+                            <div class="ba-searchable-empty" data-searchable-empty>
+                                Mitra tidak ditemukan
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
 
@@ -927,7 +977,11 @@
                         class="ba-filter-input"
                     >
 
-                        <option value="">
+                        <option value="" disabled @selected(!request()->has('bulan'))>
+                            Pilih Bulan
+                        </option>
+
+                        <option value="" @selected(request()->has('bulan') && request('bulan') === '')>
                             Semua Bulan
                         </option>
 
@@ -954,14 +1008,31 @@
                         Tahun
                     </label>
 
-                    <input
-                        type="number"
+                    <select
                         name="tahun"
-                        value="{{ request('tahun', now()->year) }}"
                         class="ba-filter-input"
-                        min="2000"
-                        max="2100"
                     >
+
+                        <option value="" disabled @selected(!request()->has('tahun'))>
+                            Pilih Tahun
+                        </option>
+
+                        <option value="" @selected(request()->has('tahun') && request('tahun') === '')>
+                            Semua Tahun
+                        </option>
+
+                        @foreach(range(now()->year, 2020) as $tahun)
+
+                            <option
+                                value="{{ $tahun }}"
+                                @selected(request('tahun') == $tahun)
+                            >
+                                {{ $tahun }}
+                            </option>
+
+                        @endforeach
+
+                    </select>
 
                 </div>
 
@@ -1110,13 +1181,13 @@
 
 
                             <td class="px-5 py-4 text-slate-700">
-                                {{ optional($ba->gudang)->nama ?? optional($ba->gudang)->name ?? '-' }}
-                            </td>
+    {{ optional($ba->gudang)->nama_gudang ?? '-' }}
+</td>
 
 
                             <td class="px-5 py-4 text-slate-700">
-                                {{ optional($ba->mitra)->nama ?? optional($ba->mitra)->name ?? '-' }}
-                            </td>
+    {{ optional($ba->mitraPengolahan)->nama_mitra ?? '-' }}
+</td>
 
 
                             <td class="px-5 py-4">
@@ -1365,6 +1436,297 @@
     </section>
 
 </div>
+
+<style>
+    /* =========================================================
+       SEARCHABLE DROPDOWN — GUDANG & MITRA
+       ========================================================= */
+    .ba-searchable-wrap {
+        position: relative;
+    }
+
+    .ba-searchable-input {
+        width: 100%;
+        padding-right: 48px !important;
+        cursor: text;
+    }
+
+    .ba-searchable-input:focus {
+        outline: none;
+    }
+
+    .ba-searchable-arrow {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        width: 34px;
+        height: 34px;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        background: transparent;
+        color: #64748b;
+        cursor: pointer;
+        z-index: 3;
+        border-radius: 8px;
+    }
+
+    .ba-searchable-arrow:hover {
+        background: rgba(18, 63, 122, .08);
+        color: #123F7A;
+    }
+
+    .ba-searchable-arrow svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .ba-searchable-menu {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 6px);
+        max-height: 260px;
+        overflow-y: auto;
+        padding: 6px;
+        border: 1px solid #dbe4ef;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 14px 35px rgba(15, 23, 42, .16);
+        z-index: 100;
+        display: none;
+    }
+
+    .ba-searchable-wrap.is-open .ba-searchable-menu {
+        display: block;
+    }
+
+    .ba-searchable-option {
+        display: block;
+        width: 100%;
+        padding: 10px 12px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: #334155;
+        text-align: left;
+        font-size: 14px;
+        line-height: 1.35;
+        cursor: pointer;
+    }
+
+    .ba-searchable-option:hover,
+    .ba-searchable-option.is-highlighted {
+        background: #eef5ff;
+        color: #123F7A;
+    }
+
+    .ba-searchable-empty {
+        display: none;
+        padding: 12px;
+        color: #94a3b8;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    .ba-searchable-menu::-webkit-scrollbar {
+        width: 7px;
+    }
+
+    .ba-searchable-menu::-webkit-scrollbar-thumb {
+        border-radius: 999px;
+        background: #cbd5e1;
+    }
+
+    .ba-rampung-page.is-dark .ba-searchable-menu {
+        border-color: #334155;
+        background: #0f1f34;
+        box-shadow: 0 14px 35px rgba(0, 0, 0, .35);
+    }
+
+    .ba-rampung-page.is-dark .ba-searchable-option {
+        color: #e2e8f0;
+    }
+
+    .ba-rampung-page.is-dark .ba-searchable-option:hover,
+    .ba-rampung-page.is-dark .ba-searchable-option.is-highlighted {
+        background: #18365b;
+        color: #fff;
+    }
+
+    .ba-rampung-page.is-dark .ba-searchable-empty {
+        color: #94a3b8;
+    }
+
+    .ba-rampung-page.is-dark .ba-searchable-arrow {
+        color: #94a3b8;
+    }
+
+    .ba-rampung-page.is-dark .ba-searchable-arrow:hover {
+        background: rgba(255, 255, 255, .08);
+        color: #fff;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    document.querySelectorAll('[data-searchable-filter]').forEach(function (filter) {
+
+        const wrap = filter.querySelector('.ba-searchable-wrap');
+        const input = filter.querySelector('[data-searchable-input]');
+        const hidden = filter.querySelector('[data-searchable-value]');
+        const toggle = filter.querySelector('[data-searchable-toggle]');
+        const menu = filter.querySelector('[data-searchable-menu]');
+        const options = Array.from(filter.querySelectorAll('.ba-searchable-option'));
+        const empty = filter.querySelector('[data-searchable-empty]');
+
+        if (!wrap || !input || !hidden || !toggle || !menu) return;
+
+        const NOT_SELECTED = '__NOT_SELECTED__';
+        let highlighted = -1;
+
+        function setOpen(open) {
+            wrap.classList.toggle('is-open', open);
+            input.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (open) {
+                filterOptions('');
+                highlighted = -1;
+            }
+        }
+
+        function filterOptions(query) {
+            const keyword = (query || '').trim().toLowerCase();
+            let visible = 0;
+
+            options.forEach(function (option) {
+                const label = (option.dataset.label || option.textContent || '').trim();
+                const show = !keyword || label.toLowerCase().includes(keyword);
+                option.style.display = show ? '' : 'none';
+                option.classList.remove('is-highlighted');
+                if (show) visible++;
+            });
+
+            empty.style.display = visible ? 'none' : 'block';
+            highlighted = -1;
+        }
+
+        function selectOption(option) {
+            const value = option.dataset.value ?? '';
+            const label = option.dataset.label || option.textContent.trim();
+
+            hidden.value = value;
+            input.value = label;
+            input.dataset.selected = 'true';
+
+            setOpen(false);
+        }
+
+        function resetSearchIfNeeded() {
+            if (hidden.value === NOT_SELECTED) {
+                hidden.value = '';
+                input.value = '';
+            }
+        }
+
+        // Kondisi awal: belum memilih apa pun.
+        if (hidden.value === NOT_SELECTED) {
+            hidden.value = '';
+            input.value = '';
+        } else if (hidden.value === '') {
+            input.value = options[0]?.dataset.label || '';
+        } else {
+            const selected = options.find(function (option) {
+                return option.dataset.value === hidden.value;
+            });
+            if (selected) input.value = selected.dataset.label;
+        }
+
+        input.addEventListener('focus', function () {
+            resetSearchIfNeeded();
+            setOpen(true);
+            input.select();
+        });
+
+        input.addEventListener('input', function () {
+            // Kalau user mulai mengetik setelah sebelumnya memilih item,
+            // pencarian tidak langsung menghapus nilai sampai memilih hasil.
+            setOpen(true);
+            filterOptions(input.value);
+        });
+
+        toggle.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (wrap.classList.contains('is-open')) {
+                setOpen(false);
+            } else {
+                setOpen(true);
+                input.focus();
+            }
+        });
+
+        options.forEach(function (option) {
+            option.addEventListener('mousedown', function (event) {
+                event.preventDefault();
+            });
+
+            option.addEventListener('click', function () {
+                selectOption(option);
+            });
+        });
+
+        input.addEventListener('keydown', function (event) {
+            const visibleOptions = options.filter(function (option) {
+                return option.style.display !== 'none';
+            });
+
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                if (!wrap.classList.contains('is-open')) setOpen(true);
+                if (!visibleOptions.length) return;
+                highlighted = Math.min(highlighted + 1, visibleOptions.length - 1);
+                visibleOptions.forEach(function (option, index) {
+                    option.classList.toggle('is-highlighted', index === highlighted);
+                });
+                visibleOptions[highlighted]?.scrollIntoView({ block: 'nearest' });
+            }
+
+            if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                if (!wrap.classList.contains('is-open')) setOpen(true);
+                if (!visibleOptions.length) return;
+                highlighted = highlighted <= 0 ? visibleOptions.length - 1 : highlighted - 1;
+                visibleOptions.forEach(function (option, index) {
+                    option.classList.toggle('is-highlighted', index === highlighted);
+                });
+                visibleOptions[highlighted]?.scrollIntoView({ block: 'nearest' });
+            }
+
+            if (event.key === 'Enter') {
+                if (wrap.classList.contains('is-open') && highlighted >= 0 && visibleOptions[highlighted]) {
+                    event.preventDefault();
+                    selectOption(visibleOptions[highlighted]);
+                }
+            }
+
+            if (event.key === 'Escape') {
+                setOpen(false);
+                input.blur();
+            }
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!filter.contains(event.target)) {
+                setOpen(false);
+            }
+        });
+    });
+});
+</script>
 
 {{-- =========================================================
     DETEKSI MODE GELAP (khusus tampilan)

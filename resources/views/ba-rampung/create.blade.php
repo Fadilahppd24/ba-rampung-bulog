@@ -554,7 +554,7 @@
                 <div>
 
                     <label class="label">
-                        Nomor BA (Otomatis)
+                        Nomor BA
                     </label>
 
                     <div
@@ -577,16 +577,11 @@
 
                         <input
                             type="text"
-                            disabled
-                            value="Akan dibuat otomatis oleh sistem setelah disimpan"
-                            class="
-                                input
-                                pl-11
-                                bg-slate-50
-                                text-slate-400
-                                italic
-                                text-xs
-                            "
+                            name="nomor_ba"
+                            value="{{ old('nomor_ba') }}"
+                            required
+                            class="input pl-11"
+                            placeholder="Masukkan nomor BA"
                         >
 
                     </div>
@@ -656,6 +651,15 @@
                                 bg-slate-50
                                 text-slate-500
                             "
+                        >
+
+                        {{-- Tahun BA mengikuti otomatis dari Tanggal BA.
+                             Input ini dikirim ke backend, sedangkan field
+                             di atas hanya sebagai tampilan. --}}
+                        <input
+                            type="hidden"
+                            name="tahun_ba"
+                            :value="tanggal ? tanggal.substring(0, 4) : ''"
                         >
 
                     </div>
@@ -1322,7 +1326,7 @@
                     </h2>
 
                     <p class="text-xs text-slate-400 mt-0.5">
-                        Data penandatangan pihak kesatu.
+                        Data penandatangan pihak kesatu dan pihak kedua.
                     </p>
 
                 </div>
@@ -1332,11 +1336,11 @@
 
             <div class="p-7 space-y-5">
 
-                {{-- NAMA PENANDATANGAN --}}
+                {{-- NAMA PENANDATANGAN PIHAK KESATU --}}
                 <div>
 
                     <label class="label">
-                        Nama Penandatangan
+                        Nama Penandatangan Pihak Kesatu (Gudang)
                     </label>
 
                     <input
@@ -1345,17 +1349,17 @@
                         value="{{ old('nama_penandatangan') }}"
                         required
                         class="input"
-                        placeholder="Masukkan nama penandatangan"
+                        placeholder="Masukkan nama penandatangan gudang"
                     >
 
                 </div>
 
 
-                {{-- JABATAN --}}
+                {{-- JABATAN PIHAK KESATU --}}
                 <div>
 
                     <label class="label">
-                        Jabatan
+                        Jabatan Pihak Kesatu (Gudang)
                     </label>
 
                     <input
@@ -1365,6 +1369,44 @@
                         required
                         class="input"
                         placeholder="Masukkan jabatan"
+                    >
+
+                </div>
+
+
+                {{-- NAMA PENANDATANGAN PIHAK KEDUA --}}
+                <div>
+
+                    <label class="label">
+                        Nama Penandatangan Pihak Kedua (Mitra Pengolahan)
+                    </label>
+
+                    <input
+                        type="text"
+                        name="nama_penandatangan_pihak_kedua"
+                        value="{{ old('nama_penandatangan_pihak_kedua') }}"
+                        required
+                        class="input"
+                        placeholder="Masukkan nama penandatangan mitra pengolahan"
+                    >
+
+                </div>
+
+
+                {{-- JABATAN PIHAK KEDUA --}}
+                <div>
+
+                    <label class="label">
+                        Jabatan Pihak Kedua (Mitra Pengolahan)
+                    </label>
+
+                    <input
+                        type="text"
+                        name="jabatan_penandatangan_pihak_kedua"
+                        value="{{ old('jabatan_penandatangan_pihak_kedua') }}"
+                        required
+                        class="input"
+                        placeholder="Masukkan jabatan penandatangan mitra"
                     >
 
                 </div>

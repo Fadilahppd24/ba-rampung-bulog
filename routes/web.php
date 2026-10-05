@@ -4,7 +4,6 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BaRampungController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GudangController;
-use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\MitraPengolahanController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\PimpinanCabangController;
@@ -136,17 +135,6 @@ Route::middleware(['auth', 'role:admin_gudang,admin_kantor,pimpinan_cabang'])->g
         Route::put('/pimpinan/{pimpinan}', [PimpinanCabangController::class, 'update'])
             ->name('pimpinan.update');
     });
-
-    // ---- Laporan ----
-    // Semua role dapat melihat dan export laporan.
-    Route::get('/laporan', [LaporanController::class, 'index'])
-        ->name('laporan.index');
-
-    Route::get('/laporan-export-excel', [LaporanController::class, 'exportExcel'])
-        ->name('laporan.export-excel');
-
-    Route::get('/laporan-export-pdf', [LaporanController::class, 'exportPdf'])
-        ->name('laporan.export-pdf');
 
     // ---- Pengaturan ----
     // Hanya Admin Kantor.

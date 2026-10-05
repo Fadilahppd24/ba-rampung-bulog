@@ -100,23 +100,21 @@ class BaRampungController extends Controller
 
         if (
             ! $user->isAdminGudang()
-            && ($gudangId = $request->input('gudang_id'))
+            && ($gudangNama = $request->input('gudang_id'))
         ) {
-            $query->where(
-                'gudang_id',
-                $gudangId
-            );
+            $query->whereHas('gudang', function ($g) use ($gudangNama) {
+                $g->where('nama_gudang', $gudangNama);
+            });
         }
 
         // =====================================================
         // FILTER MITRA
         // =====================================================
 
-        if ($mitraId = $request->input('mitra_pengolahan_id')) {
-            $query->where(
-                'mitra_pengolahan_id',
-                $mitraId
-            );
+        if ($mitraNama = $request->input('mitra_pengolahan_id')) {
+            $query->whereHas('mitraPengolahan', function ($m) use ($mitraNama) {
+                $m->where('nama_mitra', $mitraNama);
+            });
         }
 
         // =====================================================
@@ -146,7 +144,7 @@ class BaRampungController extends Controller
         // =====================================================
 
         $baList = $query
-    ->orderByDesc('tanggal_ba')
+    ->orderByDesc('created_at')
     ->orderByDesc('id')
     ->paginate(10)
     ->withQueryString();
@@ -372,7 +370,7 @@ class BaRampungController extends Controller
                 $ba = BaRampung::create([
 
                     'nomor_ba' =>
-    $data['nomor_ba'] ?? null,
+                        $this->formatNomorBa($data['nomor_ba'] ?? null, $tanggal),
 
                     'tanggal_ba' =>
                         $tanggal,
@@ -632,7 +630,7 @@ class BaRampungController extends Controller
                         $tanggal,
 
                         'nomor_ba' =>
-    $data['nomor_ba'] ?? null,
+                        $this->formatNomorBa($data['nomor_ba'] ?? null, $tanggal),
 
                     'hari' =>
                         $tanggal->translatedFormat('l'),
@@ -908,11 +906,12 @@ class BaRampungController extends Controller
                 : 'Semua';
 
         $tahun =
-            $filters['tahun']
-            ?? now()->year;
+            $filters['tahun'] ?? null;
+
+        $namaTahun = $tahun ?: 'Semua_Tahun';
 
         $fileName =
-            "Rekap_BA_Rampung_{$namaBulan}_{$tahun}.xlsx";
+            "Rekap_BA_Rampung_{$namaBulan}_{$namaTahun}.xlsx";
 
         return \Maatwebsite\Excel\Facades\Excel::download(
             new \App\Exports\BaRampungExport(
@@ -1085,18 +1084,31 @@ class BaRampungController extends Controller
         // =====================================================
         // DATA BA
         // =====================================================
-$nomorBa = $baRampung->nomor_ba ?? '';
+$nomorBa = trim((string) ($baRampung->nomor_ba ?? ''));
 
-$nomorBaBagian = '';
+/*
+ * Nomor BA di database sekarang disimpan lengkap:
+ * BA-900/10/2026/10040/GKP
+ *
+ * Template Word sudah menyediakan:
+ * BA - [nomor] / [bulan] / [tahun] / 10040 / [suffix]
+ *
+ * Jadi yang dikirim ke nomor_ba_bagian hanya nomor utamanya:
+ * 900
+ */
 
-if (
-    preg_match(
-        '/BA\s*-\s*(\d+)/',
-        $nomorBa,
-        $match
-    )
-) {
-    $nomorBaBagian = $match[1];
+$nomorBaBagian = preg_split('/\//', $nomorBa)[0] ?? '';
+
+$nomorBaBagian = preg_replace(
+    '/^\s*BA\s*[-:]?\s*/i',
+    '',
+    $nomorBaBagian
+);
+
+$nomorBaBagian = trim($nomorBaBagian);
+
+if ($nomorBaBagian === '') {
+    $nomorBaBagian = str_repeat("\u{00A0}", 12);
 }
 
 if ($nomorBaBagian === '') {
@@ -1158,16 +1170,36 @@ if ($nomorBaBagian === '') {
         );
 
         $template->setValue(
-            'nomor_mo',
-            $baRampung->nomor_mo
-            ?? '-'
-        );
+    'nomor_mo',
+    $baRampung->nomor_mo
+        ? trim($baRampung->nomor_mo)
+            . '/'
+            . ($baRampung->tanggal_ba
+                ? $baRampung->tanggal_ba->format('m')
+                : '-')
+            . '/'
+            . ($baRampung->tanggal_ba
+                ? $baRampung->tanggal_ba->format('Y')
+                : '-')
+            . '/10040'
+        : '-'
+);
 
-        $template->setValue(
-            'nomor_po',
-            $baRampung->nomor_po
-            ?? '-'
-        );
+$template->setValue(
+    'nomor_po',
+    $baRampung->nomor_po
+        ? trim($baRampung->nomor_po)
+            . '/'
+            . ($baRampung->tanggal_ba
+                ? $baRampung->tanggal_ba->format('m')
+                : '-')
+            . '/'
+            . ($baRampung->tanggal_ba
+                ? $baRampung->tanggal_ba->format('Y')
+                : '-')
+            . '/10040'
+        : '-'
+);
 
         // =====================================================
         // GUDANG
@@ -1486,6 +1518,75 @@ if ($nomorBaBagian === '') {
         );
     }
 
+
+
+    // =========================================================
+    // FORMAT NOMOR BA
+    // =========================================================
+
+    /**
+     * Memastikan nomor BA yang disimpan selalu memiliki format:
+     * BA-XXX/MM/YYYY/10040/GKP
+     *
+     * Jika form sudah mengirim nomor BA lengkap, nilainya
+     * tetap dipertahankan. Jika yang dikirim hanya nomor,
+     * sistem melengkapinya berdasarkan tanggal BA.
+     */
+    private function formatNomorBa(
+        ?string $nomorBa,
+        \Carbon\Carbon $tanggal
+    ): ?string {
+
+        $nomorBa = trim((string) $nomorBa);
+
+        if ($nomorBa === '') {
+            return null;
+        }
+
+        // Jika nomor BA sudah lengkap, jangan diubah.
+        if (preg_match(
+            '/^BA-\s*[^\/]+\/\d{1,2}\/\d{4}\/10040\/[^\/]+$/i',
+            $nomorBa
+        )) {
+            return preg_replace('/^BA\s*-\s*/i', 'BA-', $nomorBa);
+        }
+
+        // Ambil bagian nomor saja jika input berupa "BA-119"
+        // atau "BA - 119".
+        $bagianNomor = preg_split('/\//', $nomorBa)[0] ?? $nomorBa;
+        $bagianNomor = preg_replace(
+            '/^BA\s*[-:]?\s*/i',
+            '',
+            trim($bagianNomor)
+        );
+
+        $bagianNomor = trim($bagianNomor);
+
+        if ($bagianNomor === '') {
+            return null;
+        }
+
+        $pengaturan = \App\Models\Pengaturan::first();
+
+        $prefix = trim(
+            (string) ($pengaturan?->prefix_nomor_ba ?? 'BA'),
+            " -"
+        );
+
+        $suffix = trim(
+            (string) ($pengaturan?->suffix_nomor_ba ?? 'GKP')
+        );
+
+        return $prefix
+            . '-'
+            . $bagianNomor
+            . '/'
+            . $tanggal->format('m')
+            . '/'
+            . $tanggal->format('Y')
+            . '/10040/'
+            . $suffix;
+    }
 
     // =========================================================
     // SIMPAN PRODUKSI
