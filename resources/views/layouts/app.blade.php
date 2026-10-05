@@ -384,8 +384,7 @@
 
                     @if(auth()->user()?->isAdminKantor())
                         <a
-                            href="{{ route('pengaturan.umum') }}"
-                            class="dashboard-nav-link {{ request()->routeIs('pengaturan.*') ? 'dashboard-nav-active' : '' }}"
+href="{{ route('pengaturan.users.index') }}"                            class="dashboard-nav-link {{ request()->routeIs('pengaturan.*') ? 'dashboard-nav-active' : '' }}"
                         >
                             Pengaturan
                         </a>
@@ -682,7 +681,7 @@
 @if(auth()->user()?->isAdminKantor())
 
                         <a
-                            href="{{ route('pengaturan.umum') }}"
+                            href="{{ route('pengaturan.users.index') }}"
                             class="mobile-dashboard-link"
                         >
                             Pengaturan

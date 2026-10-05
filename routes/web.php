@@ -7,6 +7,7 @@ use App\Http\Controllers\GudangController;
 use App\Http\Controllers\MitraPengolahanController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\PimpinanCabangController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('welcome');
@@ -139,20 +140,32 @@ Route::middleware(['auth', 'role:admin_gudang,admin_kantor,pimpinan_cabang'])->g
     // ---- Pengaturan ----
     // Hanya Admin Kantor.
     Route::middleware('role:admin_kantor')->group(function () {
-        Route::get('/pengaturan', fn () => redirect()->route('pengaturan.umum'))
+        Route::get('/pengaturan', fn () => redirect()->route('pengaturan.users.index'))
             ->name('pengaturan.index');
 
-        Route::get('/pengaturan/umum', [PengaturanController::class, 'umum'])
-            ->name('pengaturan.umum');
+        // ---- Manajemen User ----
+        Route::get('/pengaturan/users', [UserController::class, 'index'])
+            ->name('pengaturan.users.index');
 
-        Route::post('/pengaturan/umum', [PengaturanController::class, 'updateUmum'])
-            ->name('pengaturan.umum.update');
+        Route::get('/pengaturan/users/create', [UserController::class, 'create'])
+            ->name('pengaturan.users.create');
 
-        Route::get('/pengaturan/sistem', [PengaturanController::class, 'sistem'])
-            ->name('pengaturan.sistem');
+        Route::post('/pengaturan/users', [UserController::class, 'store'])
+            ->name('pengaturan.users.store');
 
-        Route::post('/pengaturan/sistem', [PengaturanController::class, 'updateSistem'])
-            ->name('pengaturan.sistem.update');
+        Route::get('/pengaturan/users/{user}/edit', [UserController::class, 'edit'])
+            ->name('pengaturan.users.edit');
+
+        Route::put('/pengaturan/users/{user}', [UserController::class, 'update'])
+            ->name('pengaturan.users.update');
+
+        Route::patch('/pengaturan/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])
+            ->name('pengaturan.users.toggle-status');
+
+        Route::patch('/pengaturan/users/{user}/reset-password', [UserController::class, 'resetPassword'])
+            ->name('pengaturan.users.reset-password');
+
+
 
         Route::get('/pengaturan/backup', [PengaturanController::class, 'backup'])
             ->name('pengaturan.backup');

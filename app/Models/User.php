@@ -43,6 +43,15 @@ class User extends Authenticatable
         return $this->belongsTo(Gudang::class);
     }
 
+    public static function availableRoles(): array
+    {
+        return [
+            self::ROLE_ADMIN_KANTOR,
+            self::ROLE_ADMIN_GUDANG,
+        ];
+    }
+
+
     public function isAdminKantor(): bool
     {
         return $this->role === self::ROLE_ADMIN_KANTOR;
