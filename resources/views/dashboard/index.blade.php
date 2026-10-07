@@ -528,6 +528,108 @@
     }
 </style>
 
+{{-- =========================================================
+    TRANSISI MASUK DASHBOARD
+    Hanya efek masuk: muncul dari bawah lalu naik perlahan.
+========================================================= --}}
+<style>
+    html.dashboard-transition-active .dashboard-page { opacity: 0; transform: translateY(35px); }\n\n    .dashboard-page.dashboard-transition-ready {
+        opacity: 0;
+        transform: translateY(35px);
+    }
+
+    .dashboard-page.dashboard-transition-ready.dashboard-transition-show {
+        opacity: 1;
+        transform: translateY(0);
+        transition:
+            opacity .9s cubic-bezier(.22, 1, .36, 1),
+            transform .9s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .dashboard-page.dashboard-transition-ready {
+            opacity: 1;
+            transform: none;
+            transition: none;
+        }
+    }
+</style>
+
+<script>
+(function () {
+    var ONLY_AFTER_LOGIN = true;
+
+    function shouldAnimate() {
+        if (window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            return false;
+        }
+
+        try {
+            var nav = performance.getEntriesByType('navigation')[0];
+            if (nav && (nav.type === 'reload' || nav.type === 'back_forward')) {
+                return false;
+            }
+        } catch (e) {}
+
+        if (!ONLY_AFTER_LOGIN) return true;
+
+        var ref = document.referrer;
+        if (!ref) return true;
+
+        try {
+            return /login/i.test(new URL(ref).pathname);
+        } catch (e) {
+            return false;
+        }
+    }
+
+    if (!shouldAnimate()) return;
+
+    /*
+     * Penting: script ini berada SEBELUM <div dashboard>.
+     * Karena itu kita pasang penanda pada <html> terlebih dahulu.
+     * Saat div dashboard diparse, CSS langsung membuatnya transparan.
+     */
+    document.documentElement.classList.add('dashboard-transition-active');
+
+    function startDashboardTransition() {
+        var page = document.querySelector('.dashboard-page');
+        if (!page) return;
+
+        page.classList.add('dashboard-transition-ready');
+
+        /*
+         * Paksa browser melakukan layout terlebih dahulu.
+         * Baru setelah itu class show ditambahkan supaya transition
+         * benar-benar terlihat, bukan langsung lompat ke posisi akhir.
+         */
+        page.offsetHeight;
+
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                page.classList.add('dashboard-transition-show');
+
+                setTimeout(function () {
+                    page.classList.remove(
+                        'dashboard-transition-ready',
+                        'dashboard-transition-show'
+                    );
+                    document.documentElement.classList.remove(
+                        'dashboard-transition-active'
+                    );
+                }, 1000);
+            });
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startDashboardTransition, { once: true });
+    } else {
+        startDashboardTransition();
+    }
+})();
+</script>
 
 <div class="dashboard-page space-y-7">
 
@@ -632,155 +734,238 @@
 
     {{-- =====================================================
         KPI
+        Admin Kantor: tampilan lama dipertahankan.
+        Admin Gudang: tampilan khusus gudang.
     ====================================================== --}}
     @php
-        // Hanya untuk visual mini bar (memakai variabel $perBulan yang sudah ada)
         $miniBars = collect($perBulan)->pluck('jumlah')->values();
         $miniMax  = max((float) $miniBars->max(), 1);
     @endphp
 
-    <section
-        class="
-            grid
-            grid-cols-1
-            md:grid-cols-3
-            gap-5
-        "
-    >
+    @if(auth()->user()->isAdminGudang())
 
-        {{-- TOTAL BA --}}
-        <div class="dash-kpi-card">
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
-            <div class="flex items-start justify-between gap-4">
+            {{-- TOTAL BA RAMPUNG --}}
+            <div class="dash-kpi-card">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                            Total BA Rampung
+                        </p>
+                        <p class="dash-kpi-number mt-3">
+                            {{ number_format($kpi['total_ba']) }}
+                        </p>
+                    </div>
 
-                <div>
-
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                        Total BA Rampung
-                    </p>
-
-                    <p class="dash-kpi-number mt-3">
-                        {{ number_format($kpi['total_ba']) }}
-                    </p>
-
+                    <div class="dash-kpi-icon bg-blue-50 text-[#123F7A]">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>
+                            <path d="M14 3v5h5"/>
+                            <path d="M9 13h6M9 17h4"/>
+                        </svg>
+                    </div>
                 </div>
 
-                <div class="dash-kpi-icon bg-blue-50 text-[#123F7A]">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>
-                        <path d="M14 3v5h5"/>
-                        <path d="M9 13h6M9 17h4"/>
-                    </svg>
-                </div>
-
-            </div>
-
-            <div class="mt-5 flex items-end justify-between gap-4">
-
-                <div>
-                    <span class="dash-kpi-badge"><i></i> Dokumen terdaftar</span>
+                <div class="mt-5">
+                    <span class="dash-kpi-badge"><i></i> Sudah disetujui</span>
                     <p class="text-[11px] text-slate-400 mt-2">
-                        Tren bulanan {{ $tahun }}
+                        BA terverifikasi
                     </p>
                 </div>
-
-                <div class="dash-kpi-bars w-28">
-                    @foreach($miniBars as $v)
-                        <span style="height: {{ max(8, round(((float) $v / $miniMax) * 100)) }}%"></span>
-                    @endforeach
-                </div>
-
             </div>
 
-        </div>
+            {{-- MENUNGGU VERIFIKASI --}}
+            <div class="dash-kpi-card dash-kpi-accent">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                            Menunggu Verifikasi
+                        </p>
+                        <p class="dash-kpi-number mt-3">
+                            {{ number_format($kpi['menunggu_verifikasi']) }}
+                        </p>
+                    </div>
 
+                    <div class="dash-kpi-icon bg-orange-50 text-orange-500">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M12 7v5l3 2"/>
+                        </svg>
+                    </div>
+                </div>
 
-        {{-- GUDANG --}}
-        <div class="dash-kpi-card dash-kpi-accent">
-
-            <div class="flex items-start justify-between gap-4">
-
-                <div>
-
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                        Gudang Aktif
+                <div class="mt-5">
+                    <span class="dash-kpi-badge dash-kpi-badge-orange"><i></i> Perlu diperiksa</span>
+                    <p class="text-[11px] text-slate-400 mt-2">
+                        Belum disetujui
                     </p>
+                </div>
+            </div>
 
-                    <p class="dash-kpi-number mt-3">
-                        {{ number_format($kpi['gudang_aktif']) }}
+            {{-- DITOLAK --}}
+            <div class="dash-kpi-card">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                            Ditolak
+                        </p>
+                        <p class="dash-kpi-number mt-3">
+                            {{ number_format($kpi['ditolak']) }}
+                        </p>
+                    </div>
+
+                    <div class="dash-kpi-icon bg-red-50 text-red-500">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M9 9l6 6M15 9l-6 6"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="mt-5">
+                    <span class="dash-kpi-badge"><i></i> Tidak disetujui</span>
+                    <p class="text-[11px] text-slate-400 mt-2">
+                        Perlu diperbaiki bila diperlukan
                     </p>
-
                 </div>
-
-                <div class="dash-kpi-icon bg-orange-50 text-orange-500">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 10l9-6 9 6"/>
-                        <path d="M5 10v10h14V10"/>
-                        <path d="M9 20v-6h6v6"/>
-                    </svg>
-                </div>
-
             </div>
 
-            <div class="mt-5">
+        </section>
 
-                <span class="dash-kpi-badge dash-kpi-badge-orange"><i></i> Gudang terdaftar</span>
+        {{-- INFO GUDANG --}}
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                <div class="dash-kpi-track dash-kpi-track-orange mt-4">
-                    <span></span>
+            <div class="soft-card rounded-3xl p-6">
+                <p class="dashboard-kicker text-[#123F7A]">Gudang</p>
+                <div class="flex items-center justify-between gap-4 mt-2">
+                    <div>
+                        <h2 class="dashboard-display text-3xl font-semibold text-[#123F7A]">
+                            Gudang Saya
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1">
+                            Gudang mengikuti akun yang sedang login.
+                        </p>
+                    </div>
+                    <div class="dash-kpi-icon bg-blue-50 text-[#123F7A]">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 10l9-6 9 6"/>
+                            <path d="M5 10v10h14V10"/>
+                            <path d="M9 20v-6h6v6"/>
+                        </svg>
+                    </div>
                 </div>
-
+                <p class="mt-5 text-xl font-bold text-[#123F7A]">
+                    {{ $kpi['gudang_saya']->nama_gudang ?? '-' }}
+                </p>
             </div>
 
-        </div>
+            <div class="soft-card rounded-3xl p-6">
+              
+        </section>
 
+    @else
 
-        {{-- MITRA --}}
-        <div class="dash-kpi-card">
+        {{-- ADMIN KANTOR: BLOK KPI LAMA TETAP --}}
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
-            <div class="flex items-start justify-between gap-4">
-
-                <div>
-
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                        Mitra Pengolahan
-                    </p>
-
-                    <p class="dash-kpi-number mt-3">
-                        {{ number_format($kpi['mitra_pengolahan']) }}
-                    </p>
-
+            <div class="dash-kpi-card">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total BA Rampung</p>
+                        <p class="dash-kpi-number mt-3">{{ number_format($kpi['total_ba']) }}</p>
+                    </div>
+                    <div class="dash-kpi-icon bg-blue-50 text-[#123F7A]">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>
+                            <path d="M14 3v5h5"/>
+                            <path d="M9 13h6M9 17h4"/>
+                        </svg>
+                    </div>
                 </div>
-
-                <div class="dash-kpi-icon bg-blue-50 text-[#123F7A]">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="9" cy="8" r="3.2"/>
-                        <path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/>
-                        <circle cx="17" cy="9" r="2.4"/>
-                        <path d="M17 14a4 4 0 0 1 4 4v2"/>
-                    </svg>
+                <div class="mt-5 flex items-end justify-between gap-4">
+                    <div>
+                        <span class="dash-kpi-badge"><i></i> Dokumen terdaftar</span>
+                        <p class="text-[11px] text-slate-400 mt-2">Tren bulanan {{ $tahun }}</p>
+                    </div>
+                    <div class="dash-kpi-bars w-28">
+                        @foreach($miniBars as $v)
+                            <span style="height: {{ max(8, round(((float) $v / $miniMax) * 100)) }}%"></span>
+                        @endforeach
+                    </div>
                 </div>
-
             </div>
 
-            <div class="mt-5">
-
-                <span class="dash-kpi-badge"><i></i> Mitra terdaftar</span>
-
-                <div class="dash-kpi-track mt-4">
-                    <span></span>
+            <div class="dash-kpi-card dash-kpi-accent">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Gudang Aktif</p>
+                        <p class="dash-kpi-number mt-3">{{ number_format($kpi['gudang_aktif']) }}</p>
+                    </div>
+                    <div class="dash-kpi-icon bg-orange-50 text-orange-500">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 10l9-6 9 6"/>
+                            <path d="M5 10v10h14V10"/>
+                            <path d="M9 20v-6h6v6"/>
+                        </svg>
+                    </div>
                 </div>
-
+                <div class="mt-5">
+                    <span class="dash-kpi-badge dash-kpi-badge-orange"><i></i> Gudang terdaftar</span>
+                    <div class="dash-kpi-track dash-kpi-track-orange mt-4"><span></span></div>
+                </div>
             </div>
 
-        </div>
+            <div class="dash-kpi-card">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Mitra Pengolahan</p>
+                        <p class="dash-kpi-number mt-3">{{ number_format($kpi['mitra_pengolahan']) }}</p>
+                    </div>
+                    <div class="dash-kpi-icon bg-blue-50 text-[#123F7A]">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="9" cy="8" r="3.2"/>
+                            <path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/>
+                            <circle cx="17" cy="9" r="2.4"/>
+                            <path d="M17 14a4 4 0 0 1 4 4v2"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-5">
+                    <span class="dash-kpi-badge"><i></i> Mitra terdaftar</span>
+                    <div class="dash-kpi-track mt-4"><span></span></div>
+                </div>
+            </div>
 
-    </section>
+        </section>
+
+    @endif
 
 
     {{-- =====================================================
         CHART AREA
     ====================================================== --}}
+    @if(auth()->user()->isAdminGudang())
+        <section class="grid grid-cols-1 gap-6">
+            <div class="soft-card rounded-3xl p-6 chart-card">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+                    <div>
+                        <p class="dashboard-kicker text-[#123F7A]">Statistik Gudang</p>
+                        <h2 class="dashboard-display text-3xl text-[#123F7A] font-semibold">
+                            BA Rampung per Bulan
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Hanya data gudang yang sedang login • Tahun {{ $tahun }}
+                        </p>
+                    </div>
+                </div>
+                <div class="h-[330px]">
+                    <canvas id="chartPerBulan"></canvas>
+                </div>
+            </div>
+        </section>
+    @else
+        {{-- ADMIN KANTOR: CHART LAMA TETAP --}}
     <section
         class="
             grid
@@ -912,53 +1097,119 @@
 
             <div class="mt-5 space-y-3">
 
-                @foreach($distribusiGudang as $d)
+@php
+    $warnaLegendGudang = [
+        '#123F7A', // Cadangpinggan
+        '#F59E0B', // Kedungwungu
+        '#10B981', // Pekandangan
+        '#8B5CF6', // Leuwigede
+        '#EF4444', // Losarang
+        '#06B6D4', // Singakerta I
+        '#EC4899', // Adi Saputra (Gd Sk2)
+        '#84CC16', // Fil PT Yhara Sukses Sejahtera (Gd Cdp)
+    ];
+@endphp
 
-                    <div
-                        class="
-                            flex
-                            justify-between
-                            items-center
-                            text-sm
-                            py-1
-                        "
-                    >
+@foreach($distribusiGudang as $index => $d)
 
-                        <div class="flex items-center gap-2">
+    <div
+        class="
+            flex
+            justify-between
+            items-center
+            text-sm
+            py-1
+        "
+    >
 
-                            <span
-                                class="
-                                    w-2
-                                    h-2
-                                    rounded-full
-                                    bg-[#123F7A]
-                                "
-                            ></span>
+        <div class="flex items-center gap-2">
 
-                            <span class="text-slate-600">
-                                {{ $d->nama_gudang }}
-                            </span>
+            <span
+                class="w-2 h-2 rounded-full flex-shrink-0"
+                style="background-color: {{ $warnaLegendGudang[$index] ?? '#123F7A' }}"
+            ></span>
 
-                        </div>
+            <span class="text-slate-600">
+                {{ $d->nama_gudang }}
+            </span>
 
-                        <span class="font-semibold text-[#123F7A]">
-                            {{ $d->jumlah }}
-                        </span>
+        </div>
 
-                    </div>
+        <span class="font-semibold text-[#123F7A]">
+            {{ $d->jumlah }}
+        </span>
 
-                @endforeach
+    </div>
+
+@endforeach
 
             </div>
 
         </div>
 
     </section>
+    @endif
 
 
     {{-- =====================================================
         DATA BAWAH
     ====================================================== --}}
+    @if(auth()->user()->isAdminGudang())
+        <section>
+            <div class="soft-card rounded-3xl p-6">
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <p class="dashboard-kicker text-[#123F7A]">Aktivitas</p>
+                        <h2 class="dashboard-display text-3xl font-semibold text-[#123F7A]">
+                            BA Rampung Terbaru
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Hanya BA yang sudah disetujui dari {{ $kpi['gudang_saya']->nama_gudang ?? 'gudang Anda' }}.
+                        </p>
+                    </div>
+                    <a href="{{ route('ba-rampung.index') }}"
+                       class="text-sm font-semibold text-[#123F7A] hover:text-orange-500 transition">
+                        Lihat Semua →
+                    </a>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-100 text-[11px] uppercase tracking-wider text-slate-400">
+                                <th class="py-3 text-left">No</th>
+                                <th class="py-3 text-left">Nomor BA</th>
+                                <th class="py-3 text-left">Tanggal</th>
+                                <th class="py-3 text-left">Mitra</th>
+                                <th class="py-3 text-left">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($baTerbaru as $key => $ba)
+                                <tr class="activity-row border-b border-slate-50 transition">
+                                    <td class="py-4 text-slate-400">{{ $key + 1 }}</td>
+                                    <td class="py-4 font-semibold text-[#123F7A]">{{ $ba->nomor_ba }}</td>
+                                    <td class="py-4 text-slate-600">
+                                        {{ $ba->tanggal_ba ? $ba->tanggal_ba->format('d/m/Y') : '-' }}
+                                    </td>
+                                    <td class="py-4 text-slate-600">
+                                        {{ $ba->mitraPengolahan->nama_mitra ?? '-' }}
+                                    </td>
+                                    <td class="py-4">
+                                        <x-status-badge
+                                            :color="$ba->statusBadgeColor()"
+                                            :label="$ba->statusLabel()"
+                                        />
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    @else
+        {{-- ADMIN KANTOR: DATA BAWAH LAMA TETAP --}}
     <section
         class="
             grid
@@ -1100,8 +1351,10 @@
         </div>
 
     </section>
+    @endif
 
 
+    @if(!auth()->user()->isAdminGudang())
     {{-- =====================================================
         AKTIVITAS SISTEM
     ====================================================== --}}
@@ -1189,6 +1442,7 @@
         </div>
 
     </section>
+    @endif
 
 </div>
 
@@ -1327,15 +1581,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     backgroundColor: [
 
-                        '#123F7A',
-                        '#2B67A5',
-                        '#F59E0B',
-                        '#4A90D9',
-                        '#F97316'
+    '#123F7A', // Cadangpinggan
+    '#F59E0B', // Kedungwungu
+    '#10B981', // Pekandangan
+    '#8B5CF6', // Leuwigede
+    '#EF4444', // Losarang
+    '#06B6D4', // Singakerta I
+    '#EC4899', // Adi Saputra (Gd Sk2)
+    '#84CC16'  // Fil PT Yhara Sukses Sejahtera (Gd Cdp)
 
-                    ],
+],
 
-                    borderWidth: 0
+borderWidth: 0
 
                 }]
 
@@ -1420,19 +1677,40 @@ document.addEventListener('DOMContentLoaded', function () {
     const hasChart = typeof Chart !== 'undefined' && typeof Chart.getChart === 'function';
 
     const THEME = hasChart ? {
-        light: {
-            bar:  '#123F7A',
-            tick: Chart.defaults.color,
-            grid: 'rgba(18,63,122,.08)',
-            donut: ['#123F7A', '#2B67A5', '#F59E0B', '#4A90D9', '#F97316']
-        },
-        dark: {
-            bar:  '#60A5FA',
-            tick: '#94A3B8',
-            grid: 'rgba(148,163,184,.14)',
-            donut: ['#60A5FA', '#3B82F6', '#F59E0B', '#93C5FD', '#F97316']
-        }
-    } : null;
+    light: {
+        bar:  '#123F7A',
+        tick: Chart.defaults.color,
+        grid: 'rgba(18,63,122,.08)',
+
+        donut: [
+            '#123F7A', // Cadangpinggan
+            '#F59E0B', // Kedungwungu
+            '#10B981', // Pekandangan
+            '#8B5CF6', // Leuwigede
+            '#EF4444', // Losarang
+            '#06B6D4', // Singakerta I
+            '#EC4899', // Adi Saputra
+            '#84CC16'  // Fil PT Yhara Sukses Sejahtera
+        ]
+    },
+
+    dark: {
+        bar:  '#60A5FA',
+        tick: '#94A3B8',
+        grid: 'rgba(148,163,184,.14)',
+
+        donut: [
+            '#60A5FA', // Cadangpinggan
+            '#FBBF24', // Kedungwungu
+            '#34D399', // Pekandangan
+            '#A78BFA', // Leuwigede
+            '#F87171', // Losarang
+            '#22D3EE', // Singakerta I
+            '#F472B6', // Adi Saputra
+            '#A3E635'  // Fil PT Yhara Sukses Sejahtera
+        ]
+    }
+} : null;
 
     function applyChartTheme(dark) {
 

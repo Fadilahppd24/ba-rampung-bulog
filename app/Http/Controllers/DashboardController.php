@@ -43,7 +43,11 @@ class DashboardController extends Controller
 
             // KPI khusus Admin Gudang
             $kpi = [
-                'total_ba' => (clone $baQuery)->count(),
+                // BA Rampung = BA yang sudah disetujui/terverifikasi.
+                // Status menunggu_verifikasi dan ditolak tidak dihitung.
+                'total_ba' => (clone $baQuery)
+                    ->where('status', BaRampung::STATUS_TERVERIFIKASI)
+                    ->count(),
 
                 'menunggu_verifikasi' => (clone $baQuery)
                     ->where(
@@ -52,14 +56,31 @@ class DashboardController extends Controller
                     )
                     ->count(),
 
-                'selesai' => (clone $baQuery)
-                    ->where('status', 'selesai')
+                'ditolak' => (clone $baQuery)
+                    ->where(
+                        'status',
+                        BaRampung::STATUS_DITOLAK
+                    )
                     ->count(),
 
-                'ditolak' => (clone $baQuery)
-                    ->where('status', 'ditolak')
-                    ->count(),
-            ];
+                'gudang_saya' => $user->gudang_id
+                    ? Gudang::aktif()
+                        ->where('id', $user->gudang_id)
+                        ->first()
+                    : null,
+
+'mitra_pengolahan' => $user->isAdminGudang() && $user->gudang_id
+    ? MitraPengolahan::aktif()
+        ->whereIn(
+            'id',
+            BaRampung::query()
+                ->where('gudang_id', $user->gudang_id)
+                ->whereNotNull('mitra_pengolahan_id')
+                ->distinct()
+                ->pluck('mitra_pengolahan_id')
+        )
+        ->count()
+    : MitraPengolahan::aktif()->count(),            ];
 
         } elseif ($user->isAdminKantor()) {
 

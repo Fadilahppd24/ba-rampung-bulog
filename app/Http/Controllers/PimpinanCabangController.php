@@ -37,9 +37,16 @@ class PimpinanCabangController extends Controller
             return PimpinanCabang::create($data);
         });
 
-        ActivityLogger::log('Menambah Riwayat Pimpinan Cabang', 'pimpinan_cabang', $pimpinan->id, "Nama: {$pimpinan->nama}");
+        ActivityLogger::log(
+            'Menambah Riwayat Pimpinan Cabang',
+            'pimpinan_cabang',
+            $pimpinan->id,
+            "Nama: {$pimpinan->nama}"
+        );
 
-        return redirect()->route('pimpinan.index')->with('success', "Riwayat Pimpinan Cabang {$pimpinan->nama} berhasil ditambahkan.");
+        return redirect()
+            ->route('pimpinan.index')
+            ->with('success', "Riwayat Pimpinan Cabang {$pimpinan->nama} berhasil ditambahkan.");
     }
 
     public function show(PimpinanCabang $pimpinan): View
@@ -52,8 +59,10 @@ class PimpinanCabangController extends Controller
         return view('pimpinan.edit', compact('pimpinan'));
     }
 
-    public function update(UpdatePimpinanCabangRequest $request, PimpinanCabang $pimpinan): RedirectResponse
-    {
+    public function update(
+        UpdatePimpinanCabangRequest $request,
+        PimpinanCabang $pimpinan
+    ): RedirectResponse {
         $data = $request->validated();
 
         DB::transaction(function () use ($data, $pimpinan) {
@@ -64,9 +73,50 @@ class PimpinanCabangController extends Controller
             $pimpinan->update($data);
         });
 
-        ActivityLogger::log('Mengubah Riwayat Pimpinan Cabang', 'pimpinan_cabang', $pimpinan->id, "Nama: {$pimpinan->nama}");
+        ActivityLogger::log(
+            'Mengubah Riwayat Pimpinan Cabang',
+            'pimpinan_cabang',
+            $pimpinan->id,
+            "Nama: {$pimpinan->nama}"
+        );
 
-        return redirect()->route('pimpinan.show', $pimpinan)->with('success', "Data Pimpinan Cabang {$pimpinan->nama} berhasil diperbarui.");
+        return redirect()
+            ->route('pimpinan.index')
+            ->with('success', "Data Pimpinan Cabang {$pimpinan->nama} berhasil diperbarui.");
+    }
+
+    /**
+     * Hapus riwayat Pimpinan Cabang.
+     */
+    public function destroy(PimpinanCabang $pimpinan): RedirectResponse
+    {
+        $namaPimpinan = $pimpinan->nama;
+        $idPimpinan = $pimpinan->id;
+
+        try {
+            $pimpinan->delete();
+
+            ActivityLogger::log(
+                'Menghapus Riwayat Pimpinan Cabang',
+                'pimpinan_cabang',
+                $idPimpinan,
+                "Nama: {$namaPimpinan}"
+            );
+
+            return redirect()
+                ->route('pimpinan.index')
+                ->with(
+                    'success',
+                    "Riwayat Pimpinan Cabang {$namaPimpinan} berhasil dihapus."
+                );
+        } catch (\Throwable $e) {
+            return redirect()
+                ->route('pimpinan.index')
+                ->with(
+                    'error',
+                    "Riwayat Pimpinan Cabang {$namaPimpinan} gagal dihapus. Silakan coba lagi."
+                );
+        }
     }
 
     /**
@@ -75,8 +125,10 @@ class PimpinanCabangController extends Controller
      * every BA Rampung. Whenever a record is (re)activated, every other
      * record is closed out.
      */
-    private function nonaktifkanYangLain(string $periodeMulaiBaru, ?int $kecualiId = null): void
-    {
+    private function nonaktifkanYangLain(
+        string $periodeMulaiBaru,
+        ?int $kecualiId = null
+    ): void {
         PimpinanCabang::where('status', 'aktif')
             ->when($kecualiId, fn ($q) => $q->where('id', '!=', $kecualiId))
             ->update([

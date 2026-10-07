@@ -28,6 +28,13 @@
             </p>
         </div>
 
+        <a
+            href="{{ route('gudang.index') }}"
+            class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-[#123F7A] shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-50"
+        >
+            ← Kembali ke Daftar Gudang
+        </a>
+
     </div>
 
 

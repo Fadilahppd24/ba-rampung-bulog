@@ -11,7 +11,6 @@
        ========================================================= */
 
     .ba-detail-page {
-        padding-bottom: 90px;
         --detail-card-bg: rgba(255,255,255,.95);
         --detail-card-border: rgba(15,43,82,.07);
         --detail-text: #111827;
@@ -293,50 +292,26 @@
 
         <p class="text-sm text-gray-500">
             Dibuat oleh {{ $baRampung->pembuat->name ?? '-' }}
-            · {{ $baRampung->created_at?->timezone('Asia/Jakarta')->format('d/m/Y H:i') ?? '-' }}
+            · {{ $baRampung->created_at->format('d/m/Y H:i') }}
         </p>
     </div>
 
-    <div class="flex flex-wrap items-center justify-end gap-3">
-        {{-- KEMBALI KE DAFTAR BA --}}
-        <a
-            href="{{ route('ba-rampung.index') }}"
-            class="btn-secondary"
-        >
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 12H5m6-6-6 6 6 6"/>
-            </svg>
-            Kembali
-        </a>
-
+    <div class="flex items-center gap-3">
         <x-status-badge
             :color="$baRampung->statusBadgeColor()"
             :label="$baRampung->statusLabel()"
             class="text-sm px-3 py-1.5"
         />
 
-        {{-- PDF HANYA MUNCUL JIKA BA SUDAH DISETUJUI / TERVERIFIKASI --}}
-        @php
-            $statusPdf = strtolower(trim((string) $baRampung->statusLabel()));
-            $bolehCetakPdf = in_array($statusPdf, [
-                'disetujui',
-                'terverifikasi',
-                'diterima',
-            ], true);
-        @endphp
-
-        @if($bolehCetakPdf)
-            <a
-                href="{{ route('ba-rampung.pdf', $baRampung) }}"
-                target="_blank"
-                class="btn-secondary"
-            >
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 9V4h12v5M6 18H4a2 2 0 0 0-2 2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v6H6v-6Z"/>
-                </svg>
-                Cetak PDF
-            </a>
-        @endif
+        <a
+            href="{{ route('ba-rampung.pdf', $baRampung) }}"
+            target="_blank"
+            class="btn-secondary"
+        >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 9V4h12v5M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v6H6v-6Z"/>
+                </svg> Cetak PDF
+        </a>
 
         @can('update', $baRampung)
             <a
@@ -680,25 +655,17 @@
 
             <tbody class="divide-y divide-gray-100">
 
-                @forelse ($baRampung->produksis as $index => $p)
+                @forelse ($baRampung->produksis as $p)
 
                     <tr>
 
-                        @if ($index === 0)
-                            <td
-                                rowspan="{{ $baRampung->produksis->count() }}"
-                                class="px-4 py-3 align-middle"
-                            >
-                                {{ $p->produk_sebelum }}
-                            </td>
+                        <td class="px-4 py-3">
+                            {{ $p->produk_sebelum }}
+                        </td>
 
-                            <td
-                                rowspan="{{ $baRampung->produksis->count() }}"
-                                class="px-4 py-3 align-middle"
-                            >
-                                {{ number_format($p->kuantum_sebelum, 0, ',', '.') }}
-                            </td>
-                        @endif
+                        <td class="px-4 py-3">
+                            {{ number_format($p->kuantum_sebelum, 0, ',', '.') }}
+                        </td>
 
                         <td class="px-4 py-3">
                             {{ $p->produk_sesudah }}

@@ -8,6 +8,7 @@ use App\Http\Controllers\MitraPengolahanController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\PimpinanCabangController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('welcome');
@@ -39,23 +40,33 @@ Route::middleware(['auth', 'role:admin_gudang,admin_kantor,pimpinan_cabang'])->g
     Route::get('/ba-rampung/{baRampung}/pdf', [BaRampungController::class, 'pdf'])
         ->name('ba-rampung.pdf');
 
-    // Admin Gudang & Admin Kantor dapat membuat/edit/hapus BA
-    Route::middleware('role:admin_gudang,admin_kantor')->group(function () {
-        Route::get('/ba-rampung-create', [BaRampungController::class, 'create'])
-            ->name('ba-rampung.create');
+    // ---- NOTIFIKASI ----
+Route::get('/notifications', [NotificationController::class, 'index'])
+    ->name('notifications.index');
 
-        Route::post('/ba-rampung', [BaRampungController::class, 'store'])
-            ->name('ba-rampung.store');
+Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])
+    ->name('notifications.read');
 
-        Route::get('/ba-rampung/{baRampung}/edit', [BaRampungController::class, 'edit'])
-            ->name('ba-rampung.edit');
+Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
+    ->name('notifications.read-all');
 
-        Route::put('/ba-rampung/{baRampung}', [BaRampungController::class, 'update'])
-            ->name('ba-rampung.update');
+    // ---- BA Rampung: Hanya Admin Gudang yang dapat membuat BA ----
+Route::middleware('role:admin_gudang')->group(function () {
+    Route::get('/ba-rampung-create', [BaRampungController::class, 'create'])
+        ->name('ba-rampung.create');
 
-        Route::delete('/ba-rampung/{baRampung}', [BaRampungController::class, 'destroy'])
-            ->name('ba-rampung.destroy');
-    });
+    Route::post('/ba-rampung', [BaRampungController::class, 'store'])
+        ->name('ba-rampung.store');
+
+    Route::get('/ba-rampung/{baRampung}/edit', [BaRampungController::class, 'edit'])
+        ->name('ba-rampung.edit');
+
+    Route::put('/ba-rampung/{baRampung}', [BaRampungController::class, 'update'])
+        ->name('ba-rampung.update');
+
+    Route::delete('/ba-rampung/{baRampung}', [BaRampungController::class, 'destroy'])
+        ->name('ba-rampung.destroy');
+});
 
     // Admin Kantor melakukan verifikasi BA
     Route::middleware('role:admin_kantor')->group(function () {
@@ -72,22 +83,27 @@ Route::middleware(['auth', 'role:admin_gudang,admin_kantor,pimpinan_cabang'])->g
         ->name('gudang.show');
 
     // Hanya Admin Kantor yang mengelola master Gudang.
-    Route::middleware('role:admin_kantor')->group(function () {
-        Route::get('/gudang-create', [GudangController::class, 'create'])
-            ->name('gudang.create');
+Route::middleware('role:admin_kantor')->group(function () {
 
-        Route::post('/gudang', [GudangController::class, 'store'])
-            ->name('gudang.store');
+    Route::get('/gudang-create', [GudangController::class, 'create'])
+        ->name('gudang.create');
 
-        Route::get('/gudang/{gudang}/edit', [GudangController::class, 'edit'])
-            ->name('gudang.edit');
+    Route::post('/gudang', [GudangController::class, 'store'])
+        ->name('gudang.store');
 
-        Route::put('/gudang/{gudang}', [GudangController::class, 'update'])
-            ->name('gudang.update');
+    Route::get('/gudang/{gudang}/edit', [GudangController::class, 'edit'])
+        ->name('gudang.edit');
 
-        Route::patch('/gudang/{gudang}/toggle-status', [GudangController::class, 'toggleStatus'])
-            ->name('gudang.toggle-status');
-    });
+    Route::put('/gudang/{gudang}', [GudangController::class, 'update'])
+        ->name('gudang.update');
+
+    Route::patch('/gudang/{gudang}/toggle-status', [GudangController::class, 'toggleStatus'])
+        ->name('gudang.toggle-status');
+
+    // Hapus Gudang
+    Route::delete('/gudang/{gudang}', [GudangController::class, 'destroy'])
+        ->name('gudang.destroy');
+});
 
     // ---- Mitra Pengolahan ----
     Route::get('/mitra', [MitraPengolahanController::class, 'index'])
@@ -112,6 +128,9 @@ Route::middleware(['auth', 'role:admin_gudang,admin_kantor,pimpinan_cabang'])->g
 
         Route::patch('/mitra/{mitra}/toggle-status', [MitraPengolahanController::class, 'toggleStatus'])
             ->name('mitra.toggle-status');
+
+        Route::delete('/mitra/{mitra}', [MitraPengolahanController::class, 'destroy'])
+            ->name('mitra.destroy');
     });
 
     // ---- Pimpinan Cabang ----
@@ -135,7 +154,13 @@ Route::middleware(['auth', 'role:admin_gudang,admin_kantor,pimpinan_cabang'])->g
 
         Route::put('/pimpinan/{pimpinan}', [PimpinanCabangController::class, 'update'])
             ->name('pimpinan.update');
+
+
+        Route::delete('/pimpinan/{pimpinan}', [PimpinanCabangController::class, 'destroy'])
+            ->name('pimpinan.destroy');
     });
+
+    
 
     // ---- Pengaturan ----
     // Hanya Admin Kantor.
@@ -165,6 +190,8 @@ Route::middleware(['auth', 'role:admin_gudang,admin_kantor,pimpinan_cabang'])->g
         Route::patch('/pengaturan/users/{user}/reset-password', [UserController::class, 'resetPassword'])
             ->name('pengaturan.users.reset-password');
 
+        Route::delete('/pengaturan/users/{user}', [UserController::class, 'destroy'])
+            ->name('pengaturan.users.destroy');
 
 
         Route::get('/pengaturan/backup', [PengaturanController::class, 'backup'])

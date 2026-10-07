@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\BaRampung;
 use App\Models\Gudang;
 use App\Models\User;
 use App\Services\ActivityLogger;
@@ -188,6 +189,97 @@ class UserController extends Controller
         );
 
         return back()->with('success', 'Password user berhasil diubah.');
+    }
+
+    /**
+     * Hapus user.
+     *
+     * User yang sedang login tidak boleh menghapus akunnya sendiri.
+     */
+    public function destroy(User $user): RedirectResponse
+    {
+        $this->ensureManageableUser($user);
+
+        if ($user->id === request()->user()->id) {
+            return back()->with(
+                'error',
+                'Anda tidak dapat menghapus akun yang sedang digunakan.'
+            );
+        }
+
+        $namaUser = $user->name;
+        $userId = $user->id;
+
+        // =========================================================
+        // CEK DATA YANG MASIH MENGGUNAKAN USER
+        // =========================================================
+
+        $jumlahBaDibuat = BaRampung::where(
+            'created_by',
+            $userId
+        )->count();
+
+        $jumlahBaDiverifikasi = BaRampung::where(
+            'verified_by',
+            $userId
+        )->count();
+
+        // User yang sudah dipakai dalam BA tidak boleh dihapus.
+        // Histori BA harus tetap menyimpan siapa pembuat/verifikatornya.
+        if ($jumlahBaDibuat > 0 || $jumlahBaDiverifikasi > 0) {
+
+            $detail = [];
+
+            if ($jumlahBaDibuat > 0) {
+                $detail[] = "{$jumlahBaDibuat} BA Rampung dibuat oleh user ini";
+            }
+
+            if ($jumlahBaDiverifikasi > 0) {
+                $detail[] = "{$jumlahBaDiverifikasi} BA Rampung diverifikasi oleh user ini";
+            }
+
+            return back()->with(
+                'error',
+                "User {$namaUser} tidak dapat dihapus karena masih digunakan pada data sistem. "
+                . implode(' dan ', $detail)
+                . ". Silakan nonaktifkan akun tersebut."
+            );
+        }
+
+        try {
+
+            $user->delete();
+
+            ActivityLogger::log(
+                'Menghapus User',
+                'user',
+                $userId,
+                "Nama: {$namaUser}"
+            );
+
+            return redirect()
+                ->route('pengaturan.users.index')
+                ->with(
+                    'success',
+                    "User {$namaUser} berhasil dihapus."
+                );
+
+        } catch (\Illuminate\Database\QueryException $e) {
+
+            return back()->with(
+                'error',
+                "User {$namaUser} tidak dapat dihapus karena masih digunakan oleh data lain di sistem. "
+                . "Silakan nonaktifkan akun tersebut."
+            );
+
+        } catch (\Throwable $e) {
+
+            return back()->with(
+                'error',
+                "User {$namaUser} gagal dihapus karena terjadi kesalahan sistem. "
+                . "Silakan coba lagi."
+            );
+        }
     }
 
     /**

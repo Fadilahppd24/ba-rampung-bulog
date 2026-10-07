@@ -3,6 +3,35 @@
 @section('title', 'Gudang')
 
 @section('content')
+{{-- POPUP NOTIFIKASI --}}
+@if(session('success') || session('error') || $errors->any())
+<div id="gudang-alert" class="gd-alert-overlay">
+  <div class="gd-alert-card">
+    @if(session('success'))
+      <div class="gd-alert-icon gd-alert-success"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <h3 class="gd-alert-title">Berhasil!</h3>
+      <p class="gd-alert-message">{{ session('success') }}</p>
+    @else
+      <div class="gd-alert-icon gd-alert-error"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></div>
+      <h3 class="gd-alert-title">Gagal!</h3>
+      <p class="gd-alert-message">{{ session('error') ?? $errors->first() }}</p>
+    @endif
+    <button type="button" class="gd-alert-button" onclick="document.getElementById('gudang-alert')?.remove()">OK</button>
+  </div>
+</div>
+@endif
+<style>
+.gd-alert-overlay{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(2,12,27,.48);backdrop-filter:blur(4px);animation:gdFade .2s ease-out}.gd-alert-card{width:min(100%,390px);border:1px solid rgba(15,43,82,.1);border-radius:1.35rem;background:#fff;padding:1.75rem;text-align:center;box-shadow:0 25px 70px rgba(2,12,27,.22);animation:gdScale .22s ease-out}.gd-alert-icon{display:flex;width:4rem;height:4rem;margin:0 auto 1rem;align-items:center;justify-content:center;border-radius:999px}.gd-alert-icon svg{width:2rem;height:2rem}.gd-alert-success{color:#059669;background:#ecfdf5}.gd-alert-error{color:#dc2626;background:#fef2f2}.gd-alert-title{margin:0;color:#0b2545;font-size:1.15rem;font-weight:800}.gd-alert-message{margin:.5rem 0 0;color:#64748b;font-size:.875rem;line-height:1.55}.gd-alert-button{width:100%;margin-top:1.25rem;border:0;border-radius:.8rem;background:#123f7a;color:#fff;padding:.7rem 1rem;font-size:.875rem;font-weight:700;cursor:pointer;transition:.2s}.gd-alert-button:hover{background:#0d3263;transform:translateY(-1px)}html.dark-theme .gd-alert-card{border-color:#263b55;background:#101c2d;box-shadow:0 25px 70px rgba(0,0,0,.45)}html.dark-theme .gd-alert-title{color:#f8fafc}html.dark-theme .gd-alert-message{color:#94a3b8}html.dark-theme .gd-alert-success{color:#6ee7b7;background:rgba(52,211,153,.14)}html.dark-theme .gd-alert-error{color:#fca5a5;background:rgba(239,68,68,.14)}html.dark-theme .gd-alert-button{background:#1f5aa6}html.dark-theme .gd-alert-button:hover{background:#f28c28}@keyframes gdFade{from{opacity:0}to{opacity:1}}@keyframes gdScale{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const alert = document.getElementById('gudang-alert');
+
+    // Popup TIDAK ditutup otomatis.
+    // Popup hanya hilang setelah tombol OK diklik.
+});
+</script>
+
 
 <style>
     /* =========================================================
@@ -699,7 +728,17 @@
     ========================================================== --}}
     <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
-        {{-- TOTAL --}}
+        @php
+            // Total gudang induk berasal dari daftar gudang utama yang
+            // memang sudah disediakan oleh controller untuk filter.
+            $totalGudangInduk = $gudangsUtama->count();
+
+            // Total gudang pada KPI mencakup induk + filial.
+            // Jadi jumlah filial dihitung dari selisihnya.
+            $totalGudangFilial = max(0, (int) $kpi['total'] - $totalGudangInduk);
+        @endphp
+
+        {{-- TOTAL GUDANG INDUK --}}
         <div class="gd-card group rounded-[1.35rem] border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
 
             <div class="flex items-start justify-between">
@@ -707,15 +746,15 @@
                 <div>
 
                     <p class="text-[10px] font-bold uppercase tracking-[.15em] text-slate-400">
-                        Total Gudang
+                        Total Gudang Induk
                     </p>
 
                     <p class="mt-2 text-3xl font-bold tracking-tight text-[#123F7A]">
-                        {{ number_format($kpi['total']) }}
+                        {{ number_format($totalGudangInduk) }}
                     </p>
 
                     <p class="mt-1 text-xs text-slate-400">
-                        Seluruh gudang dalam sistem
+                        Gudang utama dalam sistem
                     </p>
 
                 </div>
@@ -729,7 +768,7 @@
         </div>
 
 
-        {{-- AKTIF --}}
+        {{-- TOTAL GUDANG FILIAL --}}
         <div class="gd-card group rounded-[1.35rem] border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
 
             <div class="flex items-start justify-between">
@@ -737,18 +776,18 @@
                 <div>
 
                     <p class="text-[10px] font-bold uppercase tracking-[.15em] text-slate-400">
-                        Gudang Aktif
+                        Total Gudang Filial
                     </p>
 
                     <p class="mt-2 text-3xl font-bold tracking-tight text-emerald-600">
-                        {{ number_format($kpi['aktif']) }}
+                        {{ number_format($totalGudangFilial) }}
                     </p>
 
                     <div class="mt-1 flex items-center gap-1.5 text-xs text-emerald-600">
 
                         <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
 
-                        Aktif
+                        Gudang Filial
 
                     </div>
 
@@ -1106,12 +1145,14 @@
                     class="gd-group {{ $gdAutoOpen ? 'is-open' : '' }}"
                 >
 
-                    <button
-                        type="button"
+                    <div
                         class="gd-group-head"
                         @click="open = !open"
                         :aria-expanded="open.toString()"
-                        aria-expanded="{{ $gdAutoOpen ? 'true' : 'false' }}"
+                        role="button"
+                        tabindex="0"
+                        @keydown.enter="open = !open"
+                        @keydown.space.prevent="open = !open"
                     >
 
                         <span class="gd-chev">
@@ -1151,7 +1192,98 @@
                             <span class="gd-count-label">Filial</span>
                         </span>
 
-                    </button>
+                        @if($induk)
+                            @role('admin_kantor')
+                                <span
+                                    class="ml-3 flex shrink-0 items-center gap-1.5"
+                                    @click.stop
+                                    @keydown.stop
+                                >
+
+                                    {{-- EDIT GUDANG UTAMA --}}
+                                    <a
+                                        href="{{ route('gudang.edit', $induk) }}"
+                                        title="Edit Gudang Utama"
+                                        class="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-600 transition hover:bg-orange-500 hover:text-white"
+                                        @click.stop
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 15.07a4.5 4.5 0 0 1-1.897 1.13L6 17l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-7.931Z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 7.5 16.5 4.5"/>
+                                        </svg>
+                                    </a>
+
+                                    {{-- TOGGLE STATUS GUDANG UTAMA --}}
+                                    <form
+                                        method="POST"
+                                        action="{{ route('gudang.toggle-status', $induk) }}"
+                                        class="inline"
+                                        @click.stop
+                                        onsubmit="event.preventDefault(); openGudangStatusModal(this.querySelector('button'));"
+                                        data-gudang-name="{{ $induk->nama_gudang }}"
+                                        data-gudang-code="{{ $induk->kode_gudang }}"
+                                        data-status="{{ $induk->status }}"
+                                    >
+                                        @csrf
+                                        @method('PATCH')
+
+                                        <button
+                                            type="button"
+                                            title="{{ $induk->status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan' }}"
+                                            class="flex h-9 w-9 items-center justify-center rounded-xl transition
+                                            {{ $induk->status === 'aktif'
+                                                ? 'bg-red-50 text-red-500 hover:bg-red-500 hover:text-white'
+                                                : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white'
+                                            }}"
+                                            data-gudang-name="{{ $induk->nama_gudang }}"
+                                            data-gudang-code="{{ $induk->kode_gudang }}"
+                                            data-status="{{ $induk->status }}"
+                                            onclick="event.stopPropagation(); openGudangStatusModal(this);"
+                                        >
+                                            @if($induk->status === 'aktif')
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 1 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/>
+                                                </svg>
+                                            @else
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12l4 4L19 6"/>
+                                                </svg>
+                                            @endif
+                                        </button>
+                                    </form>
+
+                                    {{-- HAPUS GUDANG UTAMA --}}
+                                    <form
+                                        method="POST"
+                                        action="{{ route('gudang.destroy', $induk) }}"
+                                        class="inline"
+                                        data-gudang-name="{{ $induk->nama_gudang }}"
+                                        data-gudang-code="{{ $induk->kode_gudang }}"
+                                        @click.stop
+                                        onsubmit="event.preventDefault(); openGudangDeleteModal(this);"
+                                    >
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button
+                                            type="submit"
+                                            title="Hapus Gudang Utama"
+                                            class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-500 transition hover:bg-red-500 hover:text-white"
+                                            onclick="event.stopPropagation();"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 7V4h6v3M7 7l1 14h8l1-14"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 11v6M14 11v6"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+
+                                </span>
+                            @endrole
+                        @endif
+
+                    </div>
 
 
                     {{-- =============================================
@@ -1271,32 +1403,7 @@
                                                 <div class="flex items-center justify-end gap-2">
 
 
-                                                    {{-- LIHAT --}}
-                                                    <a
-                                                        href="{{ route('gudang.show', $filial) }}"
-                                                        title="Lihat Gudang"
-                                                        class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-[#123F7A] transition hover:bg-[#123F7A] hover:text-white"
-                                                    >
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            class="h-4 w-4"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            stroke="currentColor"
-                                                            stroke-width="1.8"
-                                                        >
-                                                            <path
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z"
-                                                            />
-                                                            <path
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                                                            />
-                                                        </svg>
-                                                    </a>
+
 
 
 
@@ -1351,7 +1458,10 @@
                                                                     ? 'bg-red-50 text-red-500 hover:bg-red-500 hover:text-white'
                                                                     : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white'
                                                                 }}"
-                                                                onclick="return confirm('Apakah Anda yakin ingin mengubah status gudang ini?')"
+                                                                onclick="openGudangStatusModal(this); return false;"
+                                                                data-gudang-name="{{ $filial->nama_gudang }}"
+                                                                data-gudang-code="{{ $filial->kode_gudang }}"
+                                                                data-status="{{ $filial->status }}"
                                                             >
 
                                                                 @if($filial->status === 'aktif')
@@ -1392,6 +1502,40 @@
 
                                                             </button>
 
+                                                        </form>
+
+                                                        {{-- HAPUS --}}
+                                                        <form
+                                                            method="POST"
+                                                            action="{{ route('gudang.destroy', $filial) }}"
+                                                            class="inline"
+                                                            onsubmit="openGudangDeleteModal(this); return false;"
+                                                            data-gudang-name="{{ $filial->nama_gudang }}"
+                                                            data-gudang-code="{{ $filial->kode_gudang }}"
+                                                        >
+                                                            @csrf
+                                                            @method('DELETE')
+
+                                                            <button
+                                                                type="submit"
+                                                                title="Hapus Gudang"
+                                                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-500 transition hover:bg-red-500 hover:text-white"
+                                                            >
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    class="h-4 w-4"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                    stroke="currentColor"
+                                                                    stroke-width="1.8"
+                                                                >
+                                                                    <path
+                                                                        stroke-linecap="round"
+                                                                        stroke-linejoin="round"
+                                                                        d="M6 7h12M10 11v6M14 11v6M9 7V4h6v3M7 7l1 14h8l1-14"
+                                                                    />
+                                                                </svg>
+                                                            </button>
                                                         </form>
 
 
@@ -1487,6 +1631,269 @@
     </section>
 
 </div>
+
+{{-- =========================================================
+    MODAL KONFIRMASI STATUS GUDANG
+========================================================= --}}
+<div id="gudang-status-modal" class="gd-status-modal" aria-hidden="true">
+    <div class="gd-status-backdrop" onclick="closeGudangStatusModal()"></div>
+
+    <div class="gd-status-card" role="dialog" aria-modal="true" aria-labelledby="gudang-status-title">
+        <button type="button" class="gd-status-close" onclick="closeGudangStatusModal()" aria-label="Tutup">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+
+        <div class="gd-status-icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 8v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M12 16h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+            </svg>
+        </div>
+
+        <p class="gd-status-kicker">Konfirmasi Status</p>
+
+        <h3 id="gudang-status-title" class="gd-status-title">
+            Apakah Anda yakin ingin mengubah status gudang?
+        </h3>
+
+        <div class="gd-status-info">
+            <p id="gudang-status-name" class="gd-status-name">-</p>
+            <span id="gudang-status-code" class="gd-status-code">-</span>
+        </div>
+
+        <p id="gudang-status-message" class="gd-status-message">
+            Status gudang akan diubah.
+        </p>
+
+        <div class="gd-status-actions">
+            <button type="button" class="gd-status-btn gd-status-cancel" onclick="closeGudangStatusModal()">
+                Batal
+            </button>
+
+            <button type="button" id="gudang-status-confirm" class="gd-status-btn gd-status-confirm" onclick="confirmGudangStatus()">
+                Ya, Nonaktifkan
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+.gd-status-modal{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:1rem}
+.gd-status-modal.is-open{display:flex}
+.gd-status-backdrop{position:absolute;inset:0;background:rgba(2,12,27,.58);backdrop-filter:blur(5px);animation:gdStatusFade .18s ease-out}
+.gd-status-card{position:relative;z-index:1;width:min(100%,430px);border:1px solid rgba(15,43,82,.10);border-radius:1.5rem;background:#fff;padding:2rem;text-align:center;box-shadow:0 28px 80px rgba(2,12,27,.28);animation:gdStatusScale .2s ease-out}
+.gd-status-close{position:absolute;top:1rem;right:1rem;display:flex;width:2rem;height:2rem;align-items:center;justify-content:center;border:0;border-radius:.65rem;background:transparent;color:#94a3b8;cursor:pointer;transition:.2s ease}
+.gd-status-close:hover{background:#f1f5f9;color:#475569}
+.gd-status-close svg{width:1rem;height:1rem}
+.gd-status-icon{display:flex;width:4.25rem;height:4.25rem;margin:0 auto 1rem;align-items:center;justify-content:center;border-radius:999px;background:#fff7ed;color:#f28c28;box-shadow:0 0 0 8px rgba(242,140,40,.08)}
+.gd-status-icon svg{width:2.15rem;height:2.15rem}
+.gd-status-kicker{margin:0;color:#f28c28;font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.gd-status-title{margin:.45rem auto 0;max-width:330px;color:#0b2545;font-size:1.15rem;line-height:1.45;font-weight:800}
+.gd-status-info{margin:1rem auto 0;width:100%;border:1px solid #e2e8f0;border-radius:1rem;background:#f8fafc;padding:.85rem 1rem}
+.gd-status-name{margin:0;color:#0f172a;font-size:.9rem;font-weight:750}
+.gd-status-code{display:inline-block;margin-top:.3rem;border-radius:999px;background:#eaf1fb;padding:.22rem .65rem;color:#123f7a;font-size:.68rem;font-weight:800;letter-spacing:.06em}
+.gd-status-message{margin:.9rem 0 0;color:#64748b;font-size:.82rem;line-height:1.55}
+.gd-status-actions{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:1.35rem}
+.gd-status-btn{min-height:2.75rem;border:0;border-radius:.8rem;padding:.7rem 1rem;font-size:.84rem;font-weight:750;cursor:pointer;transition:transform .18s ease,background-color .18s ease,box-shadow .18s ease}
+.gd-status-btn:hover{transform:translateY(-1px)}
+.gd-status-cancel{border:1px solid #dbe3ec;background:#fff;color:#475569}
+.gd-status-cancel:hover{background:#f8fafc}
+.gd-status-confirm{background:#dc2626;color:#fff;box-shadow:0 8px 20px rgba(220,38,38,.18)}
+.gd-status-confirm:hover{background:#b91c1c}
+.gd-status-confirm.is-activate{background:#059669;box-shadow:0 8px 20px rgba(5,150,105,.18)}
+.gd-status-confirm.is-activate:hover{background:#047857}
+html.dark-theme .gd-status-card{border-color:#263b55;background:#101c2d;box-shadow:0 28px 80px rgba(0,0,0,.5)}
+html.dark-theme .gd-status-close{color:#94a3b8}
+html.dark-theme .gd-status-close:hover{background:rgba(255,255,255,.07);color:#f8fafc}
+html.dark-theme .gd-status-icon{background:rgba(242,140,40,.14);color:#fbbf24;box-shadow:0 0 0 8px rgba(242,140,40,.06)}
+html.dark-theme .gd-status-title{color:#f8fafc}
+html.dark-theme .gd-status-info{border-color:#263b55;background:#132238}
+html.dark-theme .gd-status-name{color:#f1f5f9}
+html.dark-theme .gd-status-code{background:rgba(96,165,250,.14);color:#93c5fd}
+html.dark-theme .gd-status-message{color:#94a3b8}
+html.dark-theme .gd-status-cancel{border-color:#334155;background:#17263a;color:#e2e8f0}
+html.dark-theme .gd-status-cancel:hover{background:#203249}
+@keyframes gdStatusFade{from{opacity:0}to{opacity:1}}
+@keyframes gdStatusScale{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media (max-width:480px){.gd-status-card{padding:1.5rem;border-radius:1.25rem}.gd-status-actions{grid-template-columns:1fr}}
+</style>
+
+<script>
+let gudangStatusForm = null;
+
+function openGudangStatusModal(button) {
+    gudangStatusForm = button.closest('form');
+
+    const modal = document.getElementById('gudang-status-modal');
+    const name = button.dataset.gudangName || 'Gudang';
+    const code = button.dataset.gudangCode || '-';
+    const status = button.dataset.status || 'aktif';
+
+    document.getElementById('gudang-status-name').textContent = name;
+    document.getElementById('gudang-status-code').textContent = code;
+
+    const message = document.getElementById('gudang-status-message');
+    const confirmButton = document.getElementById('gudang-status-confirm');
+
+    if (status === 'aktif') {
+        message.textContent = 'Gudang akan dinonaktifkan dan tidak lagi berstatus aktif di dalam sistem.';
+        confirmButton.textContent = 'Ya, Nonaktifkan';
+        confirmButton.classList.remove('is-activate');
+    } else {
+        message.textContent = 'Gudang akan diaktifkan kembali dan dapat digunakan di dalam sistem.';
+        confirmButton.textContent = 'Ya, Aktifkan';
+        confirmButton.classList.add('is-activate');
+    }
+
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('overflow-hidden');
+}
+
+function closeGudangStatusModal() {
+    const modal = document.getElementById('gudang-status-modal');
+    if (!modal) return;
+
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('overflow-hidden');
+    gudangStatusForm = null;
+}
+
+function confirmGudangStatus() {
+    if (!gudangStatusForm) return;
+    const form = gudangStatusForm;
+    gudangStatusForm = null;
+    form.submit();
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') closeGudangStatusModal();
+});
+</script>
+
+{{-- =========================================================
+    MODAL KONFIRMASI HAPUS GUDANG
+========================================================= --}}
+<div id="gudang-delete-modal" class="gd-status-modal" aria-hidden="true">
+    <div class="gd-status-backdrop" onclick="closeGudangDeleteModal()"></div>
+
+    <div class="gd-status-card" role="dialog" aria-modal="true" aria-labelledby="gudang-delete-title">
+        <button type="button" class="gd-status-close" onclick="closeGudangDeleteModal()" aria-label="Tutup">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+
+        <div class="gd-delete-icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 7h16" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+                <path d="M9 7V4h6v3M7 7l1 14h8l1-14" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <p class="gd-delete-kicker">Hapus Gudang</p>
+
+        <h3 id="gudang-delete-title" class="gd-status-title">
+            Apakah Anda yakin ingin menghapus gudang ini?
+        </h3>
+
+        <div class="gd-status-info gd-delete-info">
+            <p id="gudang-delete-name" class="gd-status-name">-</p>
+            <span id="gudang-delete-code" class="gd-status-code">-</span>
+        </div>
+
+        <p class="gd-status-message">
+            Data gudang yang dihapus tidak dapat digunakan lagi dalam sistem.
+        </p>
+
+        <div class="gd-status-actions">
+            <button type="button" class="gd-status-btn gd-status-cancel" onclick="closeGudangDeleteModal()">
+                Batal
+            </button>
+
+            <button type="button" class="gd-status-btn gd-delete-confirm" onclick="confirmGudangDelete()">
+                Ya, Hapus
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+.gd-delete-icon{
+    display:flex;
+    width:4.25rem;
+    height:4.25rem;
+    margin:0 auto 1rem;
+    align-items:center;
+    justify-content:center;
+    border-radius:999px;
+    background:#fef2f2;
+    color:#dc2626;
+    box-shadow:0 0 0 8px rgba(220,38,38,.07);
+}
+.gd-delete-icon svg{width:2.15rem;height:2.15rem}
+.gd-delete-kicker{
+    margin:0;
+    color:#dc2626;
+    font-size:.68rem;
+    font-weight:800;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+}
+.gd-delete-confirm{
+    background:#dc2626;
+    color:#fff;
+    box-shadow:0 8px 20px rgba(220,38,38,.18);
+}
+.gd-delete-confirm:hover{background:#b91c1c}
+html.dark-theme .gd-delete-icon{
+    background:rgba(239,68,68,.14);
+    color:#fca5a5;
+    box-shadow:0 0 0 8px rgba(239,68,68,.05);
+}
+</style>
+
+<script>
+let gudangDeleteForm = null;
+
+function openGudangDeleteModal(form) {
+    gudangDeleteForm = form;
+
+    const modal = document.getElementById('gudang-delete-modal');
+    document.getElementById('gudang-delete-name').textContent =
+        form.dataset.gudangName || 'Gudang';
+    document.getElementById('gudang-delete-code').textContent =
+        form.dataset.gudangCode || '-';
+
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('overflow-hidden');
+}
+
+function closeGudangDeleteModal() {
+    const modal = document.getElementById('gudang-delete-modal');
+    if (!modal) return;
+
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('overflow-hidden');
+    gudangDeleteForm = null;
+}
+
+function confirmGudangDelete() {
+    if (!gudangDeleteForm) return;
+
+    const form = gudangDeleteForm;
+    gudangDeleteForm = null;
+    form.onsubmit = null;
+    form.submit();
+}
+</script>
 
 {{-- =========================================================
     DETEKSI MODE GELAP (khusus tampilan)

@@ -28,6 +28,13 @@
             </p>
         </div>
 
+        <a
+            href="{{ route('gudang.index') }}"
+            class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-[#123F7A] shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-50"
+        >
+            ← Kembali ke Daftar Gudang
+        </a>
+
     </div>
 
 
@@ -82,6 +89,7 @@
                     <input
                         type="text"
                         name="kode_gudang"
+                        id="kode_gudang"
                         value="{{ $kodeGudang }}"
                         readonly
                         class="input cursor-not-allowed bg-slate-100 font-bold text-[#123F7A]"
@@ -433,41 +441,36 @@
 
 {{-- =============================================================
      SCRIPT JENIS GUDANG
+     JavaScript hanya untuk PREVIEW kode.
+     Kode final tetap dibuat ulang oleh backend saat submit.
 ============================================================= --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
+    const kodePreview = @json($kodePreview);
+
     const jenisGudang = document.getElementById('jenis_gudang');
     const wrapperInduk = document.getElementById('gudang-induk-wrapper');
     const gudangInduk = document.getElementById('gudang_induk_id');
-    const kodeGudang = document.querySelector('input[name="kode_gudang"]');
+    const kodeGudang = document.getElementById('kode_gudang');
 
-    function updateKodeFilial() {
-        const selectedOption = gudangInduk.options[gudangInduk.selectedIndex];
-        const kodeInduk = selectedOption?.dataset?.kode || '';
-
-        if (!kodeInduk) {
-            kodeGudang.value = 'Otomatis';
-            return;
-        }
-
-        kodeGudang.value = `${kodeInduk}-F01`;
+    function updateKodePreview() {
+        kodeGudang.value = kodePreview[jenisGudang.value] ?? kodePreview.utama;
     }
 
     function updateGudangInduk() {
         if (jenisGudang.value === 'filial') {
             wrapperInduk.style.display = 'block';
             gudangInduk.required = true;
-            updateKodeFilial();
         } else {
             wrapperInduk.style.display = 'none';
             gudangInduk.required = false;
             gudangInduk.value = '';
-            kodeGudang.value = @json($kodeGudang);
         }
+
+        updateKodePreview();
     }
 
-    gudangInduk.addEventListener('change', updateKodeFilial);
     jenisGudang.addEventListener('change', updateGudangInduk);
     updateGudangInduk();
 });

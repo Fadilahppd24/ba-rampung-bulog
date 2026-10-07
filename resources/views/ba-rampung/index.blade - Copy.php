@@ -1279,42 +1279,91 @@
                                     @endcan
 
 
-                                    {{-- PDF: HANYA MUNCUL JIKA SUDAH TERVERIFIKASI --}}
-                                    @if($ba->status === \App\Models\BaRampung::STATUS_TERVERIFIKASI)
+                                    {{-- PDF --}}
+                                    @can('view', $ba)
+
                                         <a
                                             href="{{ route('ba-rampung.pdf', $ba) }}"
                                             title="PDF"
                                             target="_blank"
                                             class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-rose-400 hover:bg-rose-50 hover:text-rose-600"
                                         >
+
                                             <svg
                                                 class="h-4 w-4"
                                                 fill="none"
                                                 stroke="currentColor"
                                                 viewBox="0 0 24 24"
                                             >
+
                                                 <path
                                                     stroke-linecap="round"
                                                     stroke-linejoin="round"
                                                     stroke-width="1.8"
                                                     d="M6 2.75h8l4 4V21.25H6z"
                                                 />
+
                                                 <path
                                                     stroke-linecap="round"
                                                     stroke-linejoin="round"
                                                     stroke-width="1.8"
                                                     d="M14 2.75v4h4"
                                                 />
+
                                                 <path
                                                     stroke-linecap="round"
                                                     stroke-linejoin="round"
                                                     stroke-width="1.8"
                                                     d="M8.5 15.5h2.2a1.5 1.5 0 000-3H8.5v5M13 12.5h1.5a2.5 2.5 0 010 5H13z"
                                                 />
-                                            </svg>
-                                        </a>
-                                    @endif
 
+                                            </svg>
+
+                                        </a>
+
+                                    @endcan
+
+
+                                    {{-- DELETE --}}
+                                    @can('delete', $ba)
+
+                                        <form
+                                            method="POST"
+                                            action="{{ route('ba-rampung.destroy', $ba) }}"
+                                            onsubmit="return confirm('Yakin ingin menghapus BA Rampung ini?')"
+                                        >
+
+                                            @csrf
+
+                                            @method('DELETE')
+
+                                            <button
+                                                type="submit"
+                                                title="Hapus"
+                                                class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-red-400 hover:bg-red-50 hover:text-red-600"
+                                            >
+
+                                                <svg
+                                                    class="h-4 w-4"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+
+                                                    <path
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        stroke-width="1.8"
+                                                        d="M4 7h16M10 11v6M14 11v6M9 7V4h6v3M6 7l1 14h10l1-14"
+                                                    />
+
+                                                </svg>
+
+                                            </button>
+
+                                        </form>
+
+                                    @endcan
 
                                 </div>
 

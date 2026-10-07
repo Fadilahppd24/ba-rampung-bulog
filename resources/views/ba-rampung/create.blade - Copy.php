@@ -195,25 +195,6 @@
         color: #F8FAFC;
     }
 
-    /* searchable dropdown mitra */
-    :is(.ba-create-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-create-page) .mitra-search-dropdown {
-        background: #101C2D !important;
-        border-color: #2B405A !important;
-    }
-
-    :is(.ba-create-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-create-page) .mitra-search-option {
-        color: #E2E8F0 !important;
-    }
-
-    :is(.ba-create-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-create-page) .mitra-search-option:hover {
-        background: rgba(242,140,40,.14) !important;
-        color: #F8FAFC !important;
-    }
-
-    :is(.ba-create-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-create-page) .mitra-search-empty {
-        color: #94A3B8 !important;
-    }
-
     /* tabel pengolahan */
     :is(.ba-create-page.is-dark, :is(.dark, .dark-mode, .theme-dark, [data-theme="dark"], [data-bs-theme="dark"]) .ba-create-page) .bg-\[\#F4F7FB\] {
         background-color: rgba(19,34,56,.96) !important;
@@ -1196,107 +1177,28 @@
                         Pihak Kedua (Mitra Pengolahan)
                     </label>
 
-                    {{-- SEARCHABLE DROPDOWN MITRA --}}
-                    <div
-                        class="relative"
-                        x-data="{
-                            open: false,
-                            search: '',
-                            selectedId: '{{ old('mitra_pengolahan_id') }}',
-                            selectedName: '',
-                            mitras: [
-                                @foreach ($mitras as $m)
-                                {
-                                    id: '{{ $m->id }}',
-                                    name: @js($m->nama_mitra)
-                                },
-                                @endforeach
-                            ],
-                            get filtered() {
-                                const q = this.search.trim().toLowerCase();
-                                if (!q) return this.mitras;
-                                return this.mitras.filter(m => m.name.toLowerCase().includes(q));
-                            },
-                            init() {
-                                const selected = this.mitras.find(m => String(m.id) === String(this.selectedId));
-                                if (selected) this.selectedName = selected.name;
-                            },
-                            choose(m) {
-                                this.selectedId = m.id;
-                                this.selectedName = m.name;
-                                this.search = '';
-                                this.open = false;
-                            },
-                            clearSelection() {
-                                this.selectedId = '';
-                                this.selectedName = '';
-                                this.search = '';
-                            }
-                        }"
-                        @click.outside="open = false"
+                    <select
+                        name="mitra_pengolahan_id"
+                        required
+                        class="input"
                     >
-                        <input
-                            type="hidden"
-                            name="mitra_pengolahan_id"
-                            x-model="selectedId"
-                        >
 
-                        <input
-                            type="text"
-                            :value="search !== '' ? search : selectedName"
-                            @focus="open = true"
-                            @input="search = $event.target.value; selectedId = ''; selectedName = ''; open = true"
-                            @keydown.escape="open = false"
-                            @keydown.enter.prevent="if (filtered.length === 1) choose(filtered[0])"
-                            class="input pr-11"
-                            placeholder="Ketik nama mitra untuk mencari..."
-                            autocomplete="off"
-                            required
-                        >
+                        <option value="">
+                            Pilih Mitra Pengolahan
+                        </option>
 
-                        <button
-                            type="button"
-                            @click="open = !open"
-                            class="absolute right-0 top-0 h-full px-4 text-slate-400 hover:text-[#F28C28] transition"
-                            aria-label="Buka daftar mitra"
-                        >
-                            <svg
-                                class="w-4 h-4 transition-transform"
-                                :class="{ 'rotate-180': open }"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
+                        @foreach ($mitras as $m)
+
+                            <option
+                                value="{{ $m->id }}"
+                                @selected(old('mitra_pengolahan_id') == $m->id)
                             >
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m6 9 6 6 6-6"/>
-                            </svg>
-                        </button>
+                                {{ $m->nama_mitra }}
+                            </option>
 
-                        <div
-                            x-show="open"
-                            x-transition.opacity.duration.150ms
-                            class="mitra-search-dropdown absolute z-50 mt-2 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
-                            style="display: none;"
-                        >
-                            <div class="max-h-64 overflow-y-auto py-1">
-                                <template x-for="m in filtered" :key="m.id">
-                                    <button
-                                        type="button"
-                                        @click="choose(m)"
-                                        class="mitra-search-option block w-full px-4 py-3 text-left text-sm text-slate-700 hover:bg-orange-50 hover:text-[#082F63] transition"
-                                        :class="{ 'bg-orange-50 font-semibold text-[#082F63]': String(selectedId) === String(m.id) }"
-                                        x-text="m.name"
-                                    ></button>
-                                </template>
+                        @endforeach
 
-                                <div
-                                    x-show="filtered.length === 0"
-                                    class="mitra-search-empty px-4 py-3 text-sm text-slate-400"
-                                >
-                                    Mitra tidak ditemukan.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </select>
 
                 </div>
 

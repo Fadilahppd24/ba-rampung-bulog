@@ -4,6 +4,50 @@
 
 @section('content')
 
+{{-- POPUP NOTIFIKASI --}}
+@if(session('success') || session('error') || $errors->any())
+    <div id="pimpinan-alert" class="pimpinan-alert-overlay">
+        <div class="pimpinan-alert-card">
+
+            @if(session('success'))
+                <div class="pimpinan-alert-icon success">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M5 12.5l4.2 4.2L19 7"></path>
+                    </svg>
+                </div>
+
+                <h3 class="pimpinan-alert-title">Berhasil!</h3>
+
+                <p class="pimpinan-alert-message">
+                    {{ session('success') }}
+                </p>
+            @else
+                <div class="pimpinan-alert-icon error">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 8v4"></path>
+                        <path d="M12 16h.01"></path>
+                    </svg>
+                </div>
+
+                <h3 class="pimpinan-alert-title">Gagal!</h3>
+
+                <p class="pimpinan-alert-message">
+                    {{ session('error') ?? $errors->first() }}
+                </p>
+            @endif
+
+            <button
+                type="button"
+                class="pimpinan-alert-button"
+                onclick="document.getElementById('pimpinan-alert')?.remove()"
+            >
+                OKE
+            </button>
+
+        </div>
+    </div>
+@endif
+
 {{-- =========================================================
      STYLE KHUSUS HALAMAN PIMPINAN (scoped di .pimpinan-page)
      - Hanya visual. Tidak menyentuh logic / backend.
@@ -213,6 +257,128 @@
     .pimpinan-page .m-act.view { background: var(--m-act-view-bg); color: var(--m-act-view-fg); }
     .pimpinan-page .m-act.edit { background: var(--m-act-edit-bg); color: var(--m-act-edit-fg); }
 
+    .pimpinan-page .m-act.delete {
+        background: rgba(239, 68, 68, .10);
+        color: #DC2626;
+    }
+
+    .pimpinan-page .m-act.delete:hover {
+        background: #DC2626;
+        color: #fff;
+        filter: none;
+    }
+
+    .pimpinan-page[data-m-theme="dark"] .m-act.delete {
+        background: rgba(248, 113, 113, .12);
+        color: #FCA5A5;
+    }
+
+    .pimpinan-page[data-m-theme="dark"] .m-act.delete:hover {
+        background: #DC2626;
+        color: #fff;
+    }
+
+    /* ---------- MODAL KONFIRMASI HAPUS ---------- */
+    .pimpinan-delete-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(5, 18, 35, .62);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+    .pimpinan-delete-overlay.show {
+        display: flex;
+        animation: pimpinanDeleteFade .18s ease-out;
+    }
+    .pimpinan-delete-card {
+        position: relative;
+        width: min(430px, calc(100vw - 40px));
+        padding: 30px;
+        border: 1px solid #E2E8F0;
+        border-radius: 24px;
+        background: #fff;
+        text-align: center;
+        box-shadow: 0 30px 90px rgba(0,0,0,.28);
+        animation: pimpinanDeletePop .22s ease-out;
+    }
+    .pimpinan-delete-close {
+        position: absolute;
+        top: 14px; right: 14px;
+        width: 34px; height: 34px;
+        display: flex; align-items: center; justify-content: center;
+        border: 0; border-radius: 10px;
+        background: #F1F5F9; color: #64748B; cursor: pointer;
+    }
+    .pimpinan-delete-close svg {
+        width: 17px; height: 17px; fill: none; stroke: currentColor;
+        stroke-width: 2; stroke-linecap: round;
+    }
+    .pimpinan-delete-icon {
+        width: 68px; height: 68px; margin: 4px auto 18px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 50%; background: #FEE2E2; color: #DC2626;
+    }
+    .pimpinan-delete-icon svg {
+        width: 32px; height: 32px; fill: none; stroke: currentColor;
+        stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .pimpinan-delete-title { margin: 0; color: #172033; font-size: 21px; font-weight: 800; }
+    .pimpinan-delete-message {
+        margin: 10px auto 0; max-width: 340px; color: #64748B;
+        font-size: 13.5px; line-height: 1.6;
+    }
+    .pimpinan-delete-message strong { color: #172033; font-weight: 750; }
+    .pimpinan-delete-warning {
+        margin: 10px 0 24px; color: #DC2626; font-size: 11.5px; font-weight: 600;
+    }
+    .pimpinan-delete-actions { display: flex; gap: 10px; }
+    .pimpinan-delete-cancel, .pimpinan-delete-confirm {
+        flex: 1; min-height: 44px; border: 0; border-radius: 11px;
+        font-size: 13px; font-weight: 750; cursor: pointer; transition: .18s ease;
+    }
+    .pimpinan-delete-cancel { background: #F1F5F9; color: #475569; }
+    .pimpinan-delete-confirm {
+        display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+        background: #DC2626; color: #fff;
+        box-shadow: 0 8px 20px rgba(220,38,38,.20);
+    }
+    .pimpinan-delete-confirm:hover { background: #B91C1C; transform: translateY(-1px); }
+    .pimpinan-delete-confirm svg {
+        width: 16px; height: 16px; fill: none; stroke: currentColor;
+        stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
+    html.dark-theme .pimpinan-delete-card,
+    html.dark .pimpinan-delete-card,
+    body.dark .pimpinan-delete-card {
+        background: #142238; border-color: #263B55;
+    }
+    html.dark-theme .pimpinan-delete-title,
+    html.dark .pimpinan-delete-title,
+    body.dark .pimpinan-delete-title { color: #F8FAFC; }
+    html.dark-theme .pimpinan-delete-message,
+    html.dark .pimpinan-delete-message,
+    body.dark .pimpinan-delete-message { color: #AAB5C7; }
+    html.dark-theme .pimpinan-delete-message strong,
+    html.dark .pimpinan-delete-message strong,
+    body.dark .pimpinan-delete-message strong { color: #F8FAFC; }
+    html.dark-theme .pimpinan-delete-cancel,
+    html.dark .pimpinan-delete-cancel,
+    body.dark .pimpinan-delete-cancel { background: #24364F; color: #DBEAFE; }
+
+    @keyframes pimpinanDeleteFade {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes pimpinanDeletePop {
+        from { opacity: 0; transform: translateY(10px) scale(.94); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
     /* ---------- PAGINATION (override tampilan bawaan Laravel) ---------- */
     .pimpinan-page .m-pagination nav { color: var(--m-text-2); }
     .pimpinan-page .m-pagination p,
@@ -235,8 +401,139 @@
     .pimpinan-page .m-pagination svg { color: currentColor; }
 
     @media (max-width: 640px) {
-        .pimpinan-page .m-table th, .pimpinan-page .m-table td { padding: 14px 16px; }
+    .pimpinan-page .m-table th,
+    .pimpinan-page .m-table td {
+        padding: 14px 16px;
     }
+}
+
+
+/* =========================================================
+   POPUP NOTIFIKASI
+========================================================= */
+
+.pimpinan-alert-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, .52);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+}
+
+.pimpinan-alert-card {
+    width: min(380px, calc(100vw - 40px));
+    padding: 30px 28px 26px;
+    text-align: center;
+    background: #fff;
+    border-radius: 22px;
+    box-shadow: 0 28px 80px rgba(15, 23, 42, .28);
+    animation: pimpinanAlertPop .22s ease-out;
+}
+
+.pimpinan-alert-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 17px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pimpinan-alert-icon.success {
+    color: #16a34a;
+    background: #dcfce7;
+}
+
+.pimpinan-alert-icon.error {
+    color: #dc2626;
+    background: #fee2e2;
+}
+
+.pimpinan-alert-icon svg {
+    width: 31px;
+    height: 31px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.pimpinan-alert-title {
+    margin: 0;
+    color: #172033;
+    font-size: 21px;
+    font-weight: 750;
+}
+
+.pimpinan-alert-message {
+    margin: 8px auto 22px;
+    max-width: 310px;
+    color: #64748b;
+    font-size: 13.5px;
+    line-height: 1.55;
+}
+
+.pimpinan-alert-button {
+    width: 100%;
+    min-height: 44px;
+    border: 0;
+    border-radius: 11px;
+    background: #f28c28;
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.pimpinan-alert-button:hover {
+    background: #df7614;
+    transform: translateY(-1px);
+}
+
+
+/* DARK MODE */
+
+.pimpinan-page[data-m-theme="dark"] ~ .pimpinan-alert-overlay .pimpinan-alert-card,
+html.dark-theme .pimpinan-alert-card,
+html.dark .pimpinan-alert-card,
+body.dark .pimpinan-alert-card {
+    background: #172033;
+}
+
+html.dark-theme .pimpinan-alert-title,
+html.dark .pimpinan-alert-title,
+body.dark .pimpinan-alert-title {
+    color: #f8fafc;
+}
+
+html.dark-theme .pimpinan-alert-message,
+html.dark .pimpinan-alert-message,
+body.dark .pimpinan-alert-message {
+    color: #aab5c7;
+}
+
+
+/* ANIMASI */
+
+@keyframes pimpinanAlertPop {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
 </style>
 
 <div class="pimpinan-page space-y-6 pb-12">
@@ -758,6 +1055,30 @@
                                                 </svg>
                                             </a>
 
+                                            <form
+                                                method="POST"
+                                                action="{{ route('pimpinan.destroy', $p) }}"
+                                                class="pimpinan-delete-form"
+                                            >
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button
+                                                    type="button"
+                                                    title="Hapus"
+                                                    class="m-act delete"
+                                                    onclick="openPimpinanDeleteModal(this)"
+                                                >
+                                                    <svg class="mi mi-sm" viewBox="0 0 24 24" aria-hidden="true">
+                                                        <path d="M3 6h18"/>
+                                                        <path d="M8 6V4.5A1.5 1.5 0 0 1 9.5 3h5A1.5 1.5 0 0 1 16 4.5V6"/>
+                                                        <path d="M19 6l-1 14H6L5 6"/>
+                                                        <path d="M10 11v5"/>
+                                                        <path d="M14 11v5"/>
+                                                    </svg>
+                                                </button>
+                                            </form>
+
                                         @endif
 
                                     </div>
@@ -823,6 +1144,95 @@
      DETEKSI DARK MODE (hanya membaca status theme dari layout;
      tidak membuat toggle baru, tidak mengubah localStorage)
 ========================================================== --}}
+{{-- MODAL KONFIRMASI HAPUS PIMPINAN --}}
+<div id="pimpinan-delete-modal" class="pimpinan-delete-overlay" aria-hidden="true">
+    <div class="pimpinan-delete-card" role="dialog" aria-modal="true">
+
+        <button type="button" class="pimpinan-delete-close"
+                onclick="closePimpinanDeleteModal()" aria-label="Tutup">
+            <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+        </button>
+
+        <div class="pimpinan-delete-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 9v4"></path>
+                <path d="M12 17h.01"></path>
+                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"></path>
+            </svg>
+        </div>
+
+        <h3 class="pimpinan-delete-title">Hapus Riwayat Pimpinan?</h3>
+
+        <p class="pimpinan-delete-message">
+            Apakah Anda yakin ingin menghapus riwayat pimpinan
+            <strong id="pimpinan-delete-name"></strong>?
+        </p>
+
+        <p class="pimpinan-delete-warning">
+            Data yang sudah dihapus tidak dapat dikembalikan.
+        </p>
+
+        <div class="pimpinan-delete-actions">
+            <button type="button" class="pimpinan-delete-cancel"
+                    onclick="closePimpinanDeleteModal()">
+                Batal
+            </button>
+
+            <button type="button" class="pimpinan-delete-confirm"
+                    onclick="confirmPimpinanDelete()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M3 6h18"></path>
+                    <path d="M8 6V4.5A1.5 1.5 0 0 1 9.5 3h5A1.5 1.5 0 0 1 16 4.5V6"></path>
+                    <path d="M19 6l-1 14H6L5 6"></path>
+                    <path d="M10 11v5"></path>
+                    <path d="M14 11v5"></path>
+                </svg>
+                Ya, Hapus
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pimpinanDeleteForm = null;
+
+    function openPimpinanDeleteModal(button) {
+        pimpinanDeleteForm = button.closest('.pimpinan-delete-form');
+        if (!pimpinanDeleteForm) return;
+
+        const row = button.closest('tr');
+        const nameCell = row ? row.querySelector('td:nth-child(2)') : null;
+        const name = nameCell ? nameCell.textContent.trim() : 'Pimpinan Cabang';
+
+        document.getElementById('pimpinan-delete-name').textContent = name;
+
+        const modal = document.getElementById('pimpinan-delete-modal');
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePimpinanDeleteModal() {
+        const modal = document.getElementById('pimpinan-delete-modal');
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        pimpinanDeleteForm = null;
+    }
+
+    function confirmPimpinanDelete() {
+        if (pimpinanDeleteForm) pimpinanDeleteForm.submit();
+    }
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') closePimpinanDeleteModal();
+    });
+
+    document.getElementById('pimpinan-delete-modal')?.addEventListener('click', function (event) {
+        if (event.target === this) closePimpinanDeleteModal();
+    });
+</script>
+
 <script>
     (function () {
         var page = document.querySelector('.pimpinan-page');

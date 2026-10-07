@@ -184,4 +184,50 @@ class MitraPengolahanController extends Controller
             . '.'
         );
     }
+
+    // =========================================================
+    // HAPUS MITRA PENGOLAHAN
+    // =========================================================
+
+    public function destroy(
+        MitraPengolahan $mitra
+    ): RedirectResponse {
+        $this->authorizeManage();
+
+        // Mitra yang masih memiliki BA Rampung tidak boleh dihapus
+        if ($mitra->baRampungs()->exists()) {
+            return back()->with(
+                'error',
+                "Mitra {$mitra->nama_mitra} tidak dapat dihapus karena masih memiliki data BA Rampung."
+            );
+        }
+
+        $namaMitra = $mitra->nama_mitra;
+        $kodeMitra = $mitra->kode_mitra;
+        $idMitra = $mitra->id;
+
+        try {
+            $mitra->delete();
+
+            ActivityLogger::log(
+                'Menghapus Mitra Pengolahan',
+                'mitra_pengolahan',
+                $idMitra,
+                "Kode: {$kodeMitra}"
+            );
+
+            return redirect()
+                ->route('mitra.index')
+                ->with(
+                    'success',
+                    "Mitra {$namaMitra} berhasil dihapus."
+                );
+        } catch (\Throwable $e) {
+            return back()->with(
+                'error',
+                "Mitra {$namaMitra} gagal dihapus. Silakan coba lagi."
+            );
+        }
+    }
+
 }

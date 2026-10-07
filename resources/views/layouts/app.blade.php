@@ -253,7 +253,7 @@
 @if(request()->routeIs('dashboard') || request()->routeIs('ba-rampung.*') || request()->routeIs('gudang.*') || request()->routeIs('mitra.*') || request()->routeIs('pimpinan.*') || request()->routeIs('pengaturan.*'))
 
 
-<div class="min-h-screen {{ request()->routeIs('ba-rampung.*') || request()->routeIs('gudang.*') || request()->routeIs('mitra.*') || request()->routeIs('pimpinan.*') || request()->routeIs('pengaturan.*') ? 'ba-rampung-fixed-bg' : '' }}">
+<div class="min-h-screen flex flex-col {{ request()->routeIs('ba-rampung.*') || request()->routeIs('gudang.*') || request()->routeIs('mitra.*') || request()->routeIs('pimpinan.*') || request()->routeIs('pengaturan.*') ? 'ba-rampung-fixed-bg' : '' }}">
 
 
     {{-- NAVBAR DASHBOARD --}}
@@ -333,32 +333,12 @@
 
 
                     {{-- BA RAMPUNG --}}
-
-                    <div class="relative group">
-                        <a
-                            href="{{ route('ba-rampung.index') }}"
-                            class="dashboard-nav-link {{ request()->routeIs('ba-rampung.*') ? 'dashboard-nav-active' : '' }} inline-flex items-center gap-1"
-                        >
-                            BA Rampung
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="m6 9 6 6 6-6"/>
-                            </svg>
-                        </a>
-
-                        <div class="absolute left-0 top-full z-[100] hidden min-w-[220px] pt-2 group-hover:block">
-                            <div class="rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
-                                <a href="{{ route('ba-rampung.index') }}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#123F7A]">
-                                    Daftar BA Rampung
-                                </a>
-                                @if(auth()->user()?->isAdminGudang() || auth()->user()?->isAdminKantor())
-                                    <a href="{{ route('ba-rampung.create') }}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#123F7A]">
-                                        Tambah BA Rampung
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-
+<a
+    href="{{ route('ba-rampung.index') }}"
+    class="dashboard-nav-link {{ request()->routeIs('ba-rampung.*') ? 'dashboard-nav-active' : '' }}"
+>
+    BA Rampung
+</a>
 
                     {{-- MASTER DATA --}}
 
@@ -432,57 +412,320 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                         </span>
                     </button>
 
-                    {{-- NOTIFICATION --}}
+                    {{-- =================================================
+                         NOTIFIKASI
+                    ================================================== --}}
+                    @php
+                        $notifikasiTerbaru = \App\Models\Notification::query()
+                            ->where('user_id', auth()->id())
+                            ->latest()
+                            ->take(5)
+                            ->get();
 
-                    <button
-                        type="button"
-                        class="
-                            relative
-                            text-white
-                            hover:text-orange-300
-                            transition
-                        "
+                        $jumlahNotifikasi = \App\Models\Notification::query()
+                            ->where('user_id', auth()->id())
+                            ->where('is_read', false)
+                            ->count();
+                    @endphp
+
+                    <div
+                        class="relative"
+                        x-data="{ notificationOpen: false }"
+                        @click.outside="notificationOpen = false"
                     >
-
-                        <svg
-                            class="h-6 w-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                        {{-- TOMBOL BELL --}}
+                        <button
+                            type="button"
+                            @click="notificationOpen = !notificationOpen"
+                            class="relative text-white hover:text-orange-300 transition"
+                            title="Notifikasi"
+                            aria-label="Notifikasi"
                         >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-width="1.7"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"
+                                />
+                                <path
+                                    stroke-width="1.7"
+                                    stroke-linecap="round"
+                                    d="M10 21h4"
+                                />
+                            </svg>
 
-                            <path
-                                stroke-width="1.7"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"
-                            />
+                            @if($jumlahNotifikasi > 0)
+                                <span
+                                    class="
+                                        absolute
+                                        -right-2
+                                        -top-2
+                                        min-w-[18px]
+                                        h-[18px]
+                                        rounded-full
+                                        bg-[#F28C28]
+                                        px-1
+                                        text-[10px]
+                                        font-bold
+                                        text-white
+                                        flex
+                                        items-center
+                                        justify-center
+                                        ring-2
+                                        ring-[#082F63]
+                                    "
+                                >
+                                    {{ $jumlahNotifikasi > 99 ? '99+' : $jumlahNotifikasi }}
+                                </span>
+                            @endif
+                        </button>
 
-                            <path
-                                stroke-width="1.7"
-                                stroke-linecap="round"
-                                d="M10 21h4"
-                            />
-
-                        </svg>
-
-
-                        <span
+                        {{-- DROPDOWN NOTIFIKASI --}}
+                        <div
+                            x-show="notificationOpen"
+                            x-cloak
+                            x-transition.origin.top.right
                             class="
                                 absolute
-                                -right-0.5
-                                top-0
-                                h-2
-                                w-2
-                                rounded-full
-                                bg-[#F28C28]
-                                ring-2
-                                ring-[#284F6A]
+                                right-0
+                                top-[calc(100%+12px)]
+                                z-[999]
+                                w-[360px]
+                                max-w-[calc(100vw-32px)]
+                                overflow-hidden
+                                rounded-2xl
+                                border
+                                border-slate-200
+                                bg-white
+                                shadow-2xl
                             "
-                        ></span>
+                        >
+                            {{-- HEADER --}}
+                            <div
+                                class="
+                                    flex
+                                    items-center
+                                    justify-between
+                                    border-b
+                                    border-slate-100
+                                    px-4
+                                    py-3
+                                "
+                            >
+                                <div>
+                                    <h3 class="text-sm font-bold text-[#082f63]">
+                                        Notifikasi
+                                    </h3>
+                                    <p class="mt-0.5 text-[11px] text-slate-400">
+                                        {{ $jumlahNotifikasi }} belum dibaca
+                                    </p>
+                                </div>
 
-                    </button>
+                                @if($jumlahNotifikasi > 0)
+                                    <form
+                                        method="POST"
+                                        action="{{ route('notifications.read-all') }}"
+                                    >
+                                        @csrf
+                                        @method('PATCH')
 
+                                        <button
+                                            type="submit"
+                                            class="
+                                                text-[11px]
+                                                font-semibold
+                                                text-[#123F7A]
+                                                hover:text-[#F28C28]
+                                                transition
+                                            "
+                                        >
+                                            Tandai semua
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+
+                            {{-- DAFTAR --}}
+                            <div class="max-h-[380px] overflow-y-auto">
+                                @forelse($notifikasiTerbaru as $notification)
+                                    <form
+                                        method="POST"
+                                        action="{{ route('notifications.read', $notification) }}"
+                                    >
+                                        @csrf
+                                        @method('PATCH')
+
+                                        <button
+                                            type="submit"
+                                            class="
+                                                group
+                                                flex
+                                                w-full
+                                                items-start
+                                                gap-3
+                                                border-b
+                                                border-slate-100
+                                                px-4
+                                                py-3.5
+                                                text-left
+                                                transition
+                                                hover:bg-slate-50
+                                                {{ !$notification->is_read
+                                                    ? 'bg-orange-50/50'
+                                                    : 'bg-white' }}
+                                            "
+                                        >
+                                            <div
+                                                class="
+                                                    mt-0.5
+                                                    flex
+                                                    h-9
+                                                    w-9
+                                                    flex-shrink-0
+                                                    items-center
+                                                    justify-center
+                                                    rounded-xl
+                                                    {{ !$notification->is_read
+                                                        ? 'bg-orange-100 text-[#F28C28]'
+                                                        : 'bg-slate-100 text-slate-400' }}
+                                                "
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke-width="1.8"
+                                                    stroke="currentColor"
+                                                    class="h-4 w-4"
+                                                >
+                                                    <path
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        d="M9 12.75 11.25 15 15 9.75"
+                                                    />
+                                                </svg>
+                                            </div>
+
+                                            <div class="min-w-0 flex-1">
+                                                <div class="flex items-start justify-between gap-2">
+                                                    <p
+                                                        class="
+                                                            text-xs
+                                                            font-bold
+                                                            {{ !$notification->is_read
+                                                                ? 'text-[#082f63]'
+                                                                : 'text-slate-600' }}
+                                                        "
+                                                    >
+                                                        {{ $notification->title }}
+                                                    </p>
+
+                                                    @if(!$notification->is_read)
+                                                        <span
+                                                            class="
+                                                                mt-1
+                                                                h-2
+                                                                w-2
+                                                                flex-shrink-0
+                                                                rounded-full
+                                                                bg-[#F28C28]
+                                                            "
+                                                        ></span>
+                                                    @endif
+                                                </div>
+
+                                                <p
+                                                    class="
+                                                        mt-1
+                                                        line-clamp-2
+                                                        text-[11px]
+                                                        leading-relaxed
+                                                        text-slate-500
+                                                    "
+                                                >
+                                                    {{ $notification->message }}
+                                                </p>
+
+                                                <p class="mt-1.5 text-[10px] text-slate-400">
+                                                    {{ $notification->created_at->diffForHumans() }}
+                                                </p>
+                                            </div>
+                                        </button>
+                                    </form>
+                                @empty
+                                    <div class="px-5 py-10 text-center">
+                                        <div
+                                            class="
+                                                mx-auto
+                                                flex
+                                                h-12
+                                                w-12
+                                                items-center
+                                                justify-center
+                                                rounded-full
+                                                bg-slate-100
+                                                text-slate-400
+                                            "
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke-width="1.6"
+                                                stroke="currentColor"
+                                                class="h-5 w-5"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    d="M14.857 17.082a23.848 23.848 0 0 1-5.714 0A2.25 2.25 0 0 1 7.5 14.85V11a4.5 4.5 0 1 1 9 0v3.85a2.25 2.25 0 0 1-1.643 2.232ZM9.75 18.75a2.25 2.25 0 0 0 4.5 0"
+                                                />
+                                            </svg>
+                                        </div>
+
+                                        <p class="mt-3 text-xs font-semibold text-slate-500">
+                                            Belum ada notifikasi
+                                        </p>
+                                    </div>
+                                @endforelse
+                            </div>
+
+                            {{-- FOOTER --}}
+                            @if($notifikasiTerbaru->count() > 0)
+                                <div
+                                    class="
+                                        border-t
+                                        border-slate-100
+                                        bg-slate-50/70
+                                        px-4
+                                        py-3
+                                        text-center
+                                    "
+                                >
+                                    <a
+                                        href="{{ route('notifications.index') }}"
+                                        @click="notificationOpen = false"
+                                        class="
+                                            text-xs
+                                            font-bold
+                                            text-[#123F7A]
+                                            hover:text-[#F28C28]
+                                            transition
+                                        "
+                                    >
+                                        Lihat semua notifikasi
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
 
                     <div
                         class="
@@ -547,15 +790,14 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                         </div>
 
 
-                        <form
-                            method="POST"
-                            action="{{ route('logout') }}"
+                        {{-- LOGOUT + KONFIRMASI --}}
+                        <div
+                            class="relative"
+                            x-data="{ logoutOpen: false }"
                         >
-
-                            @csrf
-
                             <button
-                                type="submit"
+                                type="button"
+                                @click="logoutOpen = true"
                                 class="
                                     text-xs
                                     text-white/70
@@ -567,7 +809,123 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                 Keluar
                             </button>
 
-                        </form>
+                            {{-- MODAL KONFIRMASI LOGOUT --}}
+                            <div
+                                x-show="logoutOpen"
+                                x-cloak
+                                x-transition
+                                class="
+                                    fixed
+                                    inset-0
+                                    z-[9999]
+                                    flex
+                                    items-center
+                                    justify-center
+                                    bg-black/50
+                                    px-4
+                                "
+                                @click.self="logoutOpen = false"
+                            >
+                                <div
+                                    x-show="logoutOpen"
+                                    x-transition
+                                    class="
+                                        w-full
+                                        max-w-sm
+                                        rounded-2xl
+                                        bg-white
+                                        p-6
+                                        shadow-2xl
+                                    "
+                                >
+                                    <div class="flex items-start gap-4">
+                                        <div
+                                            class="
+                                                flex
+                                                h-11
+                                                w-11
+                                                flex-shrink-0
+                                                items-center
+                                                justify-center
+                                                rounded-full
+                                                bg-orange-100
+                                                text-[#F28C28]
+                                            "
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke-width="1.8"
+                                                stroke="currentColor"
+                                                class="h-5 w-5"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    d="M12 9v3.75m0 3h.008v.008H12V15.75ZM10.29 3.86 1.82 18a1.5 1.5 0 0 0 1.29 2.25h17.78A1.5 1.5 0 0 0 22.18 18L13.71 3.86a1.98 1.98 0 0 0-3.42 0Z"
+                                                />
+                                            </svg>
+                                        </div>
+
+                                        <div>
+                                            <h3 class="text-base font-bold text-[#082F63]">
+                                                Keluar dari sistem?
+                                            </h3>
+
+                                            <p class="mt-1 text-sm leading-relaxed text-slate-500">
+                                                Apakah Anda yakin ingin keluar dari sistem?
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-6 flex justify-end gap-2">
+                                        <button
+                                            type="button"
+                                            @click="logoutOpen = false"
+                                            class="
+                                                rounded-xl
+                                                border
+                                                border-slate-200
+                                                px-4
+                                                py-2
+                                                text-sm
+                                                font-semibold
+                                                text-slate-600
+                                                hover:bg-slate-50
+                                                transition
+                                            "
+                                        >
+                                            Batal
+                                        </button>
+
+                                        <form
+                                            method="POST"
+                                            action="{{ route('logout') }}"
+                                        >
+                                            @csrf
+
+                                            <button
+                                                type="submit"
+                                                class="
+                                                    rounded-xl
+                                                    bg-[#F28C28]
+                                                    px-4
+                                                    py-2
+                                                    text-sm
+                                                    font-semibold
+                                                    text-white
+                                                    hover:bg-[#df7918]
+                                                    transition
+                                                "
+                                            >
+                                                Ya, Keluar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                     </div>
 
@@ -705,7 +1063,9 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
             class="
                 relative
                 z-10
+                flex-1
                 mx-auto
+                w-full
                 max-w-[1500px]
                 px-6
                 pb-10

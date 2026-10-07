@@ -609,6 +609,40 @@
         color: white;
     }
 
+    .um-delete-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 34px;
+        padding: 0 11px;
+        border-radius: 9px;
+        border: 1px solid rgba(239,68,68,.22);
+        color: #DC2626;
+        background: rgba(239,68,68,.04);
+        font-size: 11px;
+        font-weight: 750;
+        transition: .18s ease;
+        cursor: pointer;
+    }
+
+    .um-delete-btn:hover {
+        background: #DC2626;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    html.dark-theme .um-delete-btn {
+        border-color: rgba(248,113,113,.24);
+        color: #F87171;
+        background: rgba(239,68,68,.07);
+    }
+
+    html.dark-theme .um-delete-btn:hover {
+        background: #DC2626;
+        color: white;
+    }
+
 
     /* =========================================================
        EMPTY
@@ -839,6 +873,185 @@
             flex-wrap: wrap;
         }
     }
+
+    /* =========================================================
+       MODAL KONFIRMASI STATUS USER
+    ========================================================= */
+    .um-confirm-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(3, 15, 28, .62);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+
+    .um-confirm-overlay.is-open {
+        display: flex;
+        animation: umFadeIn .18s ease;
+    }
+
+    .um-confirm-modal {
+        width: min(430px, 100%);
+        border: 1px solid rgba(255,255,255,.14);
+        border-radius: 22px;
+        padding: 28px;
+        background: rgba(10, 29, 51, .97);
+        box-shadow:
+            0 28px 80px rgba(0,0,0,.35),
+            inset 0 1px 0 rgba(255,255,255,.08);
+        transform: translateY(8px) scale(.98);
+        animation: umModalIn .2s ease forwards;
+    }
+
+    .um-confirm-icon {
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 18px;
+        border-radius: 17px;
+        color: #FBBF24;
+        background: rgba(245,158,11,.12);
+        border: 1px solid rgba(245,158,11,.20);
+    }
+
+    .um-confirm-title {
+        margin: 0;
+        color: #F8FAFC;
+        font-size: 21px;
+        font-weight: 800;
+        letter-spacing: -.02em;
+    }
+
+    .um-confirm-message {
+        margin-top: 9px;
+        color: #AFC0D2;
+        font-size: 13px;
+        line-height: 1.65;
+    }
+
+    .um-confirm-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 9px;
+        margin-top: 24px;
+    }
+
+    .um-confirm-btn {
+        min-height: 40px;
+        padding: 0 16px;
+        border-radius: 11px;
+        font-size: 12px;
+        font-weight: 800;
+        transition: .18s ease;
+        cursor: pointer;
+    }
+
+    .um-confirm-cancel {
+        border: 1px solid rgba(148,163,184,.20);
+        color: #CBD5E1;
+        background: rgba(148,163,184,.08);
+    }
+
+    .um-confirm-cancel:hover {
+        background: rgba(148,163,184,.15);
+    }
+
+    .um-confirm-submit {
+        border: 1px solid rgba(239,68,68,.25);
+        color: #FFFFFF;
+        background: linear-gradient(135deg, #DC2626, #B91C1C);
+        box-shadow: 0 8px 20px rgba(220,38,38,.20);
+    }
+
+    .um-confirm-submit.um-confirm-activate {
+        border-color: rgba(16,185,129,.25);
+        background: linear-gradient(135deg, #059669, #047857);
+        box-shadow: 0 8px 20px rgba(5,150,105,.20);
+    }
+
+    .um-confirm-submit:hover {
+        transform: translateY(-1px);
+    }
+
+    @keyframes umFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes umModalIn {
+        to {
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    html:not(.dark-theme) .um-confirm-modal {
+        background: rgba(255,255,255,.98);
+        border-color: rgba(15,42,74,.10);
+    }
+
+    html:not(.dark-theme) .um-confirm-title {
+        color: #0B2545;
+    }
+
+    html:not(.dark-theme) .um-confirm-message {
+        color: #64748B;
+    }
+
+    html:not(.dark-theme) .um-confirm-cancel {
+        color: #475569;
+        border-color: rgba(15,42,74,.12);
+        background: rgba(15,42,74,.04);
+    }
+
+    @media (max-width: 480px) {
+        .um-confirm-modal {
+            padding: 22px;
+            border-radius: 18px;
+        }
+
+        .um-confirm-actions {
+            flex-direction: column-reverse;
+        }
+
+        .um-confirm-btn {
+            width: 100%;
+        }
+    }
+
+
+    /* =========================================================
+       POPUP HASIL AKSI USER
+    ========================================================= */
+    .um-result-icon.success {
+        color: #34D399;
+        background: rgba(16,185,129,.11);
+        border-color: rgba(16,185,129,.20);
+    }
+
+    .um-result-icon.error {
+        color: #F87171;
+        background: rgba(239,68,68,.11);
+        border-color: rgba(239,68,68,.20);
+    }
+
+    .um-result-ok {
+        border: 0;
+        color: #fff;
+        background: linear-gradient(135deg,#123F7A,#0B315F);
+        box-shadow: 0 8px 20px rgba(18,63,122,.22);
+    }
+
+    .um-result-ok:hover {
+        transform: translateY(-1px);
+    }
+
 </style>
 
 
@@ -1260,6 +1473,7 @@
                                     <form
                                         method="POST"
                                         action="{{ route('pengaturan.users.toggle-status', $user) }}"
+                                        data-status-form
                                     >
 
                                         @csrf
@@ -1269,9 +1483,11 @@
                                         @if($user->is_active)
 
                                             <button
-                                                type="submit"
+                                                type="button"
                                                 class="um-status-btn um-status-off"
-                                                onclick="return confirm('Nonaktifkan user ini?')"
+                                                data-status-action
+                                                data-action="nonaktifkan"
+                                                data-user-name="{{ $user->name }}"
                                             >
 
                                                 <svg
@@ -1295,9 +1511,11 @@
                                         @else
 
                                             <button
-                                                type="submit"
+                                                type="button"
                                                 class="um-status-btn um-status-on"
-                                                onclick="return confirm('Aktifkan user ini?')"
+                                                data-status-action
+                                                data-action="aktifkan"
+                                                data-user-name="{{ $user->name }}"
                                             >
 
                                                 <svg
@@ -1317,6 +1535,41 @@
 
                                         @endif
 
+                                    </form>
+
+                                    {{-- HAPUS USER --}}
+                                    <form
+                                        method="POST"
+                                        action="{{ route('pengaturan.users.destroy', $user) }}"
+                                        data-delete-form
+                                    >
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button
+                                            type="button"
+                                            class="um-delete-btn"
+                                            data-delete-action
+                                            data-user-name="{{ $user->name }}"
+                                        >
+                                            <svg
+                                                width="13"
+                                                height="13"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            >
+                                                <path d="M3 6h18"/>
+                                                <path d="M8 6V4h8v2"/>
+                                                <path d="M19 6l-1 14H6L5 6"/>
+                                                <path d="M10 11v5"/>
+                                                <path d="M14 11v5"/>
+                                            </svg>
+                                            Hapus
+                                        </button>
                                     </form>
 
                                 </div>
@@ -1385,5 +1638,260 @@
     </section>
 
 </div>
+
+
+    {{-- =====================================================
+         MODAL HASIL AKSI USER
+    ====================================================== --}}
+    @if(session('success') || session('error'))
+        <div id="umResultModal" class="um-confirm-overlay is-open" aria-hidden="false">
+            <div class="um-confirm-modal" role="dialog" aria-modal="true">
+                <div class="um-confirm-icon {{ session('success') ? 'success' : 'error' }} um-result-icon">
+                    @if(session('success'))
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 6 9 17l-5-5"/>
+                        </svg>
+                    @else
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M12 8v5"/>
+                            <path d="M12 16h.01"/>
+                        </svg>
+                    @endif
+                </div>
+
+                <h3 class="um-confirm-title">
+                    {{ session('success') ? 'Berhasil!' : 'Gagal!' }}
+                </h3>
+
+                <p class="um-confirm-message">
+                    {{ session('success') ?? session('error') }}
+                </p>
+
+                <div class="um-confirm-actions">
+                    <button type="button" id="umResultOk" class="um-confirm-btn um-result-ok">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- =====================================================
+         MODAL KONFIRMASI HAPUS USER
+    ====================================================== --}}
+    <div id="umDeleteConfirm" class="um-confirm-overlay" aria-hidden="true">
+        <div class="um-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="umDeleteTitle">
+            <div class="um-confirm-icon" style="color:#F87171;background:rgba(239,68,68,.11);border-color:rgba(239,68,68,.20);">
+                <svg width="27" height="27" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M3 6h18"/>
+                    <path d="M8 6V4h8v2"/>
+                    <path d="M19 6l-1 14H6L5 6"/>
+                    <path d="M10 11v5"/>
+                    <path d="M14 11v5"/>
+                </svg>
+            </div>
+
+            <h3 id="umDeleteTitle" class="um-confirm-title">Hapus User?</h3>
+
+            <p id="umDeleteMessage" class="um-confirm-message">
+                Apakah Anda yakin ingin menghapus user ini? Data yang sudah dihapus tidak dapat dikembalikan.
+            </p>
+
+            <div class="um-confirm-actions">
+                <button type="button" id="umDeleteCancel" class="um-confirm-btn um-confirm-cancel">
+                    Batal
+                </button>
+
+                <button type="button" id="umDeleteSubmit" class="um-confirm-btn um-confirm-submit">
+                    Ya, Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- =====================================================
+         MODAL KONFIRMASI STATUS USER
+    ====================================================== --}}
+    <div id="umStatusConfirm" class="um-confirm-overlay" aria-hidden="true">
+        <div class="um-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="umConfirmTitle">
+            <div class="um-confirm-icon">
+                <svg width="27" height="27" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M10.3 3.6 2.9 16.5A2 2 0 0 0 4.6 19.5h14.8a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z"/>
+                    <path d="M12 9v4"/>
+                    <path d="M12 17h.01"/>
+                </svg>
+            </div>
+
+            <h3 id="umConfirmTitle" class="um-confirm-title">
+                Konfirmasi Perubahan Status
+            </h3>
+
+            <p id="umConfirmMessage" class="um-confirm-message">
+                Apakah Anda yakin ingin mengubah status user ini?
+            </p>
+
+            <div class="um-confirm-actions">
+                <button type="button" id="umConfirmCancel" class="um-confirm-btn um-confirm-cancel">
+                    Batal
+                </button>
+
+                <button type="button" id="umConfirmSubmit" class="um-confirm-btn um-confirm-submit">
+                    Ya, Nonaktifkan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (() => {
+            const overlay = document.getElementById('umDeleteConfirm');
+            const message = document.getElementById('umDeleteMessage');
+            const submit = document.getElementById('umDeleteSubmit');
+            const cancel = document.getElementById('umDeleteCancel');
+
+            if (!overlay || !message || !submit || !cancel) return;
+
+            let activeForm = null;
+
+            const closeModal = () => {
+                overlay.classList.remove('is-open');
+                overlay.setAttribute('aria-hidden', 'true');
+                activeForm = null;
+            };
+
+            document.querySelectorAll('[data-delete-action]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const form = button.closest('form');
+                    if (!form) return;
+
+                    const userName = button.dataset.userName || 'user ini';
+                    activeForm = form;
+
+                    message.textContent =
+                        `Apakah Anda yakin ingin menghapus user "${userName}"? Data yang sudah dihapus tidak dapat dikembalikan.`;
+
+                    overlay.classList.add('is-open');
+                    overlay.setAttribute('aria-hidden', 'false');
+
+                    setTimeout(() => submit.focus(), 50);
+                });
+            });
+
+            cancel.addEventListener('click', closeModal);
+
+            submit.addEventListener('click', () => {
+                if (!activeForm) return;
+                submit.disabled = true;
+                activeForm.submit();
+            });
+
+            overlay.addEventListener('click', (event) => {
+                if (event.target === overlay) closeModal();
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && overlay.classList.contains('is-open')) {
+                    closeModal();
+                }
+            });
+        })();
+    </script>
+
+    <script>
+        (() => {
+            const overlay = document.getElementById('umStatusConfirm');
+            const message = document.getElementById('umConfirmMessage');
+            const submit = document.getElementById('umConfirmSubmit');
+            const cancel = document.getElementById('umConfirmCancel');
+
+            if (!overlay || !message || !submit || !cancel) return;
+
+            let activeForm = null;
+
+            const closeModal = () => {
+                overlay.classList.remove('is-open');
+                overlay.setAttribute('aria-hidden', 'true');
+                activeForm = null;
+            };
+
+            document.querySelectorAll('[data-status-action]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const form = button.closest('form');
+                    if (!form) return;
+
+                    const action = button.dataset.action;
+                    const userName = button.dataset.userName || 'user ini';
+                    const isActivate = action === 'aktifkan';
+
+                    activeForm = form;
+
+                    message.textContent = isActivate
+                        ? `Apakah Anda yakin ingin mengaktifkan user "${userName}"?`
+                        : `Apakah Anda yakin ingin menonaktifkan user "${userName}"?`;
+
+                    submit.textContent = isActivate
+                        ? 'Ya, Aktifkan'
+                        : 'Ya, Nonaktifkan';
+
+                    submit.classList.toggle('um-confirm-activate', isActivate);
+
+                    overlay.classList.add('is-open');
+                    overlay.setAttribute('aria-hidden', 'false');
+
+                    setTimeout(() => submit.focus(), 50);
+                });
+            });
+
+            cancel.addEventListener('click', closeModal);
+
+            submit.addEventListener('click', () => {
+                if (!activeForm) return;
+                submit.disabled = true;
+                activeForm.submit();
+            });
+
+            overlay.addEventListener('click', (event) => {
+                if (event.target === overlay) closeModal();
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && overlay.classList.contains('is-open')) {
+                    closeModal();
+                }
+            });
+        })();
+    </script>
+
+
+    <script>
+        (() => {
+            const modal = document.getElementById('umResultModal');
+            const ok = document.getElementById('umResultOk');
+
+            if (!modal || !ok) return;
+
+            const close = () => {
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+            };
+
+            ok.addEventListener('click', close);
+
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) close();
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') close();
+            });
+        })();
+    </script>
 
 @endsection

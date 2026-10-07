@@ -9,6 +9,8 @@ use App\Models\BaRampung;
 use App\Models\Gudang;
 use App\Models\MitraPengolahan;
 use App\Models\PimpinanCabang;
+use App\Models\Notification;
+use App\Models\User;
 use App\Services\ActivityLogger;
 use App\Services\RendemenCalculator;
 use Illuminate\Http\RedirectResponse;
@@ -451,6 +453,36 @@ class BaRampungController extends Controller
             "Nomor BA: {$ba->nomor_ba}"
         );
 
+
+        // ========================================
+// NOTIFIKASI KE ADMIN KANTOR
+// ========================================
+
+if ($ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI) {
+
+    $ba->load('gudang');
+
+    $adminKantors = User::query()
+        ->where('role', 'admin_kantor')
+        ->where('is_active', true)
+        ->get();
+
+    foreach ($adminKantors as $adminKantor) {
+
+        Notification::create([
+            'user_id' => $adminKantor->id,
+            'ba_rampung_id' => $ba->id,
+            'type' => 'ba_menunggu_verifikasi',
+            'title' => 'BA Rampung Menunggu Verifikasi',
+            'message' => 'BA Rampung ' . $ba->nomor_ba .
+                ' baru dari Gudang ' .
+                ($ba->gudang->nama_gudang ?? '-') .
+                ' dan menunggu verifikasi.',
+            'is_read' => false,
+        ]);
+    }
+}
+
         return redirect()
             ->route(
                 'ba-rampung.show',
@@ -802,6 +834,32 @@ class BaRampungController extends Controller
                 "BA {$baRampung->nomor_ba} diterima."
             );
 
+            // ========================================
+            // NOTIFIKASI KE ADMIN GUDANG
+            // BA DITERIMA
+            // ========================================
+
+            $adminGudang = User::query()
+                ->where('id', $baRampung->created_by)
+                ->where('role', 'admin_gudang')
+                ->where('is_active', true)
+                ->first();
+
+            if ($adminGudang) {
+
+                Notification::create([
+                    'user_id' => $adminGudang->id,
+                    'ba_rampung_id' => $baRampung->id,
+                    'type' => 'ba_terverifikasi',
+                    'title' => 'BA Rampung Diverifikasi',
+                    'message' => 'BA Rampung ' .
+                        $baRampung->nomor_ba .
+                        ' telah diterima dan diverifikasi oleh Admin Kantor.',
+                    'is_read' => false,
+                ]);
+            }
+
+
             $pesan =
                 "BA Rampung {$baRampung->nomor_ba} berhasil diverifikasi.";
 
@@ -828,6 +886,32 @@ class BaRampungController extends Controller
                 $baRampung->id,
                 "BA {$baRampung->nomor_ba} ditolak: {$data['alasan_penolakan']}"
             );
+
+            // ========================================
+            // NOTIFIKASI KE ADMIN GUDANG
+            // BA DITOLAK
+            // ========================================
+
+            $adminGudang = User::query()
+                ->where('id', $baRampung->created_by)
+                ->where('role', 'admin_gudang')
+                ->where('is_active', true)
+                ->first();
+
+            if ($adminGudang) {
+
+                Notification::create([
+                    'user_id' => $adminGudang->id,
+                    'ba_rampung_id' => $baRampung->id,
+                    'type' => 'ba_ditolak',
+                    'title' => 'BA Rampung Ditolak',
+                    'message' => 'BA Rampung ' .
+                        $baRampung->nomor_ba .
+                        ' ditolak oleh Admin Kantor. Alasan: ' .
+                        ($baRampung->alasan_penolakan ?? '-'),
+                    'is_read' => false,
+                ]);
+            }
 
             $pesan =
                 "BA Rampung {$baRampung->nomor_ba} ditolak.";

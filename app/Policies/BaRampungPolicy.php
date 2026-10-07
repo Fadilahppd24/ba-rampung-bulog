@@ -27,28 +27,33 @@ class BaRampungPolicy
 
     public function create(User $user): bool
     {
-        return $user->isAdminGudang() || $user->isAdminKantor();
+        // Hanya Admin Gudang yang berhak membuat BA Rampung.
+        return $user->isAdminGudang();
     }
 
-    public function update(User $user, BaRampung $ba): bool
-    {
-        if (! $this->view($user, $ba)) {
-            return false;
-        }
-
-        // Hanya bisa edit saat draft atau menunggu verifikasi
-        return in_array(
-            $ba->status,
-            [
-                BaRampung::STATUS_DRAFT,
-                BaRampung::STATUS_MENUNGGU_VERIFIKASI
-            ],
-            true
-        ) && (
-            $user->isAdminGudang() ||
-            $user->isAdminKantor()
-        );
+   public function update(User $user, BaRampung $ba): bool
+{
+    // Hanya Admin Gudang yang boleh mengedit
+    if (! $user->isAdminGudang()) {
+        return false;
     }
+
+    // Hanya pembuat BA tersebut yang boleh mengedit
+    if ((int) $ba->created_by !== (int) $user->id) {
+        return false;
+    }
+
+    // BA yang masih boleh diedit
+    return in_array(
+        $ba->status,
+        [
+            BaRampung::STATUS_DRAFT,
+            BaRampung::STATUS_MENUNGGU_VERIFIKASI,
+            BaRampung::STATUS_DITOLAK,
+        ],
+        true
+    );
+}
 
     public function delete(User $user, BaRampung $ba): bool
     {
