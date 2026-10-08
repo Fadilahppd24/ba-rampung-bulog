@@ -1274,63 +1274,7 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
         >
 
 
-{{-- NOTIFIKASI MODERN --}}
-@if(session('success') || session('error'))    <div
-        x-data="{ show: true }"
-        x-show="show"
-        x-init="setTimeout(() => show = false, 5000)"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 translate-x-5 scale-95"
-        x-transition:enter-end="opacity-100 translate-x-0 scale-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 translate-x-0 scale-100"
-        x-transition:leave-end="opacity-0 translate-x-5 scale-95"
-class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/30 px-4 backdrop-blur-[2px]"    >
-        <div class="flex items-start gap-3 rounded-2xl border bg-white/95 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.18)] backdrop-blur-xl
-            {{ session('success') ? 'border-emerald-200' : 'border-red-200' }}">
 
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full
-                {{ session('success') ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600' }}">
-                @if(session('success'))
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="m5 12 4 4L19 6"/>
-                    </svg>
-                @else
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M18 6 6 18"/>
-                    </svg>
-                @endif
-            </div>
-
-            <div class="min-w-0 flex-1">
-                <p class="text-sm font-bold text-slate-800">
-                    {{ session('success') ? 'Berhasil' : 'Gagal' }}
-                </p>
-
-                <p class="mt-1 text-sm leading-5 text-slate-500">
-                    @if(session('success'))
-                        {{ session('success') }}
-                    @elseif(session('error'))
-                        {{ session('error') }}
-                    @else
-                        {{ $errors->first() }}
-                    @endif
-                </p>
-            </div>
-
-            <button
-                type="button"
-                @click="show = false"
-                class="rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-                aria-label="Tutup"
-            >
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M18 6 6 18"/>
-                </svg>
-            </button>
-        </div>
-    </div>
-@endif
             @yield('content')
 
 

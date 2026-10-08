@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Pimpinan')
+@section('title', 'Detail Pimpinan Cabang')
 
 @section('content')
 
@@ -13,51 +13,6 @@
         min-height: calc(100vh - 250px);
         padding-bottom: 40px;
         color: #1e293b;
-    }
-
-    /* MODERN PAGE HEADER */
-    .pimpinan-modern-header {
-        width: 100%;
-        max-width: 1100px;
-        margin: 0 auto 24px auto;
-        text-align: center;
-        position: relative;
-    }
-
-    .pimpinan-modern-eyebrow {
-        margin-bottom: 8px;
-        color: #cbd5e1;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: .28em;
-        text-transform: uppercase;
-    }
-
-    .pimpinan-modern-title {
-        margin: 0;
-        color: #ffffff;
-        font-size: 38px;
-        font-weight: 700;
-        line-height: 1.1;
-        letter-spacing: -.02em;
-    }
-
-    .pimpinan-modern-title span {
-        color: #F28C28;
-    }
-
-    .pimpinan-modern-subtitle {
-        margin-top: 8px;
-        color: rgba(226, 232, 240, .82);
-        font-size: 14px;
-    }
-
-    .pimpinan-modern-actions {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        margin-top: 14px;
     }
 
     /* HEADER */
@@ -187,36 +142,6 @@
         box-shadow: 0 18px 45px rgba(0, 0, 0, .30) !important;
     }
 
-    .pimpinan-person-summary {
-        margin-bottom: 22px;
-        padding-bottom: 18px;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .pimpinan-person-name {
-        color: #0f172a;
-        font-size: 20px;
-        font-weight: 700;
-    }
-
-    .pimpinan-person-role {
-        margin-top: 4px;
-        color: #64748b;
-        font-size: 13px;
-    }
-
-    html.dark-theme .pimpinan-person-summary {
-        border-color: rgba(148, 163, 184, .16) !important;
-    }
-
-    html.dark-theme .pimpinan-person-name {
-        color: #f8fafc !important;
-    }
-
-    html.dark-theme .pimpinan-person-role {
-        color: #94a3b8 !important;
-    }
-
     html.dark-theme .pimpinan-info-title {
         color: #f8fafc !important;
     }
@@ -252,14 +177,6 @@
             min-height: calc(100vh - 220px);
         }
 
-        .pimpinan-modern-title {
-            font-size: 32px;
-        }
-
-        .pimpinan-modern-actions {
-            flex-wrap: wrap;
-        }
-
         .pimpinan-header {
             flex-direction: column;
             align-items: flex-start;
@@ -288,18 +205,21 @@
 <div class="pimpinan-detail-page">
 
     {{-- HEADER --}}
-    <div class="pimpinan-modern-header">
-        <div class="pimpinan-modern-eyebrow">MASTER DATA</div>
+    <div class="pimpinan-header">
 
-        <h1 class="pimpinan-modern-title">
-            Detail <span>Pimpinan</span>
-        </h1>
+        <div>
+            <h2 class="pimpinan-title">
+                {{ $pimpinan->nama }}
+            </h2>
 
-        <p class="pimpinan-modern-subtitle">
-            Informasi lengkap data pimpinan cabang.
-        </p>
+            <p class="pimpinan-jabatan">
+                {{ $pimpinan->jabatan }}
+            </p>
+        </div>
 
-        <div class="pimpinan-modern-actions">
+
+        <div class="flex items-center gap-3">
+
             <x-status-badge
                 :color="$pimpinan->status === 'aktif' ? 'green' : 'gray'"
                 :label="ucfirst($pimpinan->status)"
@@ -313,19 +233,14 @@
                     ✏️ Edit
                 </a>
             @endrole
+
         </div>
+
     </div>
 
 
     {{-- CARD INFORMASI --}}
     <div class="pimpinan-info-card">
-
-        <div class="pimpinan-person-summary">
-            <div>
-                <div class="pimpinan-person-name">{{ $pimpinan->nama }}</div>
-                <div class="pimpinan-person-role">{{ $pimpinan->jabatan }}</div>
-            </div>
-        </div>
 
         <h3 class="pimpinan-info-title">
             Informasi Pimpinan

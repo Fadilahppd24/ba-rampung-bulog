@@ -193,19 +193,6 @@
 
 <div class="pimpinan-create-page">
 
-    {{-- HEADER --}}
-    <div class="text-center mb-8">
-        <p class="text-xs font-semibold tracking-[0.28em] text-[#F28C28] uppercase">
-            MASTER DATA
-        </p>
-        <h1 class="mt-2 text-5xl font-serif font-bold text-white">
-            Tambah <span class="text-[#F28C28]">Pimpinan</span>
-        </h1>
-        <p class="mt-2 text-sm text-white/60">
-            Tambahkan data pimpinan baru ke dalam sistem.
-        </p>
-    </div>
-
     {{-- INFO --}}
     <div class="pimpinan-create-alert">
         Jika Status diatur ke <strong>Aktif</strong>, seluruh riwayat

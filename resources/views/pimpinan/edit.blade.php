@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Riwayat Pimpinan Cabang')
+@section('title', 'Edit Data Pimpinan')
 
 @section('content')
 
@@ -176,6 +176,58 @@
     }
 
     /* =========================
+       PAGE HEADER
+       ========================= */
+
+    .pimpinan-edit-header {
+        width: 100%;
+        max-width: 760px;
+        margin: 0 auto 22px auto;
+        text-align: center;
+    }
+
+    .pimpinan-edit-eyebrow {
+        margin-bottom: 5px;
+        color: #dbeafe;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .28em;
+        text-transform: uppercase;
+    }
+
+    .pimpinan-edit-title {
+        margin: 0;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(38px, 5vw, 52px);
+        line-height: 1;
+        font-weight: 500;
+        color: #ffffff;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, .18);
+    }
+
+    .pimpinan-edit-title span {
+        color: #F28C28;
+    }
+
+    .pimpinan-edit-subtitle {
+        margin: 10px 0 0;
+        color: rgba(255, 255, 255, .78);
+        font-size: 13px;
+    }
+
+    html.dark-theme .pimpinan-edit-eyebrow {
+        color: #cbd5e1 !important;
+    }
+
+    html.dark-theme .pimpinan-edit-title {
+        color: #ffffff !important;
+    }
+
+    html.dark-theme .pimpinan-edit-subtitle {
+        color: #cbd5e1 !important;
+    }
+
+    /* =========================
        RESPONSIVE
        ========================= */
 
@@ -193,6 +245,17 @@
 
 
 <div class="pimpinan-edit-page">
+
+    {{-- PAGE HEADER --}}
+    <div class="pimpinan-edit-header">
+        <div class="pimpinan-edit-eyebrow">MASTER DATA</div>
+        <h1 class="pimpinan-edit-title">
+            Edit <span>Pimpinan</span>
+        </h1>
+        <p class="pimpinan-edit-subtitle">
+            Perbarui informasi data pimpinan cabang.
+        </p>
+    </div>
 
     {{-- INFO --}}
     <div class="pimpinan-edit-alert">

@@ -1,25 +1,25 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Riwayat Pimpinan Cabang')
+@section('title', 'Edit Riwayat Pimpinan Cabang')
 
 @section('content')
 
 <style>
     /* =========================================================
-       TAMBAH PIMPINAN CABANG
+       EDIT PIMPINAN CABANG
        ========================================================= */
 
-    .pimpinan-create-page {
+    .pimpinan-edit-page {
         min-height: calc(100vh - 250px);
         padding-bottom: 40px;
         color: #1e293b;
     }
 
     /* =========================
-       ALERT
+       INFO ALERT
        ========================= */
 
-    .pimpinan-create-alert {
+    .pimpinan-edit-alert {
         width: 100%;
         max-width: 760px;
         margin: 0 auto 14px auto;
@@ -36,7 +36,7 @@
        FORM CARD
        ========================= */
 
-    .pimpinan-create-card {
+    .pimpinan-edit-card {
         width: 100%;
         max-width: 760px;
         margin: 0 auto;
@@ -52,7 +52,7 @@
        LABEL
        ========================= */
 
-    .pimpinan-create-label {
+    .pimpinan-edit-label {
         display: block;
         margin-bottom: 7px;
         color: #334155;
@@ -64,7 +64,7 @@
        INPUT
        ========================= */
 
-    .pimpinan-create-input {
+    .pimpinan-edit-input {
         width: 100%;
         min-height: 42px;
         border: 1px solid #cbd5e1;
@@ -81,12 +81,12 @@
             color .2s ease;
     }
 
-    .pimpinan-create-input:focus {
+    .pimpinan-edit-input:focus {
         border-color: #F28C28;
         box-shadow: 0 0 0 3px rgba(242, 140, 40, .15);
     }
 
-    .pimpinan-create-input::placeholder {
+    .pimpinan-edit-input::placeholder {
         color: #94a3b8;
     }
 
@@ -94,7 +94,7 @@
        BUTTON KEMBALI
        ========================= */
 
-    .pimpinan-create-back {
+    .pimpinan-edit-back {
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -109,7 +109,7 @@
         transition: all .2s ease;
     }
 
-    .pimpinan-create-back:hover {
+    .pimpinan-edit-back:hover {
         background: #f8fafc;
         border-color: #123F7A;
         color: #123F7A;
@@ -117,58 +117,59 @@
 
     /* =========================================================
        DARK MODE
+       PROJECT MENGGUNAKAN html.dark-theme
        ========================================================= */
 
-    html.dark-theme .pimpinan-create-page {
+    html.dark-theme .pimpinan-edit-page {
         color: #e5e7eb !important;
     }
 
-    html.dark-theme .pimpinan-create-alert {
+    html.dark-theme .pimpinan-edit-alert {
         background: rgba(30, 64, 175, .18) !important;
         border-color: rgba(96, 165, 250, .30) !important;
         color: #bfdbfe !important;
     }
 
-    html.dark-theme .pimpinan-create-card {
+    html.dark-theme .pimpinan-edit-card {
         background: #101C2D !important;
         border-color: #263B55 !important;
         color: #e5e7eb !important;
         box-shadow: 0 18px 45px rgba(0, 0, 0, .30) !important;
     }
 
-    html.dark-theme .pimpinan-create-label {
+    html.dark-theme .pimpinan-edit-label {
         color: #cbd5e1 !important;
     }
 
-    html.dark-theme .pimpinan-create-input {
+    html.dark-theme .pimpinan-edit-input {
         background: #111D2E !important;
         border-color: #2B405A !important;
         color: #F8FAFC !important;
     }
 
-    html.dark-theme .pimpinan-create-input:focus {
+    html.dark-theme .pimpinan-edit-input:focus {
         background: #0F1A2B !important;
         border-color: #F28C28 !important;
         color: #F8FAFC !important;
         box-shadow: 0 0 0 3px rgba(242, 140, 40, .20) !important;
     }
 
-    html.dark-theme .pimpinan-create-input::placeholder {
+    html.dark-theme .pimpinan-edit-input::placeholder {
         color: #64748B !important;
     }
 
-    html.dark-theme .pimpinan-create-input option {
+    html.dark-theme .pimpinan-edit-input option {
         background: #101C2D !important;
         color: #F8FAFC !important;
     }
 
-    html.dark-theme .pimpinan-create-back {
+    html.dark-theme .pimpinan-edit-back {
         background: #13263D !important;
         border-color: #2B405A !important;
         color: #F8FAFC !important;
     }
 
-    html.dark-theme .pimpinan-create-back:hover {
+    html.dark-theme .pimpinan-edit-back:hover {
         background: #1A3150 !important;
         border-color: #60A5FA !important;
         color: #FFFFFF !important;
@@ -180,50 +181,36 @@
 
     @media (max-width: 768px) {
 
-        .pimpinan-create-page {
+        .pimpinan-edit-page {
             min-height: calc(100vh - 220px);
         }
 
-        .pimpinan-create-card {
+        .pimpinan-edit-card {
             padding: 22px;
         }
     }
 </style>
 
 
-<div class="pimpinan-create-page">
-
-    {{-- HEADER --}}
-    <div class="text-center mb-8">
-        <p class="text-xs font-semibold tracking-[0.28em] text-[#F28C28] uppercase">
-            MASTER DATA
-        </p>
-        <h1 class="mt-2 text-5xl font-serif font-bold text-white">
-            Tambah <span class="text-[#F28C28]">Pimpinan</span>
-        </h1>
-        <p class="mt-2 text-sm text-white/60">
-            Tambahkan data pimpinan baru ke dalam sistem.
-        </p>
-    </div>
+<div class="pimpinan-edit-page">
 
     {{-- INFO --}}
-    <div class="pimpinan-create-alert">
+    <div class="pimpinan-edit-alert">
         Jika Status diatur ke <strong>Aktif</strong>, seluruh riwayat
         Pimpinan Cabang lain akan otomatis ditutup periodenya
-        (dijadikan Nonaktif) — hanya boleh ada satu Pimpinan Cabang
-        aktif pada satu waktu, karena data ini dipakai sebagai
-        penandatangan "Mengetahui" pada setiap BA Rampung.
+        (dijadikan Nonaktif).
     </div>
 
 
     {{-- FORM --}}
     <form
         method="POST"
-        action="{{ route('pimpinan.store') }}"
-        class="pimpinan-create-card"
+        action="{{ route('pimpinan.update', $pimpinan) }}"
+        class="pimpinan-edit-card"
     >
 
         @csrf
+        @method('PUT')
 
 
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -231,16 +218,16 @@
             {{-- NAMA --}}
             <div class="md:col-span-2">
 
-                <label class="pimpinan-create-label">
+                <label class="pimpinan-edit-label">
                     Nama
                 </label>
 
                 <input
                     type="text"
                     name="nama"
-                    value="{{ old('nama') }}"
+                    value="{{ old('nama', $pimpinan->nama) }}"
                     required
-                    class="pimpinan-create-input"
+                    class="pimpinan-edit-input"
                 >
 
             </div>
@@ -249,16 +236,16 @@
             {{-- JABATAN --}}
             <div class="md:col-span-2">
 
-                <label class="pimpinan-create-label">
+                <label class="pimpinan-edit-label">
                     Jabatan
                 </label>
 
                 <input
                     type="text"
                     name="jabatan"
-                    value="{{ old('jabatan', 'Pimpinan Cabang BULOG Indramayu') }}"
+                    value="{{ old('jabatan', $pimpinan->jabatan) }}"
                     required
-                    class="pimpinan-create-input"
+                    class="pimpinan-edit-input"
                 >
 
             </div>
@@ -267,16 +254,16 @@
             {{-- PERIODE MULAI --}}
             <div>
 
-                <label class="pimpinan-create-label">
+                <label class="pimpinan-edit-label">
                     Periode Mulai
                 </label>
 
                 <input
                     type="date"
                     name="periode_mulai"
-                    value="{{ old('periode_mulai', now()->toDateString()) }}"
+                    value="{{ old('periode_mulai', $pimpinan->periode_mulai->toDateString()) }}"
                     required
-                    class="pimpinan-create-input"
+                    class="pimpinan-edit-input"
                 >
 
             </div>
@@ -285,15 +272,15 @@
             {{-- PERIODE SELESAI --}}
             <div>
 
-                <label class="pimpinan-create-label">
+                <label class="pimpinan-edit-label">
                     Periode Selesai (opsional)
                 </label>
 
                 <input
                     type="date"
                     name="periode_selesai"
-                    value="{{ old('periode_selesai') }}"
-                    class="pimpinan-create-input"
+                    value="{{ old('periode_selesai', $pimpinan->periode_selesai?->toDateString()) }}"
+                    class="pimpinan-edit-input"
                 >
 
             </div>
@@ -302,32 +289,32 @@
             {{-- EMAIL --}}
             <div>
 
-                <label class="pimpinan-create-label">
+                <label class="pimpinan-edit-label">
                     Email
                 </label>
 
                 <input
                     type="email"
                     name="email"
-                    value="{{ old('email') }}"
-                    class="pimpinan-create-input"
+                    value="{{ old('email', $pimpinan->email) }}"
+                    class="pimpinan-edit-input"
                 >
 
             </div>
 
 
-            {{-- NOMOR TELEPON --}}
+            {{-- TELEPON --}}
             <div>
 
-                <label class="pimpinan-create-label">
+                <label class="pimpinan-edit-label">
                     Nomor Telepon
                 </label>
 
                 <input
                     type="text"
                     name="nomor_telepon"
-                    value="{{ old('nomor_telepon') }}"
-                    class="pimpinan-create-input"
+                    value="{{ old('nomor_telepon', $pimpinan->nomor_telepon) }}"
+                    class="pimpinan-edit-input"
                 >
 
             </div>
@@ -336,15 +323,15 @@
             {{-- ALAMAT --}}
             <div class="md:col-span-2">
 
-                <label class="pimpinan-create-label">
+                <label class="pimpinan-edit-label">
                     Alamat Kantor
                 </label>
 
                 <textarea
                     name="alamat"
                     rows="3"
-                    class="pimpinan-create-input"
-                >{{ old('alamat') }}</textarea>
+                    class="pimpinan-edit-input"
+                >{{ old('alamat', $pimpinan->alamat) }}</textarea>
 
             </div>
 
@@ -352,25 +339,25 @@
             {{-- STATUS --}}
             <div>
 
-                <label class="pimpinan-create-label">
+                <label class="pimpinan-edit-label">
                     Status
                 </label>
 
                 <select
                     name="status"
-                    class="pimpinan-create-input"
+                    class="pimpinan-edit-input"
                 >
 
                     <option
                         value="nonaktif"
-                        @selected(old('status', 'nonaktif') === 'nonaktif')
+                        @selected(old('status', $pimpinan->status) === 'nonaktif')
                     >
                         Nonaktif (riwayat)
                     </option>
 
                     <option
                         value="aktif"
-                        @selected(old('status') === 'aktif')
+                        @selected(old('status', $pimpinan->status) === 'aktif')
                     >
                         Aktif (menjabat sekarang)
                     </option>
@@ -387,7 +374,7 @@
 
             <a
                 href="{{ route('pimpinan.index') }}"
-                class="pimpinan-create-back"
+                class="pimpinan-edit-back"
             >
                 <svg
                     class="h-4 w-4"
@@ -411,7 +398,7 @@
                 type="submit"
                 class="btn-primary"
             >
-                💾 Simpan
+                💾 Simpan Perubahan
             </button>
 
         </div>
