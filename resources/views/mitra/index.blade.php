@@ -415,6 +415,76 @@
     /* =========================================================
        MODAL KONFIRMASI HAPUS
     ========================================================== */
+    /* ---------- MODAL KONFIRMASI AKTIF / NONAKTIF ---------- */
+    .mitra-toggle-overlay {
+        position: fixed; inset: 0; z-index: 99999;
+        display: none; align-items: center; justify-content: center;
+        padding: 20px; background: rgba(5,18,35,.62);
+        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    }
+    .mitra-toggle-overlay.show { display: flex; animation: mitraToggleFade .18s ease-out; }
+    .mitra-toggle-card {
+        position: relative; width: min(430px, calc(100vw - 40px));
+        padding: 30px; border: 1px solid #E2E8F0; border-radius: 24px;
+        background: #fff; text-align: center;
+        box-shadow: 0 30px 90px rgba(0,0,0,.28);
+        animation: mitraTogglePop .22s ease-out;
+    }
+    .mitra-toggle-close {
+        position: absolute; top: 14px; right: 14px; width: 34px; height: 34px;
+        display: flex; align-items: center; justify-content: center;
+        border: 0; border-radius: 10px; background: #F1F5F9; color: #64748B; cursor: pointer;
+    }
+    .mitra-toggle-close:hover { background: #E2E8F0; color: #0F172A; }
+    .mitra-toggle-close svg {
+        width: 17px; height: 17px; fill: none; stroke: currentColor;
+        stroke-width: 2; stroke-linecap: round;
+    }
+    .mitra-toggle-icon {
+        width: 68px; height: 68px; margin: 4px auto 18px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 50%; background: #FFF3E3; color: #D97706;
+    }
+    .mitra-toggle-icon.deactivate { background: #FEE2E2; color: #DC2626; }
+    .mitra-toggle-icon svg {
+        width: 32px; height: 32px; fill: none; stroke: currentColor;
+        stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .mitra-toggle-title { margin: 0; color: #172033; font-size: 21px; font-weight: 800; }
+    .mitra-toggle-message {
+        margin: 10px auto 24px; max-width: 350px; color: #64748B;
+        font-size: 13.5px; line-height: 1.6;
+    }
+    .mitra-toggle-message strong { color: #172033; font-weight: 750; }
+    .mitra-toggle-actions { display: flex; gap: 10px; }
+    .mitra-toggle-cancel, .mitra-toggle-confirm {
+        flex: 1; min-height: 44px; border: 0; border-radius: 11px;
+        font-size: 13px; font-weight: 750; cursor: pointer; transition: .18s ease;
+    }
+    .mitra-toggle-cancel { background: #F1F5F9; color: #475569; }
+    .mitra-toggle-cancel:hover { background: #E2E8F0; }
+    .mitra-toggle-confirm {
+        display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+        background: #123F7A; color: #fff; box-shadow: 0 8px 20px rgba(18,63,122,.20);
+    }
+    .mitra-toggle-confirm.deactivate { background: #DC2626; box-shadow: 0 8px 20px rgba(220,38,38,.20); }
+    .mitra-toggle-confirm:hover { background: #0D3263; transform: translateY(-1px); }
+    .mitra-toggle-confirm.deactivate:hover { background: #B91C1C; }
+    html.dark-theme .mitra-toggle-card, html.dark .mitra-toggle-card, body.dark .mitra-toggle-card {
+        background: #142238; border-color: #263B55;
+    }
+    html.dark-theme .mitra-toggle-title, html.dark .mitra-toggle-title, body.dark .mitra-toggle-title { color: #F8FAFC; }
+    html.dark-theme .mitra-toggle-message, html.dark .mitra-toggle-message, body.dark .mitra-toggle-message { color: #AAB5C7; }
+    html.dark-theme .mitra-toggle-message strong, html.dark .mitra-toggle-message strong, body.dark .mitra-toggle-message strong { color: #F8FAFC; }
+    html.dark-theme .mitra-toggle-cancel, html.dark .mitra-toggle-cancel, body.dark .mitra-toggle-cancel {
+        background: #24364F; color: #DBEAFE;
+    }
+    @keyframes mitraToggleFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes mitraTogglePop {
+        from { opacity: 0; transform: translateY(10px) scale(.94); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
     .mitra-delete-overlay {
         position: fixed;
         inset: 0;
@@ -844,7 +914,7 @@
 
                 <div class="flex items-center gap-2">
 
-                    @if(request('search') || request('jenis_usaha'))
+                    @if(request('search'))
 
                         <a
                             href="{{ route('mitra.index') }}"
@@ -1069,16 +1139,17 @@
                                         <form
                                             method="POST"
                                             action="{{ route('mitra.toggle-status', $m) }}"
-                                            onsubmit="return confirm('{{ $m->status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan' }} mitra {{ $m->nama_mitra }}?');"
+                                            class="mitra-toggle-form inline"
                                         >
 
                                             @csrf
                                             @method('PATCH')
 
                                             <button
-                                                type="submit"
+                                                type="button"
                                                 title="{{ $m->status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan' }}"
                                                 class="m-act tog"
+                                                onclick="openMitraToggleModal(this)"
                                             >
                                                 @if($m->status === 'aktif')
                                                     <svg class="mi mi-sm" viewBox="0 0 24 24" aria-hidden="true">
@@ -1184,6 +1255,34 @@
 {{-- =========================================================
      MODAL KONFIRMASI HAPUS
 ========================================================== --}}
+<div id="mitra-toggle-modal" class="mitra-toggle-overlay" aria-hidden="true">
+    <div class="mitra-toggle-card" role="dialog" aria-modal="true" aria-labelledby="mitra-toggle-title">
+        <button type="button" class="mitra-toggle-close" onclick="closeMitraToggleModal()" aria-label="Tutup">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+        </button>
+
+        <div id="mitra-toggle-icon" class="mitra-toggle-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M15.75 5.25v13.5m-7.5-13.5v13.5"/>
+            </svg>
+        </div>
+
+        <h3 id="mitra-toggle-title" class="mitra-toggle-title">Nonaktifkan Mitra?</h3>
+
+        <p class="mitra-toggle-message">
+            Apakah Anda yakin ingin <span id="mitra-toggle-action">menonaktifkan</span>
+            mitra <strong id="mitra-toggle-name"></strong>?
+        </p>
+
+        <div class="mitra-toggle-actions">
+            <button type="button" class="mitra-toggle-cancel" onclick="closeMitraToggleModal()">Batal</button>
+            <button type="button" id="mitra-toggle-confirm" class="mitra-toggle-confirm" onclick="confirmMitraToggle()">
+                Ya, Nonaktifkan
+            </button>
+        </div>
+    </div>
+</div>
+
 <div id="mitra-delete-modal" class="mitra-delete-overlay" aria-hidden="true">
     <div
         class="mitra-delete-card"
@@ -1251,6 +1350,62 @@
 </div>
 
 <script>
+    let mitraToggleForm = null;
+
+    function openMitraToggleModal(button) {
+        mitraToggleForm = button.closest('.mitra-toggle-form');
+        if (!mitraToggleForm) return;
+
+        const row = button.closest('tr');
+        const nameCell = row ? row.querySelector('td:nth-child(3)') : null;
+        const name = nameCell ? nameCell.textContent.trim() : 'Mitra Pengolahan';
+        const isActive = button.title === 'Nonaktifkan';
+
+        const modal = document.getElementById('mitra-toggle-modal');
+        const nameEl = document.getElementById('mitra-toggle-name');
+        const titleEl = document.getElementById('mitra-toggle-title');
+        const actionEl = document.getElementById('mitra-toggle-action');
+        const confirmBtn = document.getElementById('mitra-toggle-confirm');
+        const icon = document.getElementById('mitra-toggle-icon');
+
+        nameEl.textContent = name;
+
+        if (isActive) {
+            titleEl.textContent = 'Nonaktifkan Mitra?';
+            actionEl.textContent = 'menonaktifkan';
+            confirmBtn.textContent = 'Ya, Nonaktifkan';
+            confirmBtn.classList.add('deactivate');
+            icon.classList.add('deactivate');
+            icon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.75 5.25v13.5m-7.5-13.5v13.5"/></svg>';
+        } else {
+            titleEl.textContent = 'Aktifkan Mitra?';
+            actionEl.textContent = 'mengaktifkan';
+            confirmBtn.textContent = 'Ya, Aktifkan';
+            confirmBtn.classList.remove('deactivate');
+            icon.classList.remove('deactivate');
+            icon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/></svg>';
+        }
+
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMitraToggleModal() {
+        const modal = document.getElementById('mitra-toggle-modal');
+        if (modal) {
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+        document.body.style.overflow = '';
+        mitraToggleForm = null;
+    }
+
+    function confirmMitraToggle() {
+        if (!mitraToggleForm) return;
+        mitraToggleForm.submit();
+    }
+
     let mitraDeleteForm = null;
 
     function closeMitraAlert() {
@@ -1300,8 +1455,15 @@
 
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape') {
+            closeMitraToggleModal();
             closeMitraDeleteModal();
             closeMitraAlert();
+        }
+    });
+
+    document.getElementById('mitra-toggle-modal')?.addEventListener('click', function (event) {
+        if (event.target === this) {
+            closeMitraToggleModal();
         }
     });
 

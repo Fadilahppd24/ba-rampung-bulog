@@ -598,6 +598,7 @@
                             type="text"
                             name="nomor_ba"
                             value="{{ old('nomor_ba') }}"
+                            required
                             class="input pl-11"
                             placeholder="Masukkan nomor BA"
                         >
@@ -696,6 +697,7 @@
                         type="text"
                         name="nomor_mo"
                         value="{{ old('nomor_mo') }}"
+                        required
                         class="input"
                         placeholder="Masukkan nomor MO"
                     >
@@ -714,6 +716,7 @@
                         type="text"
                         name="nomor_po"
                         value="{{ old('nomor_po') }}"
+                        required
                         class="input"
                         placeholder="Masukkan nomor PO"
                     >

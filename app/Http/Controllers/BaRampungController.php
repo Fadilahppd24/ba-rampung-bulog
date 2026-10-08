@@ -417,11 +417,7 @@ class BaRampungController extends Controller
                         $data['pimpinan_cabang_id'],
 
                     // Status
-                    'status' =>
-                        $data['action'] === 'submit'
-                            ? BaRampung::STATUS_MENUNGGU_VERIFIKASI
-                            : BaRampung::STATUS_DRAFT,
-
+                    'status' => BaRampung::STATUS_MENUNGGU_VERIFIKASI,
                     'catatan' =>
                         $data['catatan'] ?? null,
 
@@ -674,10 +670,10 @@ if ($ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI) {
                         $tanggal->year,
 
                     'nomor_mo' =>
-                        $data['nomor_mo'],
+                        $data['nomor_mo'] ?? null,
 
                     'nomor_po' =>
-                        $data['nomor_po'],
+                        $data['nomor_po'] ?? null,
 
                     'gudang_id' =>
                         $data['gudang_id'],
@@ -704,10 +700,10 @@ if ($ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI) {
                         $data['pimpinan_cabang_id'],
 
                     // Status
-                    'status' =>
-                        $data['action'] === 'submit'
-                            ? BaRampung::STATUS_MENUNGGU_VERIFIKASI
-                            : BaRampung::STATUS_DRAFT,
+'status' => BaRampung::STATUS_MENUNGGU_VERIFIKASI,
+
+'catatan' =>
+    $data['catatan'] ?? null,
 
                     'catatan' =>
                         $data['catatan'] ?? null,

@@ -279,6 +279,32 @@
     .ba-detail-page.is-dark .input::placeholder {
         color: #94A3B8 !important;
     }
+
+    .ba-detail-page #modal-verifikasi .card {
+        background: #FFFFFF;
+        border: 1px solid rgba(15,43,82,.10);
+    }
+
+    .ba-detail-page.is-dark #modal-verifikasi .card {
+        background: #101C2D !important;
+        border-color: #263B55 !important;
+        color: #E5E7EB !important;
+        box-shadow: 0 24px 60px rgba(0,0,0,.45) !important;
+    }
+
+    .ba-detail-page.is-dark #modal-verifikasi h3 {
+        color: #F8FAFC !important;
+    }
+
+    .ba-detail-page.is-dark #modal-verifikasi p {
+        color: #AEBFD1 !important;
+    }
+
+    .ba-detail-page.is-dark #modal-verifikasi .bg-blue-100 {
+        background: rgba(59,130,246,.16) !important;
+        color: #93C5FD !important;
+    }
+
 </style>
 
 <div class="ba-detail-page">
@@ -287,15 +313,23 @@
 
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
     <div>
-        <h2 class="text-lg font-semibold text-gray-900">
-            {{ $baRampung->nomor_ba }}
-        </h2>
+    <p class="text-sm font-semibold uppercase tracking-wider text-orange-400">
+        BA RAMPUNG
+    </p>
 
-        <p class="text-sm text-gray-500">
-            Dibuat oleh {{ $baRampung->pembuat->name ?? '-' }}
-            · {{ $baRampung->created_at?->timezone('Asia/Jakarta')->format('d/m/Y H:i') ?? '-' }}
-        </p>
-    </div>
+    <h1 class="mt-1 text-2xl font-bold text-white">
+        Detail BA Rampung
+    </h1>
+
+    <p class="mt-2 text-base font-semibold text-white/95">
+        {{ $baRampung->nomor_ba }}
+    </p>
+
+    <p class="mt-1 text-sm text-white/80">
+        Dibuat oleh {{ $baRampung->pembuat->name ?? '-' }}
+        · {{ $baRampung->created_at?->timezone('Asia/Jakarta')->format('d/m/Y H:i') ?? '-' }}
+    </p>
+</div>
 
     <div class="flex flex-wrap items-center justify-end gap-3">
         {{-- KEMBALI KE DAFTAR BA --}}
@@ -384,7 +418,7 @@
             <form
                 method="POST"
                 action="{{ route('ba-rampung.verify', $baRampung) }}"
-                onsubmit="return confirm('Verifikasi dan terima BA {{ $baRampung->nomor_ba }}?');"
+                id="form-verifikasi-ba"
             >
                 @csrf
 
@@ -395,7 +429,8 @@
                 >
 
                 <button
-                    type="submit"
+                    type="button"
+                    onclick="document.getElementById('modal-verifikasi').classList.remove('hidden')"
                     class="btn-primary"
                 >
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -419,6 +454,52 @@
         </div>
     </div>
 
+
+    {{-- MODAL KONFIRMASI VERIFIKASI --}}
+    <div
+        id="modal-verifikasi"
+        class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/55 px-4 backdrop-blur-sm"
+    >
+        <div class="card w-full max-w-md rounded-2xl p-6 shadow-2xl">
+            <div class="flex items-start gap-4">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[#123F7A]">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="m5 12 4 4L19 6"/>
+                    </svg>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                    <h3 class="font-semibold text-gray-900">
+                        Verifikasi BA Rampung
+                    </h3>
+
+                    <p class="mt-2 text-sm text-gray-500">
+                        Apakah Anda yakin ingin memverifikasi dan menerima
+                        BA Rampung <strong>{{ $baRampung->nomor_ba }}</strong>?
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <button
+                    type="button"
+                    onclick="document.getElementById('modal-verifikasi').classList.add('hidden')"
+                    class="btn-secondary"
+                >
+                    Batal
+                </button>
+
+                <button
+                    type="button"
+                    onclick="document.getElementById('form-verifikasi-ba').submit()"
+                    class="btn-primary"
+                >
+                    Ya, Verifikasi
+                </button>
+            </div>
+        </div>
+    </div>
 
     {{-- MODAL TOLAK --}}
     <div

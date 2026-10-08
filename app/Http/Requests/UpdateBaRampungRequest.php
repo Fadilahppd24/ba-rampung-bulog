@@ -42,7 +42,6 @@ class UpdateBaRampungRequest extends FormRequest
 
             'catatan' => ['nullable', 'string', 'max:1000'],
 
-            'action' => ['required', 'in:draft,submit'],
         ];
     }
 

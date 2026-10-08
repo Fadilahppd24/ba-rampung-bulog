@@ -39,18 +39,9 @@ class MitraPengolahanController extends Controller
             });
         }
 
-        if ($jenisUsaha = $request->input('jenis_usaha')) {
-            $query->where('jenis_usaha', $jenisUsaha);
-        }
-
         $mitras = $query
 ->orderBy('kode_mitra', 'asc')            ->paginate(10)
             ->withQueryString();
-
-        $jenisUsahaOptions = MitraPengolahan::whereNotNull('jenis_usaha')
-            ->distinct()
-            ->orderBy('jenis_usaha')
-            ->pluck('jenis_usaha');
 
         $kpi = [
             'total' => MitraPengolahan::count(),
@@ -71,8 +62,7 @@ class MitraPengolahanController extends Controller
             'mitra.index',
             compact(
                 'mitras',
-                'kpi',
-                'jenisUsahaOptions'
+                'kpi'
             )
         );
     }

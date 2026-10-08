@@ -47,18 +47,6 @@
             >
         </div>
 
-        {{-- Jenis Usaha --}}
-        <div>
-            <label class="label">Jenis Usaha</label>
-            <input
-                type="text"
-                name="jenis_usaha"
-                value="{{ old('jenis_usaha', 'Penggilingan Padi') }}"
-                class="input"
-                placeholder="Penggilingan Padi"
-            >
-        </div>
-
         {{-- Penanggung Jawab --}}
         <div>
             <label class="label">Penanggung Jawab</label>

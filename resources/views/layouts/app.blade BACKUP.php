@@ -130,47 +130,90 @@
             border-color: rgba(148, 163, 184, 0.20) !important;
         }
 
-        /* Modal Semua Notifikasi */
-        html.dark-theme .dark-notification-modal {
+        html.dark-theme .hover\:bg-slate-50:hover,
+        html.dark-theme .bg-slate-50 {
+            background-color: rgba(148, 163, 184, 0.10) !important;
+        }
+
+
+        /* =========================================================
+         * DROPDOWN NOTIFIKASI - DARK MODE
+         * Hanya mengubah dropdown notifikasi saat dark mode.
+         * ========================================================= */
+        html.dark-theme .notification-dropdown {
             background-color: #0b2949 !important;
             border-color: rgba(148, 163, 184, 0.22) !important;
             color: #e7eef7 !important;
         }
 
-        html.dark-theme .dark-notification-modal .border-slate-200,
-        html.dark-theme .dark-notification-modal .border-slate-100 {
+        html.dark-theme .notification-dropdown .notification-header {
             border-color: rgba(148, 163, 184, 0.18) !important;
         }
 
-        html.dark-theme .dark-notification-modal .text-\[\#082F63\] {
+        html.dark-theme .notification-dropdown .notification-title {
             color: #f3f7fb !important;
         }
 
-        html.dark-theme .dark-notification-modal .text-slate-600,
-        html.dark-theme .dark-notification-modal .text-slate-500,
-        html.dark-theme .dark-notification-modal .text-slate-400 {
-            color: #aebfd1 !important;
+        html.dark-theme .notification-dropdown .notification-action {
+            color: #8fc1ff !important;
         }
 
-        html.dark-theme .dark-notification-modal .hover\:bg-slate-50:hover {
-            background-color: rgba(148, 163, 184, 0.08) !important;
+        html.dark-theme .notification-dropdown .notification-action:hover {
+            color: #F28C28 !important;
         }
 
-        html.dark-theme .dark-notification-modal .bg-slate-100 {
+        html.dark-theme .notification-dropdown .notification-item {
+            border-color: rgba(148, 163, 184, 0.16) !important;
+            background-color: #0b2949 !important;
+            color: #e7eef7 !important;
+        }
+
+        html.dark-theme .notification-dropdown .notification-item:hover {
+            background-color: #123653 !important;
+        }
+
+        html.dark-theme .notification-dropdown .notification-item-unread {
+            background-color: rgba(242, 140, 40, 0.10) !important;
+        }
+
+        html.dark-theme .notification-dropdown .notification-item-title {
+            color: #f3f7fb !important;
+        }
+
+        html.dark-theme .notification-dropdown .notification-item-message {
+            color: #b7c7d8 !important;
+        }
+
+        html.dark-theme .notification-dropdown .notification-item-time {
+            color: #8298ae !important;
+        }
+
+        html.dark-theme .notification-dropdown .notification-icon-unread {
+            background-color: rgba(242, 140, 40, 0.16) !important;
+            color: #F28C28 !important;
+        }
+
+        html.dark-theme .notification-dropdown .notification-icon-read {
             background-color: rgba(148, 163, 184, 0.12) !important;
+            color: #8ea3b8 !important;
         }
 
-        html.dark-theme .dark-notification-modal .bg-slate-50 {
-            background-color: rgba(148, 163, 184, 0.08) !important;
+        html.dark-theme .notification-dropdown .notification-empty-icon {
+            background-color: rgba(148, 163, 184, 0.12) !important;
+            color: #8ea3b8 !important;
         }
 
-        html.dark-theme .dark-notification-modal .border-orange-200 {
-            border-color: rgba(242, 140, 40, 0.30) !important;
+        html.dark-theme .notification-dropdown .notification-footer {
+            border-color: rgba(148, 163, 184, 0.18) !important;
+            background-color: rgba(5, 24, 43, 0.55) !important;
         }
 
-        html.dark-theme .hover\:bg-slate-50:hover,
-        html.dark-theme .bg-slate-50 {
-            background-color: rgba(148, 163, 184, 0.10) !important;
+        html.dark-theme .notification-dropdown .notification-footer a {
+            color: #8fc1ff !important;
+        }
+
+        html.dark-theme .notification-dropdown .notification-footer a:hover {
+            color: #F28C28 !important;
         }
 
         /* Input / select / textarea */
@@ -467,16 +510,11 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                             ->where('user_id', auth()->id())
                             ->where('is_read', false)
                             ->count();
-
-                        $semuaNotifikasi = \App\Models\Notification::query()
-                            ->where('user_id', auth()->id())
-                            ->latest()
-                            ->get();
                     @endphp
 
                     <div
                         class="relative"
-                        x-data="{ notificationOpen: false, showAllNotifications: false, notificationFilter: 'all' }"
+                        x-data="{ notificationOpen: false }"
                         @click.outside="notificationOpen = false"
                     >
                         {{-- TOMBOL BELL --}}
@@ -551,6 +589,7 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                 border-slate-200
                                 bg-white
                                 shadow-2xl
+                                notification-dropdown
                             "
                         >
                             {{-- HEADER --}}
@@ -561,12 +600,13 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                     justify-between
                                     border-b
                                     border-slate-100
+                                    notification-header
                                     px-4
                                     py-3
                                 "
                             >
                                 <div>
-                                    <h3 class="text-sm font-bold text-[#082f63]">
+                                    <h3 class="text-sm font-bold text-[#082f63] notification-title">
                                         Notifikasi
                                     </h3>
                                     <p class="mt-0.5 text-[11px] text-slate-400">
@@ -588,6 +628,7 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                                 text-[11px]
                                                 font-semibold
                                                 text-[#123F7A]
+                                                notification-action
                                                 hover:text-[#F28C28]
                                                 transition
                                             "
@@ -618,13 +659,14 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                                 gap-3
                                                 border-b
                                                 border-slate-100
+                                                notification-item
                                                 px-4
                                                 py-3.5
                                                 text-left
                                                 transition
                                                 hover:bg-slate-50
                                                 {{ !$notification->is_read
-                                                    ? 'bg-orange-50/50'
+                                                    ? 'bg-orange-50/50 notification-item-unread'
                                                     : 'bg-white' }}
                                             "
                                         >
@@ -639,8 +681,8 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                                     justify-center
                                                     rounded-xl
                                                     {{ !$notification->is_read
-                                                        ? 'bg-orange-100 text-[#F28C28]'
-                                                        : 'bg-slate-100 text-slate-400' }}
+                                                        ? 'bg-orange-100 text-[#F28C28] notification-icon-unread'
+                                                        : 'bg-slate-100 text-slate-400 notification-icon-read' }}
                                                 "
                                             >
                                                 <svg
@@ -665,6 +707,7 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                                         class="
                                                             text-xs
                                                             font-bold
+                                                            notification-item-title
                                                             {{ !$notification->is_read
                                                                 ? 'text-[#082f63]'
                                                                 : 'text-slate-600' }}
@@ -699,7 +742,7 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                                     {{ $notification->message }}
                                                 </p>
 
-                                                <p class="mt-1.5 text-[10px] text-slate-400">
+                                                <p class="mt-1.5 text-[10px] text-slate-400 notification-item-time">
                                                     {{ $notification->created_at->diffForHumans() }}
                                                 </p>
                                             </div>
@@ -718,6 +761,7 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                                 rounded-full
                                                 bg-slate-100
                                                 text-slate-400
+                                                notification-empty-icon
                                             "
                                         >
                                             <svg
@@ -750,179 +794,28 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                         border-t
                                         border-slate-100
                                         bg-slate-50/70
+                                        notification-footer
                                         px-4
                                         py-3
                                         text-center
                                     "
                                 >
-                                    <button
-                                        type="button"
-                                        @click="notificationOpen = false; showAllNotifications = true"
+                                    <a
+                                        href="{{ route('notifications.index') }}"
+                                        @click="notificationOpen = false"
                                         class="
                                             text-xs
                                             font-bold
                                             text-[#123F7A]
+                                            notification-action
                                             hover:text-[#F28C28]
                                             transition
                                         "
                                     >
                                         Lihat semua notifikasi
-                                    </button>
+                                    </a>
                                 </div>
                             @endif
-                        </div>
-
-                        {{-- MODAL SEMUA NOTIFIKASI --}}
-                        <div
-                            x-show="showAllNotifications"
-                            x-cloak
-                            x-transition.opacity
-                            class="fixed inset-0 z-[9998] flex items-center justify-center bg-black/55 px-4 backdrop-blur-sm"
-                            @click.self="showAllNotifications = false"
-                        >
-                            <div
-                                x-show="showAllNotifications"
-                                x-transition
-                                class="w-full max-w-2xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl dark-notification-modal"
-                            >
-                                {{-- HEADER --}}
-                                <div class="flex items-start justify-between border-b border-slate-200 px-6 py-5">
-                                    <div>
-                                        <p class="text-xs font-semibold tracking-[0.18em] text-[#F28C28]">
-                                            NOTIFIKASI
-                                        </p>
-                                        <h2 class="mt-1 text-2xl font-bold text-[#082F63]">
-                                            Semua Notifikasi
-                                        </h2>
-                                        <p class="mt-1 text-xs text-slate-400">
-                                            Seluruh pemberitahuan dari Sistem BA Rampung.
-                                        </p>
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        @click="showAllNotifications = false"
-                                        class="rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-                                        aria-label="Tutup"
-                                    >
-                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M18 6 6 18"/>
-                                        </svg>
-                                    </button>
-                                </div>
-
-                                {{-- FILTER --}}
-                                <div class="flex gap-2 border-b border-slate-200 px-6 py-3">
-                                    <button
-                                        type="button"
-                                        @click="notificationFilter = 'all'"
-                                        :class="notificationFilter === 'all'
-                                            ? 'bg-[#123F7A] text-white'
-                                            : 'text-slate-500 hover:bg-slate-100'"
-                                        class="rounded-full px-4 py-2 text-xs font-bold transition"
-                                    >
-                                        Semua ({{ $semuaNotifikasi->count() }})
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        @click="notificationFilter = 'unread'"
-                                        :class="notificationFilter === 'unread'
-                                            ? 'bg-[#123F7A] text-white'
-                                            : 'text-slate-500 hover:bg-slate-100'"
-                                        class="rounded-full px-4 py-2 text-xs font-semibold transition"
-                                    >
-                                        Belum Dibaca ({{ $jumlahNotifikasi }})
-                                    </button>
-                                </div>
-
-                                {{-- LIST --}}
-                                <div class="max-h-[55vh] overflow-y-auto px-5 py-2">
-                                    @forelse($semuaNotifikasi as $notification)
-                                        <form
-                                            x-show="notificationFilter === 'all' || {{ $notification->is_read ? 'false' : 'true' }}"
-                                            method="POST"
-                                            action="{{ route('notifications.read', $notification) }}"
-                                            class="border-b border-slate-100 last:border-b-0"
-                                        >
-                                            @csrf
-                                            @method('PATCH')
-
-                                            <button
-                                                type="submit"
-                                                class="group flex w-full items-start gap-4 px-2 py-4 text-left transition hover:bg-slate-50"
-                                            >
-                                                <div
-                                                    class="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl
-                                                        {{ !$notification->is_read
-                                                            ? 'bg-orange-100 text-[#F28C28]'
-                                                            : 'bg-slate-100 text-slate-400' }}"
-                                                >
-                                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                                            d="M9 12.75 11.25 15 15 9.75"/>
-                                                    </svg>
-                                                </div>
-
-                                                <div class="min-w-0 flex-1">
-                                                    <div class="flex items-start justify-between gap-3">
-                                                        <p class="text-sm font-bold
-                                                            {{ !$notification->is_read ? 'text-[#082F63]' : 'text-slate-600' }}">
-                                                            {{ $notification->title }}
-                                                        </p>
-
-                                                        @if(!$notification->is_read)
-                                                            <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#F28C28]"></span>
-                                                        @endif
-                                                    </div>
-
-                                                    <p class="mt-1 text-xs leading-relaxed text-slate-500">
-                                                        {{ $notification->message }}
-                                                    </p>
-
-                                                    <p class="mt-2 text-[10px] text-slate-400">
-                                                        {{ $notification->created_at->diffForHumans() }}
-                                                    </p>
-                                                </div>
-                                            </button>
-                                        </form>
-                                    @empty
-                                        <div class="px-5 py-12 text-center">
-                                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"
-                                                        d="M14.857 17.082a23.848 23.848 0 0 1-5.714 0A2.25 2.25 0 0 1 7.5 14.85V11a4.5 4.5 0 1 1 9 0v3.85a2.25 2.25 0 0 1-1.643 2.232ZM9.75 18.75a2.25 2.25 0 0 0 4.5 0"/>
-                                                </svg>
-                                            </div>
-                                            <p class="mt-3 text-sm font-semibold text-slate-500">
-                                                Belum ada notifikasi.
-                                            </p>
-                                        </div>
-                                    @endforelse
-
-                                    @if($jumlahNotifikasi === 0)
-                                        <div
-                                            x-show="notificationFilter === 'unread'"
-                                            class="px-5 py-12 text-center"
-                                        >
-                                            <p class="text-sm font-semibold text-slate-500">
-                                                Tidak ada notifikasi yang belum dibaca.
-                                            </p>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                {{-- FOOTER --}}
-                                <div class="border-t border-slate-200 px-6 py-4">
-                                    <button
-                                        type="button"
-                                        @click="showAllNotifications = false"
-                                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
-                                    >
-                                        Tutup
-                                    </button>
-                                </div>
-                            </div>
                         </div>
                     </div>
 

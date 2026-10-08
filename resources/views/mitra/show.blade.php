@@ -191,17 +191,6 @@
 
                 <div>
                     <dt class="mitra-detail-label mb-1">
-                        Jenis Usaha
-                    </dt>
-
-                    <dd class="mitra-detail-value font-medium">
-                        {{ $mitra->jenis_usaha ?? '-' }}
-                    </dd>
-                </div>
-
-
-                <div>
-                    <dt class="mitra-detail-label mb-1">
                         Penanggung Jawab
                     </dt>
 

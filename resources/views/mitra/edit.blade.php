@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Mitra Pengolahan')
+@section('title', 'Edit Data Mitra')
 
 @section('content')
 
@@ -153,14 +153,21 @@
 <div class="mitra-edit-page">
 
     {{-- HEADER --}}
-    <div class="mitra-edit-header mb-5">
+    <div class="mitra-edit-header mb-7">
 
-        <h2 class="mitra-edit-title text-xl font-semibold">
-            Edit Mitra Pengolahan
+        <p class="mb-1 text-[10px] font-bold uppercase tracking-[0.30em] text-white/75">
+            MASTER DATA
+        </p>
+
+        <h2 class="dashboard-display text-5xl leading-none text-white sm:text-6xl">
+            Edit
+            <span class="text-[#F28C28]">
+                Mitra
+            </span>
         </h2>
 
-        <p class="mitra-edit-subtitle mt-1 text-sm">
-            Perbarui informasi mitra pengolahan.
+        <p class="mt-4 text-sm leading-6 text-white/85 sm:text-base">
+            Perbarui informasi data mitra pengolahan.
         </p>
 
     </div>
@@ -206,21 +213,6 @@
                     name="nama_mitra"
                     value="{{ old('nama_mitra', $mitra->nama_mitra) }}"
                     required
-                    class="mitra-edit-input"
-                >
-            </div>
-
-
-            {{-- JENIS USAHA --}}
-            <div>
-                <label class="mitra-edit-label mb-2 block text-sm font-medium">
-                    Jenis Usaha
-                </label>
-
-                <input
-                    type="text"
-                    name="jenis_usaha"
-                    value="{{ old('jenis_usaha', $mitra->jenis_usaha) }}"
                     class="mitra-edit-input"
                 >
             </div>

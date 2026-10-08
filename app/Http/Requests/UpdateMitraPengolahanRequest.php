@@ -31,12 +31,6 @@ class UpdateMitraPengolahanRequest extends FormRequest
                 'max:150',
             ],
 
-            'jenis_usaha' => [
-                'nullable',
-                'string',
-                'max:100',
-            ],
-
             'alamat' => [
                 'nullable',
                 'string',

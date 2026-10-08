@@ -13,7 +13,6 @@ class MitraPengolahan extends Model
     protected $fillable = [
         'kode_mitra',
         'nama_mitra',
-        'jenis_usaha',
         'alamat',
         'kecamatan',
         'desa',
