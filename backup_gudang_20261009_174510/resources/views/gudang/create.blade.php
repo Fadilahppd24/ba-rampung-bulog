@@ -417,31 +417,6 @@
                 </div>
 
 
-                {{-- LUAS DAN UKURAN GUDANG --}}
-                <div>
-                    <label class="label">Luas Gudang (m²)</label>
-                    <input type="number" min="0" step="0.01" name="luas_m2" value="{{ old('luas_m2') }}" class="input" placeholder="Contoh: 455">
-                    @error('luas_m2') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="label">Panjang (m)</label>
-                    <input type="number" min="0" step="0.01" name="panjang_m" value="{{ old('panjang_m') }}" class="input" placeholder="Contoh: 35">
-                    @error('panjang_m') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="label">Lebar (m)</label>
-                    <input type="number" min="0" step="0.01" name="lebar_m" value="{{ old('lebar_m') }}" class="input" placeholder="Contoh: 13">
-                    @error('lebar_m') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="label">Tinggi (m)</label>
-                    <input type="number" min="0" step="0.01" name="tinggi_m" value="{{ old('tinggi_m') }}" class="input" placeholder="Contoh: 8">
-                    @error('tinggi_m') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </div>
-
                 {{-- =================================================
                      STATUS
                 ================================================== --}}

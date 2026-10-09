@@ -114,23 +114,6 @@ class GudangController extends Controller
     }
 
     // =========================================================
-    // EXPORT DATA GUDANG KE EXCEL (2 SHEET)
-    // =========================================================
-
-    
-public function export()
-{
-    
-return \Maatwebsite\Excel\Facades\Excel::download(
-    new \App\Exports\GudangExport(),
-    'Data_Gudang.xlsx'
-);
-
-}
-
-
-
-    // =========================================================
     // GENERATE KODE GUDANG OTOMATIS
     //
     // - Utama : GDG-001, GDG-002, ...

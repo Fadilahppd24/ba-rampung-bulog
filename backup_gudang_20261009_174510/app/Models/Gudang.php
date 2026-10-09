@@ -19,10 +19,6 @@ class Gudang extends Model
     'nomor_telepon',
     'email',
     'kapasitas',
-    'luas_m2',
-    'panjang_m',
-    'lebar_m',
-    'tinggi_m',
     'status',
     'gudang_induk_id',
 ];
@@ -31,10 +27,6 @@ class Gudang extends Model
     {
         return [
             'kapasitas' => 'decimal:2',
-            'luas_m2' => 'decimal:2',
-            'panjang_m' => 'decimal:2',
-            'lebar_m' => 'decimal:2',
-            'tinggi_m' => 'decimal:2',
         ];
     }
 

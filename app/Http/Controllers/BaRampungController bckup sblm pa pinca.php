@@ -145,11 +145,18 @@ class BaRampungController extends Controller
         // DATA BA
         // =====================================================
 
+        // Jumlah baris per halaman dari dropdown (hanya pilihan yang diizinkan).
+        $perPage = (int) $request->input('per_page', 10);
+
+        if (! in_array($perPage, [10, 20, 25, 50, 100], true)) {
+            $perPage = 10;
+        }
+
         $baList = $query
-    ->orderByDesc('created_at')
-    ->orderByDesc('id')
-    ->paginate(10)
-    ->withQueryString();
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate($perPage)
+            ->withQueryString();
 
         // =====================================================
         // KPI
@@ -283,11 +290,7 @@ class BaRampungController extends Controller
             ->orderBy('nama_mitra')
             ->get();
 
-        // Tampilkan semua riwayat Pinca agar BA baru maupun BA revisian
-        // dapat menggunakan Pinca aktif atau nonaktif sesuai periode.
-        $pimpinans = PimpinanCabang::query()
-            ->orderByRaw("CASE WHEN status = 'aktif' THEN 0 ELSE 1 END")
-            ->orderBy('periode_mulai', 'desc')
+        $pimpinans = PimpinanCabang::aktif()
             ->orderBy('nama')
             ->get();
 
@@ -586,11 +589,7 @@ if ($ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI) {
             ->orderBy('nama_mitra')
             ->get();
 
-        // Tampilkan semua riwayat Pinca agar BA baru maupun BA revisian
-        // dapat menggunakan Pinca aktif atau nonaktif sesuai periode.
-        $pimpinans = PimpinanCabang::query()
-            ->orderByRaw("CASE WHEN status = 'aktif' THEN 0 ELSE 1 END")
-            ->orderBy('periode_mulai', 'desc')
+        $pimpinans = PimpinanCabang::aktif()
             ->orderBy('nama')
             ->get();
 

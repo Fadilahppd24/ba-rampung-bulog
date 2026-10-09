@@ -96,13 +96,13 @@
                 </h3>
             </div>
 
-            @if ($gudang->pegawais->isEmpty())
+            @if (collect($gudang->pegawais ?? [])->isEmpty())
                 <p class="text-sm text-slate-500">
                     Belum ada pegawai terdaftar di gudang ini.
                 </p>
             @else
                 <div class="divide-y divide-slate-100">
-                    @foreach ($gudang->pegawais as $p)
+                    @foreach (collect($gudang->pegawais ?? []) as $p)
                         <div class="flex items-center justify-between py-3 text-sm">
                             <div>
                                 <p class="font-medium text-gray-900">{{ $p->nama }}</p>
@@ -140,13 +140,13 @@
             </a>
         </div>
 
-        @if ($baTerbaru->isEmpty())
+        @if (collect($baTerbaru ?? [])->isEmpty())
             <p class="py-6 text-center text-sm text-slate-500">
                 Belum ada data BA Rampung.
             </p>
         @else
             <div class="divide-y divide-slate-100">
-                @foreach ($baTerbaru as $ba)
+                @foreach (collect($baTerbaru ?? []) as $ba)
                     <a
                         href="{{ route('ba-rampung.show', $ba) }}"
                         class="-mx-2 flex items-center justify-between rounded-lg px-2 py-3 transition hover:bg-slate-50"

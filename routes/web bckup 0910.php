@@ -85,10 +85,6 @@ Route::middleware('role:admin_gudang')->group(function () {
     // Hanya Admin Kantor yang mengelola master Gudang.
 Route::middleware('role:admin_kantor')->group(function () {
 
-    // Export seluruh data gudang ke Excel.
-    Route::get('/gudang-export', [GudangController::class, 'export'])
-        ->name('gudang.export');
-
     Route::get('/gudang-create', [GudangController::class, 'create'])
         ->name('gudang.create');
 

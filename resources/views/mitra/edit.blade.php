@@ -70,18 +70,31 @@
         gap: 8px;
         padding: 10px 15px;
         border-radius: 10px;
-        border: 1px solid #cbd5e1;
-        background: #ffffff;
-        color: #334155;
+        border: 1px solid #123F7A;
+        background: #123F7A;
+        color: #ffffff;
         font-size: 14px;
         font-weight: 600;
-        transition: .2s ease;
+        text-decoration: none;
+        transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
     }
 
     .mitra-edit-back:hover {
-        border-color: #123F7A;
-        color: #123F7A;
-        background: #f8fafc;
+        border-color: #0B2F5B;
+        color: #ffffff;
+        background: #0B2F5B;
+    }
+
+    .mitra-edit-form .btn-primary {
+        background: #123F7A !important;
+        border-color: #123F7A !important;
+        color: #ffffff !important;
+    }
+
+    .mitra-edit-form .btn-primary:hover {
+        background: #0B2F5B !important;
+        border-color: #0B2F5B !important;
+        color: #ffffff !important;
     }
 
     /* =========================================================
@@ -137,14 +150,26 @@
     }
 
     html.dark-theme .mitra-edit-back {
-        background: #13263D !important;
-        border-color: #2B405A !important;
-        color: #F8FAFC !important;
+        background: #123F7A !important;
+        border-color: #123F7A !important;
+        color: #FFFFFF !important;
     }
 
     html.dark-theme .mitra-edit-back:hover {
-        background: #1A3150 !important;
-        border-color: #60A5FA !important;
+        background: #0B2F5B !important;
+        border-color: #0B2F5B !important;
+        color: #FFFFFF !important;
+    }
+
+    html.dark-theme .mitra-edit-form .btn-primary {
+        background: #123F7A !important;
+        border-color: #123F7A !important;
+        color: #FFFFFF !important;
+    }
+
+    html.dark-theme .mitra-edit-form .btn-primary:hover {
+        background: #0B2F5B !important;
+        border-color: #0B2F5B !important;
         color: #FFFFFF !important;
     }
 </style>

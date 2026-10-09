@@ -75,11 +75,6 @@ class StoreGudangRequest extends FormRequest
                 'min:0',
             ],
 
-            'luas_m2' => ['nullable', 'numeric', 'min:0'],
-            'panjang_m' => ['nullable', 'numeric', 'min:0'],
-            'lebar_m' => ['nullable', 'numeric', 'min:0'],
-            'tinggi_m' => ['nullable', 'numeric', 'min:0'],
-
             'status' => [
                 'required',
                 'in:aktif,nonaktif',
@@ -113,15 +108,6 @@ class StoreGudangRequest extends FormRequest
 
             'kapasitas.min' =>
                 'Kapasitas tidak boleh negatif.',
-
-            'luas_m2.numeric' => 'Luas gudang harus berupa angka.',
-            'luas_m2.min' => 'Luas gudang tidak boleh negatif.',
-            'panjang_m.numeric' => 'Panjang gudang harus berupa angka.',
-            'panjang_m.min' => 'Panjang gudang tidak boleh negatif.',
-            'lebar_m.numeric' => 'Lebar gudang harus berupa angka.',
-            'lebar_m.min' => 'Lebar gudang tidak boleh negatif.',
-            'tinggi_m.numeric' => 'Tinggi gudang harus berupa angka.',
-            'tinggi_m.min' => 'Tinggi gudang tidak boleh negatif.',
 
             'status.required' =>
                 'Status wajib dipilih.',

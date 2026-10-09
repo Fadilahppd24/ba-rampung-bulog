@@ -1114,36 +1114,6 @@
         </div>
 
 
-        {{-- PILIH JUMLAH BARIS --}}
-        <div class="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <div class="flex items-center gap-2 text-sm text-slate-500">
-                <label for="ba-per-page" class="whitespace-nowrap">Baris per halaman:</label>
-                <select
-                    id="ba-per-page"
-                    class="ba-filter-input !w-auto min-w-[88px] !py-2"
-                    aria-label="Jumlah baris per halaman"
-                >
-                    @foreach([10, 20, 25, 50, 100] as $jumlahBaris)
-                        <option
-                            value="{{ $jumlahBaris }}"
-                            @selected((int) request('per_page', $baList->perPage() ?? 10) === $jumlahBaris)
-                        >
-                            {{ $jumlahBaris }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <p class="text-sm text-slate-500" aria-live="polite">
-                @if($baList->total() > 0)
-                    Menampilkan {{ number_format($baList->firstItem()) }}–{{ number_format($baList->lastItem()) }}
-                    dari {{ number_format($baList->total()) }} data
-                @else
-                    Tidak ada data untuk ditampilkan
-                @endif
-            </p>
-        </div>
-
         <div class="overflow-x-auto">
 
             <table class="ba-table min-w-full text-left text-sm">
@@ -1408,7 +1378,7 @@
 
             <div class="border-t border-slate-100 px-5 py-4 sm:px-6">
 
-                {{ $baList->appends(request()->except('page'))->links() }}
+                {{ $baList->links() }}
 
             </div>
 
@@ -1705,20 +1675,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 setOpen(false);
             }
         });
-    });
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const selector = document.getElementById('ba-per-page');
-    if (!selector) return;
-
-    selector.addEventListener('change', function () {
-        const url = new URL(window.location.href);
-        url.searchParams.set('per_page', this.value);
-        url.searchParams.delete('page');
-        window.location.href = url.toString();
     });
 });
 </script>

@@ -598,7 +598,6 @@
                             type="text"
                             name="nomor_ba"
                             value="{{ old('nomor_ba') }}"
-                            required
                             class="input pl-11"
                             placeholder="Masukkan nomor BA"
                         >
@@ -697,7 +696,6 @@
                         type="text"
                         name="nomor_mo"
                         value="{{ old('nomor_mo') }}"
-                        required
                         class="input"
                         placeholder="Masukkan nomor MO"
                     >
@@ -716,7 +714,6 @@
                         type="text"
                         name="nomor_po"
                         value="{{ old('nomor_po') }}"
-                        required
                         class="input"
                         placeholder="Masukkan nomor PO"
                     >
@@ -1581,19 +1578,12 @@
                                 value="{{ $p->id }}"
                                 @selected(old('pimpinan_cabang_id') == $p->id)
                             >
-                                {{ $p->nama }} — {{ ucfirst($p->status) }}
-                                @if($p->periode_mulai)
-                                    ({{ \Illuminate\Support\Carbon::parse($p->periode_mulai)->format('d/m/Y') }}{{ $p->periode_selesai ? ' - ' . \Illuminate\Support\Carbon::parse($p->periode_selesai)->format('d/m/Y') : ($p->status === 'aktif' ? ' - Sekarang' : '') }})
-                                @endif
+                                {{ $p->nama }}
                             </option>
 
                         @endforeach
 
                     </select>
-
-                    <p class="mt-2 text-xs text-slate-400">
-                        Pinca aktif maupun nonaktif dapat dipilih. Untuk BA revisian, pilih Pinca sesuai periode dan dokumen yang ditandatangani.
-                    </p>
 
                 </div>
 
@@ -1656,39 +1646,11 @@
             "
         >
 
-            <button
-                type="submit"
-                name="action"
-                value="draft"
-                class="
-                    inline-flex
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-2xl
-                    border
-                    border-[#082F63]
-                    bg-white
-                    px-6
-                    py-3.5
-                    text-sm
-                    font-semibold
-                    text-[#082F63]
-                    shadow-sm
-                    transition
-                    hover:bg-[#082F63]
-                    hover:text-white
-                "
-            >
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 3h11l3 3v15H5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 3v5h7V3M8 21v-6h8v6"/></svg>
-                Simpan Draft
-            </button>
+            
 
 
             <button
                 type="submit"
-                name="action"
-                value="submit"
                 class="
                     inline-flex
                     items-center

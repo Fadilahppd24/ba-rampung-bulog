@@ -4,85 +4,30 @@
 
 @section('content')
 
-<style>
-    /* Header halaman mengikuti gaya halaman Edit Pimpinan */
-    .gudang-create-header {
-        width: 100%;
-        max-width: 760px;
-        margin: 0 auto 22px auto;
-        text-align: center;
-        padding-top: 2px;
-    }
-
-    .gudang-create-eyebrow {
-        margin-bottom: 5px;
-        color: #dbeafe;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: .28em;
-        text-transform: uppercase;
-    }
-
-    .gudang-create-title {
-        margin: 0;
-        font-family: Georgia, 'Times New Roman', serif;
-        font-size: clamp(38px, 5vw, 52px);
-        line-height: 1;
-        font-weight: 500;
-        color: #ffffff;
-        text-shadow: 0 2px 12px rgba(0, 0, 0, .18);
-    }
-
-    .gudang-create-title span {
-        color: #F28C28;
-    }
-
-    .gudang-create-subtitle {
-        margin: 10px 0 0;
-        color: rgba(255, 255, 255, .78);
-        font-size: 13px;
-    }
-
-    html.dark-theme .gudang-create-eyebrow {
-        color: #cbd5e1 !important;
-    }
-
-    html.dark-theme .gudang-create-title {
-        color: #ffffff !important;
-    }
-
-    html.dark-theme .gudang-create-subtitle {
-        color: #cbd5e1 !important;
-    }
-
-    /* Tombol Tambah Gudang menggunakan warna navy yang konsisten */
-    .gudang-create-actions .gudang-create-button {
-        background-color: #123F7A !important;
-        color: #ffffff !important;
-        border: 1px solid #123F7A !important;
-        transition: background-color .2s ease, transform .2s ease;
-    }
-
-    .gudang-create-actions .gudang-create-button:hover {
-        background-color: #0D2F5B !important;
-        border-color: #0D2F5B !important;
-        color: #ffffff !important;
-    }
-</style>
-
 <div class="space-y-6">
 
     {{-- =========================================================
          HERO / HEADER HALAMAN
     ========================================================== --}}
-    <div class="gudang-create-header">
-        <div class="gudang-create-eyebrow">MASTER DATA</div>
-        <h1 class="gudang-create-title">
-            Tambah <span>Gudang</span>
-        </h1>
-        <p class="gudang-create-subtitle">
-            Tambahkan data gudang baru.
-        </p>
+    <div class="flex flex-col gap-4 pt-2 sm:flex-row sm:items-end sm:justify-between">
+
+        <div>
+            <p class="dashboard-kicker text-white/75">
+                Master Data
+            </p>
+
+            <h1 class="dashboard-display mt-2 text-4xl leading-tight text-white sm:text-5xl">
+                Tambah <span class="text-[#F28C28]">Gudang</span>
+            </h1>
+
+            <p
+                class="mt-2 text-sm text-white/85"
+                style="text-shadow: 0 1px 8px rgba(3, 28, 55, .2);"
+            >
+                Tambahkan data gudang baru.
+            </p>
+        </div>
+
     </div>
 
 
@@ -417,31 +362,6 @@
                 </div>
 
 
-                {{-- LUAS DAN UKURAN GUDANG --}}
-                <div>
-                    <label class="label">Luas Gudang (m²)</label>
-                    <input type="number" min="0" step="0.01" name="luas_m2" value="{{ old('luas_m2') }}" class="input" placeholder="Contoh: 455">
-                    @error('luas_m2') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="label">Panjang (m)</label>
-                    <input type="number" min="0" step="0.01" name="panjang_m" value="{{ old('panjang_m') }}" class="input" placeholder="Contoh: 35">
-                    @error('panjang_m') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="label">Lebar (m)</label>
-                    <input type="number" min="0" step="0.01" name="lebar_m" value="{{ old('lebar_m') }}" class="input" placeholder="Contoh: 13">
-                    @error('lebar_m') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="label">Tinggi (m)</label>
-                    <input type="number" min="0" step="0.01" name="tinggi_m" value="{{ old('tinggi_m') }}" class="input" placeholder="Contoh: 8">
-                    @error('tinggi_m') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </div>
-
                 {{-- =================================================
                      STATUS
                 ================================================== --}}
@@ -486,18 +406,18 @@
             {{-- =====================================================
                  BUTTON
             ====================================================== --}}
-            <div class="gudang-create-actions mt-6 flex justify-between border-t border-slate-100 pt-6">
+            <div class="mt-6 flex justify-between border-t border-slate-100 pt-6">
 
                 <a
                     href="{{ route('gudang.index') }}"
-                    class="btn-secondary gudang-create-button inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold"
+                    class="btn-secondary"
                 >
                     ← Kembali
                 </a>
 
                 <button
                     type="submit"
-                    class="btn-primary gudang-create-button inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold"
+                    class="btn-primary"
                 >
                     💾 Simpan Gudang
                 </button>

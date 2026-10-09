@@ -283,11 +283,7 @@ class BaRampungController extends Controller
             ->orderBy('nama_mitra')
             ->get();
 
-        // Tampilkan semua riwayat Pinca agar BA baru maupun BA revisian
-        // dapat menggunakan Pinca aktif atau nonaktif sesuai periode.
-        $pimpinans = PimpinanCabang::query()
-            ->orderByRaw("CASE WHEN status = 'aktif' THEN 0 ELSE 1 END")
-            ->orderBy('periode_mulai', 'desc')
+        $pimpinans = PimpinanCabang::aktif()
             ->orderBy('nama')
             ->get();
 
@@ -586,11 +582,7 @@ if ($ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI) {
             ->orderBy('nama_mitra')
             ->get();
 
-        // Tampilkan semua riwayat Pinca agar BA baru maupun BA revisian
-        // dapat menggunakan Pinca aktif atau nonaktif sesuai periode.
-        $pimpinans = PimpinanCabang::query()
-            ->orderByRaw("CASE WHEN status = 'aktif' THEN 0 ELSE 1 END")
-            ->orderBy('periode_mulai', 'desc')
+        $pimpinans = PimpinanCabang::aktif()
             ->orderBy('nama')
             ->get();
 

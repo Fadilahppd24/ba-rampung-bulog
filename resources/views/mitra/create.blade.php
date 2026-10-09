@@ -145,14 +145,14 @@
 
         <a
             href="{{ route('mitra.index') }}"
-            class="btn-secondary"
+            class="btn-secondary mitra-navy-button"
         >
             ← Kembali
         </a>
 
         <button
             type="submit"
-            class="btn-primary"
+            class="btn-primary mitra-navy-button"
         >
             💾 Simpan Mitra
         </button>
@@ -162,6 +162,34 @@
 </form>
 
     <style>
+        /* Samakan warna tombol Kembali dan Simpan dengan tema navy */
+        .mitra-form-card .mitra-navy-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            min-height: 40px;
+            padding: .65rem 1.1rem;
+            border: 1px solid #123F7A !important;
+            border-radius: .65rem;
+            background: #123F7A !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
+        }
+
+        .mitra-form-card .mitra-navy-button:hover {
+            background: #0B2F5B !important;
+            border-color: #0B2F5B !important;
+            color: #ffffff !important;
+        }
+
+        .mitra-form-card .mitra-navy-button:focus-visible {
+            outline: 3px solid rgba(18, 63, 122, .25);
+            outline-offset: 2px;
+        }
+
         .mitra-page {
             width: 100%;
             max-width: 980px;

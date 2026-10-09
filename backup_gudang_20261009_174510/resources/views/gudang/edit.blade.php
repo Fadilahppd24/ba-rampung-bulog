@@ -75,34 +75,6 @@
         outline: 3px solid rgba(18, 63, 122, .25);
         outline-offset: 2px;
     }
-
-    /* Pastikan label form tetap terbaca pada mode gelap maupun terang. */
-    .gudang-edit-form label,
-    .gudang-edit-form label.label {
-        display: block;
-        margin-bottom: 6px;
-        font-size: 12px;
-        font-weight: 600;
-        line-height: 1.5;
-        color: #334155;
-        opacity: 1;
-    }
-
-    html.dark-theme .gudang-edit-form label,
-    html.dark-theme .gudang-edit-form label.label,
-    body.dark-theme .gudang-edit-form label,
-    body.dark-theme .gudang-edit-form label.label,
-    html.dark .gudang-edit-form label,
-    html.dark .gudang-edit-form label.label,
-    body.dark .gudang-edit-form label,
-    body.dark .gudang-edit-form label.label,
-    [data-theme="dark"] .gudang-edit-form label,
-    [data-theme="dark"] .gudang-edit-form label.label {
-        color: #f1f5f9 !important;
-        opacity: 1 !important;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, .25);
-    }
-
 </style>
 
 <div class="space-y-6">
@@ -122,7 +94,7 @@
          action, method, @csrf, @method, name attribute
          SEMUA DIPERTAHANKAN PERSIS SEPERTI SEBELUMNYA.
     ========================================================== --}}
-    <form method="POST" action="{{ route('gudang.update', $gudang) }}" class="space-y-6 gudang-edit-form">
+    <form method="POST" action="{{ route('gudang.update', $gudang) }}" class="space-y-6">
         @csrf
         @method('PUT')
 
@@ -201,26 +173,6 @@
                     @error('kapasitas')
                         <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                     @enderror
-                </div>
-                <div>
-                    <label class="label">Luas Gudang (m²)</label>
-                    <input type="number" min="0" step="0.01" name="luas_m2" value="{{ old('luas_m2', $gudang->luas_m2) }}" class="input">
-                    @error('luas_m2') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="label">Panjang (m)</label>
-                    <input type="number" min="0" step="0.01" name="panjang_m" value="{{ old('panjang_m', $gudang->panjang_m) }}" class="input">
-                    @error('panjang_m') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="label">Lebar (m)</label>
-                    <input type="number" min="0" step="0.01" name="lebar_m" value="{{ old('lebar_m', $gudang->lebar_m) }}" class="input">
-                    @error('lebar_m') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="label">Tinggi (m)</label>
-                    <input type="number" min="0" step="0.01" name="tinggi_m" value="{{ old('tinggi_m', $gudang->tinggi_m) }}" class="input">
-                    @error('tinggi_m') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label class="label">Status</label>

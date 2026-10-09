@@ -36,10 +36,11 @@
     .pimpinan-modern-title {
         margin: 0;
         color: #ffffff;
-        font-size: 38px;
-        font-weight: 700;
-        line-height: 1.1;
-        letter-spacing: -.02em;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 52px;
+        font-weight: 400;
+        line-height: 1.05;
+        letter-spacing: -.025em;
     }
 
     .pimpinan-modern-title span {
@@ -253,7 +254,7 @@
         }
 
         .pimpinan-modern-title {
-            font-size: 32px;
+            font-size: 38px;
         }
 
         .pimpinan-modern-actions {

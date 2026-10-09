@@ -704,15 +704,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     @role('admin_kantor')
 
                         <a
-                            href="{{ route('gudang.export') }}"
-                            class="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-bold text-white shadow-lg backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:bg-white/20"
-                            title="Unduh seluruh data gudang dalam Excel"
-                        >
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>
-                            Export Excel
-                        </a>
-
-                        <a
                             href="{{ route('gudang.create') }}"
                             class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#123F7A] px-5 py-3 text-sm font-bold text-white shadow-lg transition duration-200 hover:-translate-y-0.5 hover:bg-[#0d3263]"
                         >

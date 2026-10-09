@@ -46,7 +46,6 @@ class MitraPengolahanController extends Controller
         $kpi = [
             'total' => MitraPengolahan::count(),
             'aktif' => MitraPengolahan::aktif()->count(),
-            'nonaktif' => MitraPengolahan::where('status', 'nonaktif')->count(),
             'total_ba' => BaRampung::count(),
             'dengan_proses' => MitraPengolahan::whereHas(
                 'baRampungs',
