@@ -198,15 +198,6 @@ Route::middleware('role:admin_kantor')->group(function () {
             ->name('pengaturan.users.destroy');
 
 
-        Route::get('/pengaturan/backup', [PengaturanController::class, 'backup'])
-            ->name('pengaturan.backup');
-
-        Route::get('/pengaturan/backup/download', [PengaturanController::class, 'downloadBackup'])
-            ->name('pengaturan.backup.download');
-
-        Route::post('/pengaturan/restore', [PengaturanController::class, 'restore'])
-            ->name('pengaturan.restore');
-
         Route::get('/pengaturan/log-aktivitas', [PengaturanController::class, 'logAktivitas'])
             ->name('pengaturan.log-aktivitas');
     });

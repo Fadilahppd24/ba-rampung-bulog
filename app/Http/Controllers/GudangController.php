@@ -62,14 +62,10 @@ class GudangController extends Controller
         // =====================================================
 
         $gudangs = $query
-            ->orderByRaw(
-                'COALESCE(gudang_induk_id, id)'
-            )
-            ->orderByRaw(
-                'CASE WHEN gudang_induk_id IS NULL THEN 0 ELSE 1 END'
-            )
-            ->orderBy('nama_gudang')
-            ->get();
+    ->orderByRaw('COALESCE(gudang_induk_id, id)')
+    ->orderByRaw('CASE WHEN gudang_induk_id IS NULL THEN 0 ELSE 1 END')
+    ->orderBy('kode_gudang')
+    ->get();
 
         // =====================================================
         // KPI

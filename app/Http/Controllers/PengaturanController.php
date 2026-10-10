@@ -3,10 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AktivitasLog;
-use App\Models\Gudang;
-use App\Models\MitraPengolahan;
 use App\Models\Pengaturan;
-use App\Models\PimpinanCabang;
 use App\Services\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -83,87 +80,6 @@ class PengaturanController extends Controller
         ActivityLogger::log('Mengubah Pengaturan Sistem', 'pengaturan', $pengaturan->id);
 
         return redirect()->route('pengaturan.sistem')->with('success', 'Pengaturan Sistem berhasil disimpan. Catatan: format nomor BA yang sudah berjalan tidak diubah retroaktif.');
-    }
-
-    public function backup(): View
-    {
-        return view('pengaturan.backup');
-    }
-
-    /**
-     * "Backup" here is a logical export (JSON snapshot of the master-data
-     * tables) rather than a raw `mysqldump`, since a real SQL dump needs a
-     * shell binary that may not exist on every host. It is a genuine,
-     * restorable backup of Gudang / Mitra / Pimpinan Cabang data.
-     */
-    public function downloadBackup()
-    {
-        $snapshot = [
-    'exported_at' => now()->toIso8601String(),
-    'gudangs' => Gudang::all()->toArray(),
-    'mitra_pengolahans' => MitraPengolahan::all()->toArray(),
-    'pimpinan_cabangs' => PimpinanCabang::all()->toArray(),
-];
-
-        ActivityLogger::log('Backup Database', 'pengaturan', null, 'Export snapshot data master ke JSON.');
-
-        $fileName = 'backup_ba_rampung_' . now()->format('Y-m-d_His') . '.json';
-
-        return response()->streamDownload(function () use ($snapshot) {
-            echo json_encode($snapshot, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        }, $fileName, ['Content-Type' => 'application/json']);
-    }
-
-    /**
-     * Restore is intentionally NON-destructive: it only inserts records
-     * whose unique key (kode_gudang / kode_mitra / nip) does not already
-     * exist. It never updates or deletes existing rows, so it cannot wipe
-     * or corrupt current data — matching the "don't touch existing data"
-     * requirement.
-     */
-    public function restore(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'file' => ['required', 'file', 'mimes:json'],
-        ], [
-            'file.required' => 'File backup wajib dipilih.',
-            'file.mimes' => 'File harus berformat .json.',
-        ]);
-
-        $content = json_decode(file_get_contents($request->file('file')->getRealPath()), true);
-
-        if (! is_array($content)) {
-            return back()->withErrors(['file' => 'File backup tidak valid atau rusak.']);
-        }
-
-        $ringkasan = [];
-
-        $ringkasan['gudang'] = $this->restoreTable(Gudang::class, $content['gudangs'] ?? [], 'kode_gudang');
-        $ringkasan['mitra'] = $this->restoreTable(MitraPengolahan::class, $content['mitra_pengolahans'] ?? [], 'kode_mitra');
-
-        ActivityLogger::log('Restore Database', 'pengaturan', null, 'Menambahkan ' . array_sum($ringkasan) . ' data baru dari file backup (data lama tidak diubah).');
-
-        return back()->with('success',
-"Restore selesai. Ditambahkan: {$ringkasan['gudang']} Gudang, {$ringkasan['mitra']} Mitra baru. Data yang sudah ada tidak diubah.");
-    }
-
-    private function restoreTable(string $modelClass, array $rows, string $uniqueKey): int
-    {
-        $ditambahkan = 0;
-
-        foreach ($rows as $row) {
-            if (empty($row[$uniqueKey])) {
-                continue;
-            }
-            $exists = $modelClass::where($uniqueKey, $row[$uniqueKey])->exists();
-            if (! $exists) {
-                $fillable = (new $modelClass())->getFillable();
-                $modelClass::create(array_intersect_key($row, array_flip($fillable)));
-                $ditambahkan++;
-            }
-        }
-
-        return $ditambahkan;
     }
 
     public function logAktivitas(Request $request): View

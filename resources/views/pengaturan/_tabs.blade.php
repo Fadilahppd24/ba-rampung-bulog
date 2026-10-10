@@ -4,10 +4,6 @@
             'label' => 'Manajemen User',
             'icon' => 'users',
         ],
-        'pengaturan.backup' => [
-            'label' => 'Backup & Restore',
-            'icon' => 'database',
-        ],
         'pengaturan.log-aktivitas' => [
             'label' => 'Log Aktivitas',
             'icon' => 'clock',
@@ -22,7 +18,7 @@
 
     .pengaturan-tabs {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 6px;
 
         padding: 5px;
@@ -350,21 +346,6 @@
                         <circle cx="9" cy="7" r="4"/>
                         <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-
-                @elseif($tab['icon'] === 'database')
-
-                    {{-- BACKUP --}}
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    >
-                        <ellipse cx="12" cy="5" rx="8" ry="3"/>
-                        <path d="M4 5v7c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/>
-                        <path d="M4 12v7c0 1.66 3.58 3 8 3s8-1.34 8-3v-7"/>
                     </svg>
 
                 @elseif($tab['icon'] === 'clock')
