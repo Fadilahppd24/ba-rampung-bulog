@@ -523,15 +523,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const kodeGudang = document.querySelector('input[name="kode_gudang"]');
 
     function updateKodeFilial() {
-        const selectedOption = gudangInduk.options[gudangInduk.selectedIndex];
-        const kodeInduk = selectedOption?.dataset?.kode || '';
-
-        if (!kodeInduk) {
-            kodeGudang.value = 'Otomatis';
-            return;
-        }
-
-        kodeGudang.value = `${kodeInduk}-F01`;
+        // Preview kode filial global yang disiapkan oleh GudangController.
+        // Kode filial tidak mengikuti kode gudang induk.
+        kodeGudang.value = @json($kodePreview['filial']);
     }
 
     function updateGudangInduk() {

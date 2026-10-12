@@ -22,6 +22,18 @@
 @endif
 <style>
 .gd-alert-overlay{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(2,12,27,.48);backdrop-filter:blur(4px);animation:gdFade .2s ease-out}.gd-alert-card{width:min(100%,390px);border:1px solid rgba(15,43,82,.1);border-radius:1.35rem;background:#fff;padding:1.75rem;text-align:center;box-shadow:0 25px 70px rgba(2,12,27,.22);animation:gdScale .22s ease-out}.gd-alert-icon{display:flex;width:4rem;height:4rem;margin:0 auto 1rem;align-items:center;justify-content:center;border-radius:999px}.gd-alert-icon svg{width:2rem;height:2rem}.gd-alert-success{color:#059669;background:#ecfdf5}.gd-alert-error{color:#dc2626;background:#fef2f2}.gd-alert-title{margin:0;color:#0b2545;font-size:1.15rem;font-weight:800}.gd-alert-message{margin:.5rem 0 0;color:#64748b;font-size:.875rem;line-height:1.55}.gd-alert-button{width:100%;margin-top:1.25rem;border:0;border-radius:.8rem;background:#123f7a;color:#fff;padding:.7rem 1rem;font-size:.875rem;font-weight:700;cursor:pointer;transition:.2s}.gd-alert-button:hover{background:#0d3263;transform:translateY(-1px)}html.dark-theme .gd-alert-card{border-color:#263b55;background:#101c2d;box-shadow:0 25px 70px rgba(0,0,0,.45)}html.dark-theme .gd-alert-title{color:#f8fafc}html.dark-theme .gd-alert-message{color:#94a3b8}html.dark-theme .gd-alert-success{color:#6ee7b7;background:rgba(52,211,153,.14)}html.dark-theme .gd-alert-error{color:#fca5a5;background:rgba(239,68,68,.14)}html.dark-theme .gd-alert-button{background:#1f5aa6}html.dark-theme .gd-alert-button:hover{background:#f28c28}@keyframes gdFade{from{opacity:0}to{opacity:1}}@keyframes gdScale{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+    /* Ukuran lebih ringkas khusus elemen kanan banner */
+    .gd-page .gd-hero-actions { gap: 7px !important; }
+    .gd-page .gd-status-card { padding: 8px 12px !important; border-radius: 14px !important; }
+    .gd-page .gd-status-card p { font-size: 9px !important; }
+    .gd-page .gd-status-card .mt-1\.5 { margin-top: 4px !important; }
+    .gd-page .gd-status-card .h-2\.5,
+    .gd-page .gd-status-card .w-2\.5 { width: 8px !important; height: 8px !important; }
+    .gd-page .gd-status-card .text-sm { font-size: 12px !important; }
+    .gd-page .gd-hero-action-btn { min-height: 34px !important; padding: 7px 12px !important; font-size: 11px !important; border-radius: 10px !important; }
+    .gd-page .gd-hero-action-btn svg { width: 13px !important; height: 13px !important; }
+
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -680,9 +692,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
 
 
-                <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center lg:flex-col lg:items-end">
+                <div class="gd-hero-actions flex flex-col items-start gap-2 sm:flex-row sm:items-center lg:flex-col lg:items-end">
 
-                    <div class="rounded-2xl border border-white/20 bg-[#082F63]/60 px-5 py-3 text-white backdrop-blur-md">
+                    <div class="gd-status-card rounded-2xl border border-white/20 bg-[#082F63]/60 px-4 py-2.5 text-white backdrop-blur-md">
 
                         <p class="text-[10px] font-bold uppercase tracking-[.2em] text-white/55">
                             STATUS DATA
@@ -705,7 +717,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         <a
                             href="{{ route('gudang.export') }}"
-                            class="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-bold text-white shadow-lg backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:bg-white/20"
+                            class="gd-hero-action-btn inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-4 py-2.5 text-xs font-bold text-white shadow-lg backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:bg-white/20"
                             title="Unduh seluruh data gudang dalam Excel"
                         >
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>
@@ -714,7 +726,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         <a
                             href="{{ route('gudang.create') }}"
-                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#123F7A] px-5 py-3 text-sm font-bold text-white shadow-lg transition duration-200 hover:-translate-y-0.5 hover:bg-[#0d3263]"
+                            class="gd-hero-action-btn inline-flex items-center justify-center gap-2 rounded-xl bg-[#123F7A] px-4 py-2.5 text-xs font-bold text-white shadow-lg transition duration-200 hover:-translate-y-0.5 hover:bg-[#0d3263]"
                         >
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 5v14M5 12h14"/></svg>
                             Tambah Gudang

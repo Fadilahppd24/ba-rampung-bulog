@@ -20,11 +20,14 @@ class GudangExport implements WithMultipleSheets
 {
     public function sheets(): array
     {
-        return [new GudangIndukSheet(), new GudangFilialSheet()];
+        return [
+            new GudangIndukSheet(),
+            new GudangFilialSheet(),
+        ];
     }
 }
 
-class GudangIndukSheet implements FromCollection, WithHeadings, WithTitle, WithStyles
+class GudangIndukSheet implements FromCollection, WithHeadings, WithTitle, WithStyles, WithEvents
 {
     public function title(): string
     {
@@ -50,18 +53,51 @@ class GudangIndukSheet implements FromCollection, WithHeadings, WithTitle, WithS
 
     public function headings(): array
     {
-        return ['Kode Gudang', 'Nama Gudang', 'Alamat', 'Kecamatan', 'Desa', 'Kapasitas (Ton)', 'Status'];
+        return [
+            'Kode Gudang',
+            'Nama Gudang',
+            'Alamat',
+            'Kecamatan',
+            'Desa',
+            'Kapasitas (Ton)',
+            'Status',
+        ];
     }
 
     public function styles(Worksheet $sheet): array
     {
-        $sheet->getStyle('A1:G1')->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
-        $sheet->getStyle('A1:G1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('123F7A');
-        $sheet->getStyle('A1:G1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:G1')->getFont()
+            ->setBold(true)->getColor()->setRGB('FFFFFF');
+
+        $sheet->getStyle('A1:G1')->getFill()
+            ->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('123F7A');
+
+        $sheet->getStyle('A1:G1')->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
         foreach (range('A', 'G') as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
+
         return [];
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $sheet = $event->sheet->getDelegate();
+                $lastRow = $sheet->getHighestRow();
+
+                // Hanya kolom F (Kapasitas) yang diformat.
+                if ($lastRow >= 2) {
+                    $sheet->getStyle("F2:F{$lastRow}")
+                        ->getNumberFormat()
+                        ->setFormatCode('#,##0.00');
+                }
+            },
+        ];
     }
 }
 
@@ -77,7 +113,12 @@ class GudangFilialSheet implements FromCollection, WithTitle, WithEvents
         return Gudang::query()
             ->with('gudangInduk')
             ->whereNotNull('gudangs.gudang_induk_id')
-            ->join('gudangs as induk', 'gudangs.gudang_induk_id', '=', 'induk.id')
+            ->join(
+                'gudangs as induk',
+                'gudangs.gudang_induk_id',
+                '=',
+                'induk.id'
+            )
             ->orderBy('induk.nama_gudang', 'asc')
             ->orderBy('gudangs.kode_gudang', 'asc')
             ->select('gudangs.*')
@@ -88,7 +129,9 @@ class GudangFilialSheet implements FromCollection, WithTitle, WithEvents
                     $gudang->desa ? 'Desa ' . $gudang->desa : null,
                     $gudang->kecamatan ? 'Kec. ' . $gudang->kecamatan : null,
                     $gudang->alamat,
-                ])->filter(fn ($value) => filled($value))->implode(' ');
+                ])
+                    ->filter(fn ($value) => filled($value))
+                    ->implode(' ');
 
                 return [
                     $index + 1,
@@ -109,12 +152,24 @@ class GudangFilialSheet implements FromCollection, WithTitle, WithEvents
         return [
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
+
                 $sheet->insertNewRowBefore(1, 4);
 
                 $sheet->mergeCells('A2:I2');
-                $sheet->setCellValue('A2', 'GUDANG NON BULOG FILIAL KANCAB INDRAMAYU TH ' . date('Y'));
+                $sheet->setCellValue(
+                    'A2',
+                    'GUDANG NON BULOG FILIAL KANCAB INDRAMAYU TH ' . date('Y')
+                );
 
-                foreach (['A3:A4', 'B3:B4', 'C3:C4', 'D3:D4', 'E3:G3', 'H3:H4', 'I3:I4'] as $range) {
+                foreach ([
+                    'A3:A4',
+                    'B3:B4',
+                    'C3:C4',
+                    'D3:D4',
+                    'E3:G3',
+                    'H3:H4',
+                    'I3:I4',
+                ] as $range) {
                     $sheet->mergeCells($range);
                 }
 
@@ -130,31 +185,77 @@ class GudangFilialSheet implements FromCollection, WithTitle, WithEvents
                     'H3' => 'LOKASI',
                     'I3' => 'GUDANG INDUK',
                 ];
+
                 foreach ($headers as $cell => $value) {
                     $sheet->setCellValue($cell, $value);
                 }
 
                 $lastRow = max(4, $sheet->getHighestRow());
-                $sheet->getStyle("A3:I{$lastRow}")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-                $sheet->getStyle('A3:I4')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FFF0C2');
-                $sheet->getStyle('A3:I4')->getFont()->setBold(true);
-                $sheet->getStyle('A2:I4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER)->setWrapText(true);
-                $sheet->getStyle('A2:I2')->getFont()->setBold(true)->setSize(14);
-                $sheet->getStyle('A2:I2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT)->setVertical(Alignment::VERTICAL_CENTER);
 
-                $widths = ['A' => 7, 'B' => 34, 'C' => 13, 'D' => 17, 'E' => 14, 'F' => 13, 'G' => 13, 'H' => 48, 'I' => 24];
+                $sheet->getStyle("A3:I{$lastRow}")
+                    ->getBorders()
+                    ->getAllBorders()
+                    ->setBorderStyle(Border::BORDER_THIN);
+
+                $sheet->getStyle('A3:I4')->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()->setRGB('FFF0C2');
+
+                $sheet->getStyle('A3:I4')->getFont()->setBold(true);
+
+                $sheet->getStyle('A2:I4')->getAlignment()
+                    ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+                    ->setVertical(Alignment::VERTICAL_CENTER)
+                    ->setWrapText(true);
+
+                $sheet->getStyle('A2:I2')->getFont()
+                    ->setBold(true)->setSize(14);
+
+                $sheet->getStyle('A2:I2')->getAlignment()
+                    ->setHorizontal(Alignment::HORIZONTAL_LEFT)
+                    ->setVertical(Alignment::VERTICAL_CENTER);
+
+                $widths = [
+                    'A' => 7,
+                    'B' => 34,
+                    'C' => 13,
+                    'D' => 17,
+                    'E' => 14,
+                    'F' => 13,
+                    'G' => 13,
+                    'H' => 48,
+                    'I' => 24,
+                ];
+
                 foreach ($widths as $column => $width) {
                     $sheet->getColumnDimension($column)->setWidth($width);
                 }
+
                 if ($lastRow >= 5) {
-                    $sheet->getStyle("A5:I{$lastRow}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-                    $sheet->getStyle("A5:A{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    $sheet->getStyle("C5:G{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+                    $sheet->getStyle("A5:I{$lastRow}")
+                        ->getAlignment()
+                        ->setVertical(Alignment::VERTICAL_CENTER);
+
+                    $sheet->getStyle("A5:A{$lastRow}")
+                        ->getAlignment()
+                        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                    // Hanya kolom D (Kapasitas) yang diatur formatnya.
+                    $sheet->getStyle("D5:D{$lastRow}")
+                        ->getAlignment()
+                        ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+                    $sheet->getStyle("D5:D{$lastRow}")
+                        ->getNumberFormat()
+                        ->setFormatCode('#,##0.00');
+
                     $sheet->setAutoFilter("A4:I{$lastRow}");
                 }
+
                 $sheet->getRowDimension(2)->setRowHeight(28);
                 $sheet->getRowDimension(3)->setRowHeight(30);
                 $sheet->getRowDimension(4)->setRowHeight(30);
+
                 $sheet->freezePane('A5');
             },
         ];
