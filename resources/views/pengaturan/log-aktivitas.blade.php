@@ -273,6 +273,16 @@
                 <option value="{{ $u->id }}" @selected((string) request('user_id') === (string) $u->id)>{{ $u->name }}</option>
             @endforeach
         </select>
+        <div class="flex items-center gap-2 sm:ml-auto">
+            <label for="per_page" class="text-sm text-gray-500 log-muted whitespace-nowrap">Tampilkan</label>
+            <select id="per_page" name="per_page" class="input log-input sm:w-32" onchange="this.form.submit()">
+                @foreach ([10, 25, 50, 100] as $jumlah)
+                    <option value="{{ $jumlah }}" @selected((int) request('per_page', $logs->perPage()) === $jumlah)>
+                        {{ $jumlah }} data
+                    </option>
+                @endforeach
+            </select>
+        </div>
     </form>
 </div>
 
@@ -312,7 +322,7 @@
     </div>
 
     @if ($logs->hasPages())
-        <div class="p-5 log-pagination">{{ $logs->links() }}</div>
+        <div class="p-5 log-pagination">{{ $logs->appends(request()->query())->links() }}</div>
     @endif
 </div>
 
