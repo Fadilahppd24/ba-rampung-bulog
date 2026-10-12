@@ -34,7 +34,9 @@ class BaRampung extends Model
         'bulan',
         'tahun',
         'nomor_mo',
+        'tanggal_mo',
         'nomor_po',
+        'tanggal_po',
         'gudang_id',
         'mitra_pengolahan_id',
         'nama_penandatangan',
@@ -54,6 +56,8 @@ class BaRampung extends Model
     {
         return [
             'tanggal_ba' => 'date',
+            'tanggal_mo' => 'date',
+            'tanggal_po' => 'date',
             'verified_at' => 'datetime',
         ];
     }

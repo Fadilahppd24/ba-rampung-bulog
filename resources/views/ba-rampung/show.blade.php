@@ -4,6 +4,101 @@
 
 @section('content')
 
+
+{{-- POPUP NOTIFIKASI BERHASIL / GAGAL --}}
+@if(session('success') || session('error') || $errors->any())
+    <div id="ba-rampung-alert" class="ba-rampung-alert-overlay" role="dialog" aria-modal="true" aria-labelledby="ba-rampung-alert-title">
+        <div class="ba-rampung-alert-card">
+            @if(session('success'))
+                <div class="ba-rampung-alert-icon success" aria-hidden="true">✓</div>
+                <h2 id="ba-rampung-alert-title">Berhasil!</h2>
+                <p>{{ session('success') }}</p>
+            @else
+                <div class="ba-rampung-alert-icon error" aria-hidden="true">!</div>
+                <h2 id="ba-rampung-alert-title">Gagal!</h2>
+                <p>{{ session('error') ?? $errors->first() ?? 'Data BA Rampung belum berhasil disimpan.' }}</p>
+                @if($errors->count() > 1)
+                    <ul class="ba-rampung-alert-errors">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+            @endif
+            <button type="button" class="ba-rampung-alert-ok" onclick="closeBaRampungAlert()">OKE</button>
+        </div>
+    </div>
+@endif
+
+<style>
+    .ba-rampung-alert-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(5, 18, 35, .62);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+    }
+    .ba-rampung-alert-card {
+        width: min(100%, 420px);
+        padding: 30px 28px 26px;
+        border: 1px solid rgba(15, 43, 82, .12);
+        border-radius: 22px;
+        background: #fff;
+        color: #102A48;
+        text-align: center;
+        box-shadow: 0 24px 70px rgba(0,0,0,.28);
+        animation: baRampungAlertIn .22s ease-out;
+    }
+    .ba-rampung-alert-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 62px;
+        height: 62px;
+        margin: 0 auto 14px;
+        border-radius: 50%;
+        font-size: 36px;
+        font-weight: 800;
+    }
+    .ba-rampung-alert-icon.success { background: #DCFCE7; color: #15803D; }
+    .ba-rampung-alert-icon.error { background: #FEE2E2; color: #B91C1C; }
+    .ba-rampung-alert-card h2 { margin: 0 0 9px; font-size: 24px; font-weight: 800; color: #102A48; }
+    .ba-rampung-alert-card p { margin: 0; color: #52657A; line-height: 1.6; overflow-wrap: anywhere; }
+    .ba-rampung-alert-errors { margin: 12px 0 0; padding-left: 20px; text-align: left; color: #B91C1C; font-size: 13px; }
+    .ba-rampung-alert-ok {
+        min-width: 110px;
+        margin-top: 22px;
+        padding: 10px 24px;
+        border: 0;
+        border-radius: 10px;
+        background: #0B2E59;
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .ba-rampung-alert-ok:hover { background: #164477; }
+    @keyframes baRampungAlertIn {
+        from { opacity: 0; transform: translateY(8px) scale(.97); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+</style>
+<script>
+    function closeBaRampungAlert() {
+        const popup = document.getElementById('ba-rampung-alert');
+        if (popup) popup.remove();
+    }
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') closeBaRampungAlert();
+    });
+</script>
+
+
+
 <style>
     /* =========================================================
        DETAIL BA RAMPUNG — DARK MODE
@@ -17,6 +112,112 @@
         --detail-text: #111827;
         --detail-muted: #6B7280;
         --detail-soft: #F8FAFC;
+    }
+
+    /* Header detail mengikuti konsep halaman Edit Gudang */
+    .ba-detail-page .ba-detail-hero {
+        position: relative;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        min-height: 132px;
+        margin-bottom: 24px;
+    }
+
+    .ba-detail-page .ba-detail-hero__content {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        min-width: 0;
+        text-align: center;
+        padding: 8px 210px 4px;
+    }
+
+    .ba-detail-page .ba-detail-hero__eyebrow {
+        margin: 0 0 8px;
+        color: #DBEAFE !important;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .32em;
+        line-height: 1.5;
+        text-transform: uppercase;
+        text-shadow: 0 2px 8px rgba(0,0,0,.35);
+    }
+
+    .ba-detail-page .ba-detail-hero__title {
+        margin: 0;
+        color: #FFFFFF !important;
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: clamp(38px, 4.5vw, 58px);
+        font-weight: 500;
+        letter-spacing: -.025em;
+        line-height: .98;
+        text-shadow: 0 3px 14px rgba(0,0,0,.42);
+    }
+
+    .ba-detail-page .ba-detail-hero__title span {
+        color: #FF941F !important;
+        font-weight: 500;
+        text-shadow: 0 3px 14px rgba(0,0,0,.45);
+    }
+
+    .ba-detail-page .ba-detail-hero__number {
+        margin: 10px 0 0;
+        color: rgba(255,255,255,.96) !important;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: .02em;
+        text-shadow: 0 2px 8px rgba(0,0,0,.45);
+    }
+
+    .ba-detail-page .ba-detail-hero__meta {
+        margin: 5px 0 0;
+        color: rgba(255,255,255,.82) !important;
+        font-size: 12px;
+        text-shadow: 0 2px 8px rgba(0,0,0,.45);
+    }
+
+    .ba-detail-page .ba-detail-hero__actions {
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    @media (max-width: 767px) {
+        .ba-detail-page .ba-detail-hero {
+            flex-direction: column;
+            gap: 14px;
+            min-height: 0;
+        }
+
+        .ba-detail-page .ba-detail-hero__content {
+            padding: 4px 0 0;
+        }
+
+        .ba-detail-page .ba-detail-hero__actions {
+            position: relative;
+            top: auto;
+            right: auto;
+            transform: none;
+            width: 100%;
+        }
+
+        .ba-detail-page .ba-detail-hero__title {
+            font-size: clamp(36px, 9vw, 48px);
+        }
+
+        .ba-detail-page .ba-detail-hero__actions {
+            justify-content: center;
+        }
     }
 
     .ba-detail-page .card {
@@ -204,28 +405,15 @@
     }
 
     /* Header/detail title di atas background foto */
-    .ba-detail-page > .flex:first-child h2 {
-        color: #FFFFFF !important;
+    .ba-detail-page .ba-detail-hero__title,
+    .ba-detail-page .ba-detail-hero__number,
+    .ba-detail-page .ba-detail-hero__meta {
         text-shadow: 0 2px 10px rgba(0,0,0,.55);
     }
 
-    .ba-detail-page > .flex:first-child p {
-        color: rgba(255,255,255,.92) !important;
-        text-shadow: 0 2px 8px rgba(0,0,0,.55);
-    }
-
-    .ba-detail-page > .flex:first-child .btn-secondary {
+    .ba-detail-page .ba-detail-hero__actions .btn-secondary {
         color: #0F172A !important;
         background: rgba(255,255,255,.96) !important;
-    }
-
-    .ba-detail-page.is-dark > .flex:first-child h2,
-    .ba-detail-page.is-dark > .flex:first-child p {
-        color: #FFFFFF !important;
-    }
-
-    .ba-detail-page.is-dark > .flex:first-child p {
-        color: rgba(255,255,255,.95) !important;
     }
 
     .ba-detail-page.is-dark tbody td {
@@ -311,27 +499,28 @@
 
 
 
-<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-    <div>
-    <p class="text-sm font-semibold uppercase tracking-wider text-orange-400">
-        BA RAMPUNG
-    </p>
+<div class="ba-detail-hero">
+    <div class="ba-detail-hero__content">
+        <p class="ba-detail-hero__eyebrow">
+            BA RAMPUNG
+        </p>
 
-    <h1 class="mt-1 text-2xl font-bold text-white">
-        Detail BA Rampung
-    </h1>
+        <h1 class="ba-detail-hero__title">
+            Detail <span>BA Rampung</span>
+        </h1>
 
-    <p class="mt-2 text-base font-semibold text-white/95">
-        {{ $baRampung->nomor_ba }}
-    </p>
+        <p class="ba-detail-hero__number">
+            {{ $baRampung->nomor_ba }}
+        </p>
 
-    <p class="mt-1 text-sm text-white/80">
-        Dibuat oleh {{ $baRampung->pembuat->name ?? '-' }}
-        · {{ $baRampung->created_at?->timezone('Asia/Jakarta')->format('d/m/Y H:i') ?? '-' }}
-    </p>
-</div>
+        <p class="ba-detail-hero__meta">
+            Dibuat oleh {{ $baRampung->pembuat->name ?? '-' }}
+            · {{ $baRampung->created_at?->timezone('Asia/Jakarta')->format('d/m/Y H:i') ?? '-' }}
+        </p>
+    </div>
 
-    <div class="flex flex-wrap items-center justify-end gap-3">
+    <div class="ba-detail-hero__actions">
+
         {{-- KEMBALI KE DAFTAR BA --}}
         <a
             href="{{ route('ba-rampung.index') }}"
@@ -590,23 +779,51 @@
                 </dd>
             </div>
 
+            {{-- NOMOR MO --}}
             <div class="flex justify-between gap-4">
                 <dt class="text-gray-500">
                     Nomor MO
                 </dt>
 
                 <dd class="font-medium text-right">
-                    {{ $baRampung->nomor_mo ?? '-' }}
+                    {{ $baRampung->nomor_mo ?: '-' }}
                 </dd>
             </div>
 
+            {{-- TANGGAL MO --}}
+            <div class="flex justify-between gap-4">
+                <dt class="text-gray-500">
+                    Tanggal MO
+                </dt>
+
+                <dd class="font-medium text-right">
+                    {{ $baRampung->tanggal_mo
+                        ? $baRampung->tanggal_mo->format('d/m/Y')
+                        : '-' }}
+                </dd>
+            </div>
+
+            {{-- NOMOR PO --}}
             <div class="flex justify-between gap-4">
                 <dt class="text-gray-500">
                     Nomor PO
                 </dt>
 
                 <dd class="font-medium text-right">
-                    {{ $baRampung->nomor_po ?? '-' }}
+                    {{ $baRampung->nomor_po ?: '-' }}
+                </dd>
+            </div>
+
+            {{-- TANGGAL PO --}}
+            <div class="flex justify-between gap-4">
+                <dt class="text-gray-500">
+                    Tanggal PO
+                </dt>
+
+                <dd class="font-medium text-right">
+                    {{ $baRampung->tanggal_po
+                        ? $baRampung->tanggal_po->format('d/m/Y')
+                        : '-' }}
                 </dd>
             </div>
 

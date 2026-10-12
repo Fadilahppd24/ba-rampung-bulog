@@ -27,11 +27,15 @@
             <input
                 type="text"
                 name="kode_mitra"
-                value="{{ old('kode_mitra') }}"
+                value="{{ $kodeMitraBerikutnya ?? old('kode_mitra', 'MIT-001') }}"
                 required
+                readonly
+                aria-describedby="kode-mitra-hint"
                 class="input"
-                placeholder="MIT-006"
+                placeholder="MT-001"
             >
+            <p id="kode-mitra-hint" class="mt-1 text-xs text-slate-500">Kode dibuat otomatis mengikuti nomor mitra terakhir.</p>
+
         </div>
 
         {{-- Nama Mitra --}}

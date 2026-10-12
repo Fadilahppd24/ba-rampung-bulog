@@ -39,8 +39,14 @@ class MitraPengolahanController extends Controller
             });
         }
 
+        $perPage = (int) $request->input('per_page', 10);
+        if (! in_array($perPage, [10, 20, 25, 50, 100], true)) {
+            $perPage = 10;
+        }
+
         $mitras = $query
-->orderBy('kode_mitra', 'asc')            ->paginate(10)
+            ->orderBy('kode_mitra', 'asc')
+            ->paginate($perPage)
             ->withQueryString();
 
         $kpi = [

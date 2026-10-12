@@ -85,6 +85,10 @@ class BaRampungExport implements WithMultipleSheets
      */
     public static function applyFilters(Builder $query, array $filters): void
     {
+        // EXPORT HANYA BOLEH MEMUAT BA YANG SUDAH TERVERIFIKASI.
+        // BA Ditolak, Menunggu Verifikasi, Draft, dan status lainnya tidak ikut.
+        $query->where('status', BaRampung::STATUS_TERVERIFIKASI);
+
         if (!empty($filters['gudang_id'])) {
             $gudangFilter = $filters['gudang_id'];
 
@@ -378,8 +382,10 @@ class BaRampungMonthSheet implements
             // B - NAMA MITRA
             $ba->mitraPengolahan?->nama_mitra ?? '',
 
-            // C - TANGGAL PO GKP
-            null,
+            // C - TANGGAL PO GKP (kosong jika tanggal PO belum diisi)
+            $ba->tanggal_po
+                ? \Carbon\Carbon::parse($ba->tanggal_po)->format('d/m/Y')
+                : '',
 
             // D - NOMOR PO GKP
             $nomorPoLengkap,
@@ -402,8 +408,10 @@ class BaRampungMonthSheet implements
             // J - NO MO
             $nomorMoLengkap,
 
-            // K - TANGGAL MO
-            null,
+            // K - TANGGAL MO (kosong jika tanggal MO belum diisi)
+            $ba->tanggal_mo
+                ? \Carbon\Carbon::parse($ba->tanggal_mo)->format('d/m/Y')
+                : '',
 
             // L - HASIL GILING KOLI
             null,

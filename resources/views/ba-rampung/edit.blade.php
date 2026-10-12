@@ -12,6 +12,101 @@
 @endphp
 
 @section('content')
+
+
+{{-- POPUP NOTIFIKASI BERHASIL / GAGAL --}}
+@if(session('success') || session('error') || $errors->any())
+    <div id="ba-rampung-alert" class="ba-rampung-alert-overlay" role="dialog" aria-modal="true" aria-labelledby="ba-rampung-alert-title">
+        <div class="ba-rampung-alert-card">
+            @if(session('success'))
+                <div class="ba-rampung-alert-icon success" aria-hidden="true">✓</div>
+                <h2 id="ba-rampung-alert-title">Berhasil!</h2>
+                <p>{{ session('success') }}</p>
+            @else
+                <div class="ba-rampung-alert-icon error" aria-hidden="true">!</div>
+                <h2 id="ba-rampung-alert-title">Gagal!</h2>
+                <p>{{ session('error') ?? $errors->first() ?? 'Data BA Rampung belum berhasil disimpan.' }}</p>
+                @if($errors->count() > 1)
+                    <ul class="ba-rampung-alert-errors">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+            @endif
+            <button type="button" class="ba-rampung-alert-ok" onclick="closeBaRampungAlert()">OKE</button>
+        </div>
+    </div>
+@endif
+
+<style>
+    .ba-rampung-alert-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(5, 18, 35, .62);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+    }
+    .ba-rampung-alert-card {
+        width: min(100%, 420px);
+        padding: 30px 28px 26px;
+        border: 1px solid rgba(15, 43, 82, .12);
+        border-radius: 22px;
+        background: #fff;
+        color: #102A48;
+        text-align: center;
+        box-shadow: 0 24px 70px rgba(0,0,0,.28);
+        animation: baRampungAlertIn .22s ease-out;
+    }
+    .ba-rampung-alert-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 62px;
+        height: 62px;
+        margin: 0 auto 14px;
+        border-radius: 50%;
+        font-size: 36px;
+        font-weight: 800;
+    }
+    .ba-rampung-alert-icon.success { background: #DCFCE7; color: #15803D; }
+    .ba-rampung-alert-icon.error { background: #FEE2E2; color: #B91C1C; }
+    .ba-rampung-alert-card h2 { margin: 0 0 9px; font-size: 24px; font-weight: 800; color: #102A48; }
+    .ba-rampung-alert-card p { margin: 0; color: #52657A; line-height: 1.6; overflow-wrap: anywhere; }
+    .ba-rampung-alert-errors { margin: 12px 0 0; padding-left: 20px; text-align: left; color: #B91C1C; font-size: 13px; }
+    .ba-rampung-alert-ok {
+        min-width: 110px;
+        margin-top: 22px;
+        padding: 10px 24px;
+        border: 0;
+        border-radius: 10px;
+        background: #0B2E59;
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .ba-rampung-alert-ok:hover { background: #164477; }
+    @keyframes baRampungAlertIn {
+        from { opacity: 0; transform: translateY(8px) scale(.97); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+</style>
+<script>
+    function closeBaRampungAlert() {
+        const popup = document.getElementById('ba-rampung-alert');
+        if (popup) popup.remove();
+    }
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') closeBaRampungAlert();
+    });
+</script>
+
+
 <style>
     /* =========================================================
        EDIT BA RAMPUNG — HEADER + LIGHT/DARK MODE
@@ -23,31 +118,91 @@
     }
 
     .ba-edit-page .ba-edit-header {
-        margin-bottom: 1.5rem;
-        padding: 0 .25rem;
+        position: relative;
+        width: 100%;
+        margin: 0 auto 1.5rem;
+        padding: .25rem 190px .5rem;
+        text-align: center;
     }
 
     .ba-edit-page .ba-edit-kicker {
-        color: #F28C28 !important;
-        font-size: .72rem;
-        font-weight: 800;
-        letter-spacing: .18em;
+        color: #DBEAFE !important;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .32em;
+        line-height: 1.5;
         text-transform: uppercase;
-        margin-bottom: .35rem;
+        margin: 0 0 8px;
+        text-shadow: 0 2px 8px rgba(0,0,0,.35);
     }
 
     .ba-edit-page .ba-edit-title {
-        color: #0B2545 !important;
-        font-size: 1.75rem;
-        line-height: 1.2;
-        font-weight: 800;
+        color: #FFFFFF !important;
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: clamp(38px, 4.5vw, 58px);
+        font-weight: 500;
+        letter-spacing: -.025em;
+        line-height: .98;
+        text-shadow: 0 3px 14px rgba(0,0,0,.42);
         margin: 0 !important;
     }
 
+    .ba-edit-page .ba-edit-title .title-accent {
+        color: #F28C28 !important;
+    }
+
+    .ba-edit-page .ba-edit-back {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .45rem;
+        padding: .65rem 1rem;
+        border-radius: .75rem;
+        background: #082F63 !important;
+        border: 1px solid rgba(255,255,255,.18);
+        color: #FFFFFF !important;
+        font-size: .85rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 8px 20px rgba(8,47,99,.25);
+        transition: background-color .2s ease, transform .2s ease;
+    }
+
+    .ba-edit-page .ba-edit-back:hover {
+        background: #0B4387 !important;
+        color: #FFFFFF !important;
+        transform: translateY(-1px);
+    }
+
+    @media (min-width: 768px) {
+        .ba-edit-page .ba-edit-back {
+            position: absolute;
+            top: 1.4rem;
+            right: .25rem;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .ba-edit-page .ba-edit-back {
+            margin-top: .8rem;
+        }
+    }
+
     .ba-edit-page .ba-edit-subtitle {
-        color: #64748B !important;
-        font-size: .875rem;
-        margin-top: .4rem;
+        color: rgba(255,255,255,.86) !important;
+        font-size: 12px;
+        margin-top: .55rem;
+        text-shadow: 0 2px 8px rgba(0,0,0,.4);
+    }
+
+    @media (max-width: 767px) {
+        .ba-edit-page .ba-edit-header {
+            padding: .25rem 0 .5rem;
+        }
+
+        .ba-edit-page .ba-edit-title {
+            font-size: clamp(36px, 9vw, 48px);
+        }
     }
 
     .ba-edit-page .card {
@@ -386,11 +541,14 @@
 
 <div class="ba-edit-page">
     <div class="ba-edit-header">
-        <div class="ba-edit-kicker">BA Rampung</div>
-        <h1 class="ba-edit-title">Edit BA Rampung</h1>
+        <div class="ba-edit-kicker">BA RAMPUNG</div>
+        <h1 class="ba-edit-title">Edit <span class="title-accent">BA Rampung</span></h1>
         <p class="ba-edit-subtitle">
             Perbarui data BA Rampung {{ $baRampung->nomor_ba }}.
         </p>
+        <a href="{{ route('ba-rampung.show', $baRampung) }}" class="ba-edit-back">
+            ← Kembali
+        </a>
     </div>
 
 
@@ -478,35 +636,36 @@
             </div>
 
 
-            {{-- Nomor MO --}}
-            <div>
-                <label class="label">
-                    Nomor Manufacturing Order (MO)
-                </label>
-
-                <input
-    type="text"
-    name="nomor_mo"
-    value="{{ old('nomor_mo', $baRampung->nomor_mo) }}"
-    class="input"
-    placeholder="Masukkan nomor MO (opsional)"
->
+            {{-- Nomor dan Tanggal MO (opsional) --}}
+            <div class="space-y-3">
+                <div>
+                    <label class="label">Nomor Manufacturing Order (MO)</label>
+                    <input type="text" name="nomor_mo"
+                        value="{{ old('nomor_mo', $baRampung->nomor_mo) }}"
+                        class="input w-full" placeholder="Masukkan nomor MO (opsional)">
+                </div>
+                <div>
+                    <label class="label">Tanggal Manufacturing Order (MO)</label>
+                    <input type="date" name="tanggal_mo"
+                        value="{{ old('tanggal_mo', $baRampung->tanggal_mo?->format('Y-m-d')) }}"
+                        class="input w-full">
+                </div>
             </div>
 
-
-            {{-- Nomor PO --}}
-            <div>
-                <label class="label">
-                    Nomor Purchase Order (PO)
-                </label>
-
-                <input
-    type="text"
-    name="nomor_po"
-    value="{{ old('nomor_po', $baRampung->nomor_po) }}"
-    class="input"
-    placeholder="Masukkan nomor PO (opsional)"
->
+            {{-- Nomor dan Tanggal PO (opsional) --}}
+            <div class="space-y-3">
+                <div>
+                    <label class="label">Nomor Purchase Order (PO)</label>
+                    <input type="text" name="nomor_po"
+                        value="{{ old('nomor_po', $baRampung->nomor_po) }}"
+                        class="input w-full" placeholder="Masukkan nomor PO (opsional)">
+                </div>
+                <div>
+                    <label class="label">Tanggal Purchase Order (PO)</label>
+                    <input type="date" name="tanggal_po"
+                        value="{{ old('tanggal_po', $baRampung->tanggal_po?->format('Y-m-d')) }}"
+                        class="input w-full">
+                </div>
             </div>
 
         </div>
@@ -945,14 +1104,6 @@
     {{-- ========================================================= --}}
 
     <div class="flex items-center justify-between">
-
-        <a
-            href="{{ route('ba-rampung.show', $baRampung) }}"
-            class="btn-secondary"
-        >
-            ← Kembali
-        </a>
-
 
         <div class="flex gap-3">
 

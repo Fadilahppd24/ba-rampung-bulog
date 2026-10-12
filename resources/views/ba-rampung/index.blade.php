@@ -623,6 +623,38 @@
 </style>
 
 
+<style>
+    /* Animasi masuk 4 detik untuk isi BA Rampung.
+       Jangan animasikan .ba-rampung-page: transform pada wrapper dapat
+       mengubah perilaku overlay fixed di halaman ini. */
+    @keyframes baRampungSectionEnter {
+        0% {
+            opacity: 0;
+            transform: translate3d(0, 26px, 0);
+        }
+        65% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+    .ba-rampung-page > .ba-hero,
+    .ba-rampung-page > .ba-info-card,
+    .ba-rampung-page > .ba-filter-card,
+    .ba-rampung-page > .ba-result-card {
+        animation: baRampungSectionEnter 4s cubic-bezier(.22, 1, .36, 1) both !important;
+        will-change: opacity, transform;
+    }
+
+    .ba-rampung-page > .ba-hero       { animation-delay: 0s !important; }
+    .ba-rampung-page > .ba-info-card  { animation-delay: .12s !important; }
+    .ba-rampung-page > .ba-filter-card { animation-delay: .24s !important; }
+    .ba-rampung-page > .ba-result-card { animation-delay: .36s !important; }
+</style>
+
 <div class="ba-rampung-page space-y-6">
 
     {{-- =========================================================

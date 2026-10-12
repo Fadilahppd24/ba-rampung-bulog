@@ -29,6 +29,16 @@
         font-family: 'Cormorant Garamond', Georgia, serif;
     }
 
+    /* Perkuat tulisan oranye pada judul utama agar lebih terbaca */
+    .dashboard-hero-title .orange-text {
+        color: #FF9F0A;
+        font-weight: 700;
+        text-shadow:
+            0 2px 3px rgba(0, 0, 0, 0.42),
+            0 4px 12px rgba(0, 0, 0, 0.28);
+        -webkit-text-stroke: 0.35px currentColor;
+    }
+
     .dashboard-kicker {
         letter-spacing: .28em;
         text-transform: uppercase;
@@ -390,9 +400,9 @@
         background:
             linear-gradient(
                 90deg,
-                rgba(5,28,62,.58) 0%,
-                rgba(9,44,87,.25) 48%,
-                rgba(9,44,87,.04) 100%
+                rgba(3,20,48,.76) 0%,
+                rgba(5,30,68,.50) 48%,
+                rgba(9,44,87,.12) 100%
             );
         pointer-events: none;
     }
@@ -400,6 +410,19 @@
     .hero-content {
         position: relative;
         z-index: 2;
+    }
+
+    /* Judul hero: lebih tegas dan mudah dibaca di atas foto */
+    .dashboard-hero-title {
+        font-weight: 700 !important;
+        letter-spacing: -.025em;
+        text-shadow: 0 3px 12px rgba(0, 12, 32, .48), 0 1px 2px rgba(0, 0, 0, .35);
+        text-wrap: balance;
+    }
+
+    .dashboard-hero-title .orange-text {
+        color: #FFA51F !important;
+        text-shadow: 0 3px 14px rgba(0, 12, 32, .55), 0 1px 2px rgba(0, 0, 0, .35);
     }
 
     .dash-kpi-icon {
@@ -533,7 +556,12 @@
     Hanya efek masuk: muncul dari bawah lalu naik perlahan.
 ========================================================= --}}
 <style>
-    html.dashboard-transition-active .dashboard-page { opacity: 0; transform: translateY(35px); }\n\n    .dashboard-page.dashboard-transition-ready {
+    html.dashboard-transition-active .dashboard-page {
+        opacity: 0;
+        transform: translateY(35px);
+    }
+
+    .dashboard-page.dashboard-transition-ready {
         opacity: 0;
         transform: translateY(35px);
     }
@@ -542,84 +570,37 @@
         opacity: 1;
         transform: translateY(0);
         transition:
-            opacity .9s cubic-bezier(.22, 1, .36, 1),
-            transform .9s cubic-bezier(.22, 1, .36, 1);
+            opacity 4s cubic-bezier(.22, 1, .36, 1),
+            transform 4s cubic-bezier(.22, 1, .36, 1);
     }
 
-    @media (prefers-reduced-motion: reduce) {
-        .dashboard-page.dashboard-transition-ready {
-            opacity: 1;
-            transform: none;
-            transition: none;
-        }
-    }
 </style>
 
 <script>
 (function () {
-    var ONLY_AFTER_LOGIN = true;
-
-    function shouldAnimate() {
-        if (window.matchMedia &&
-            window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            return false;
-        }
-
-        try {
-            var nav = performance.getEntriesByType('navigation')[0];
-            if (nav && (nav.type === 'reload' || nav.type === 'back_forward')) {
-                return false;
-            }
-        } catch (e) {}
-
-        if (!ONLY_AFTER_LOGIN) return true;
-
-        var ref = document.referrer;
-        if (!ref) return true;
-
-        try {
-            return /login/i.test(new URL(ref).pathname);
-        } catch (e) {
-            return false;
-        }
-    }
-
-    if (!shouldAnimate()) return;
-
-    /*
-     * Penting: script ini berada SEBELUM <div dashboard>.
-     * Karena itu kita pasang penanda pada <html> terlebih dahulu.
-     * Saat div dashboard diparse, CSS langsung membuatnya transparan.
-     */
+    // Animasi dijalankan setiap kali halaman dashboard dibuka.
+    // Tidak bergantung pada document.referrer, sehingga tetap berjalan
+    // setelah proses login Laravel maupun saat URL dibuka langsung.
     document.documentElement.classList.add('dashboard-transition-active');
 
     function startDashboardTransition() {
         var page = document.querySelector('.dashboard-page');
-        if (!page) return;
+        if (!page) {
+            document.documentElement.classList.remove('dashboard-transition-active');
+            return;
+        }
 
         page.classList.add('dashboard-transition-ready');
-
-        /*
-         * Paksa browser melakukan layout terlebih dahulu.
-         * Baru setelah itu class show ditambahkan supaya transition
-         * benar-benar terlihat, bukan langsung lompat ke posisi akhir.
-         */
-        page.offsetHeight;
+        // Pastikan kondisi awal (transparan dan sedikit di bawah) dirender.
+        void page.offsetHeight;
 
         requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-                page.classList.add('dashboard-transition-show');
+            page.classList.add('dashboard-transition-show');
 
-                setTimeout(function () {
-                    page.classList.remove(
-                        'dashboard-transition-ready',
-                        'dashboard-transition-show'
-                    );
-                    document.documentElement.classList.remove(
-                        'dashboard-transition-active'
-                    );
-                }, 1000);
-            });
+            window.setTimeout(function () {
+                page.classList.remove('dashboard-transition-ready', 'dashboard-transition-show');
+                document.documentElement.classList.remove('dashboard-transition-active');
+            }, 1100);
         });
     }
 
@@ -655,7 +636,7 @@
                 </div>
 
                 <h1
-                    class="dashboard-display text-white text-5xl sm:text-6xl lg:text-7xl leading-[.9] font-medium"
+                    class="dashboard-display text-white text-5xl sm:text-6xl lg:text-7xl leading-[.98] font-bold dashboard-hero-title"
                 >
                     Mengelola Data,
                     <br>

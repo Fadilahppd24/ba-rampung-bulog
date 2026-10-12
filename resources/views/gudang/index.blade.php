@@ -2056,4 +2056,46 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+
+{{-- ANIMASI MASUK MASTER DATA GUDANG: 4 DETIK, TANPA TRANSFORM PADA WRAPPER --}}
+<style>
+@keyframes gdPageEntrance4s {
+    0% {
+        opacity: 0;
+        transform: translateY(22px);
+        filter: blur(2px);
+    }
+    65% {
+        opacity: 1;
+        filter: blur(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* Animasi hanya mengenai elemen isi, bukan .gd-page atau overlay fixed-nya. */
+.gd-page > .gd-hero,
+.gd-page > section.grid,
+.gd-page > .gd-panel {
+    animation: gdPageEntrance4s 4s cubic-bezier(.22, 1, .36, 1) both;
+    will-change: opacity, transform;
+}
+
+.gd-page > .gd-hero { animation-delay: 0s; }
+.gd-page > section.grid { animation-delay: .12s; }
+.gd-page > .gd-panel:nth-of-type(3) { animation-delay: .24s; }
+.gd-page > .gd-panel:nth-of-type(4) { animation-delay: .36s; }
+
+@media (prefers-reduced-motion: reduce) {
+    .gd-page > .gd-hero,
+    .gd-page > section.grid,
+    .gd-page > .gd-panel {
+        animation-duration: 4s;
+    }
+}
+</style>
+
 @endsection

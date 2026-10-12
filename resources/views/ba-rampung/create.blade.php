@@ -598,7 +598,6 @@
                             type="text"
                             name="nomor_ba"
                             value="{{ old('nomor_ba') }}"
-                            required
                             class="input pl-11"
                             placeholder="Masukkan nomor BA"
                         >
@@ -687,39 +686,67 @@
 
 
                 {{-- MO --}}
-                <div>
+                <div class="space-y-3">
 
-                    <label class="label">
-                        Nomor Manufacturing Order (MO)
-                    </label>
+                    <div>
+                        <label class="label">
+                            Nomor Manufacturing Order (MO)
+                        </label>
 
-                    <input
-                        type="text"
-                        name="nomor_mo"
-                        value="{{ old('nomor_mo') }}"
-                        required
-                        class="input"
-                        placeholder="Masukkan nomor MO"
-                    >
+                        <input
+                            type="text"
+                            name="nomor_mo"
+                            value="{{ old('nomor_mo') }}"
+                            class="input w-full"
+                            placeholder="Masukkan nomor MO"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            Tanggal Manufacturing Order (MO)
+                        </label>
+
+                        <input
+                            type="date"
+                            name="tanggal_mo"
+                            value="{{ old('tanggal_mo') }}"
+                            class="input w-full"
+                        >
+                    </div>
 
                 </div>
 
 
                 {{-- PO --}}
-                <div>
+                <div class="space-y-3">
 
-                    <label class="label">
-                        Nomor Purchase Order (PO)
-                    </label>
+                    <div>
+                        <label class="label">
+                            Nomor Purchase Order (PO)
+                        </label>
 
-                    <input
-                        type="text"
-                        name="nomor_po"
-                        value="{{ old('nomor_po') }}"
-                        required
-                        class="input"
-                        placeholder="Masukkan nomor PO"
-                    >
+                        <input
+                            type="text"
+                            name="nomor_po"
+                            value="{{ old('nomor_po') }}"
+                            class="input w-full"
+                            placeholder="Masukkan nomor PO"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            Tanggal Purchase Order (PO)
+                        </label>
+
+                        <input
+                            type="date"
+                            name="tanggal_po"
+                            value="{{ old('tanggal_po') }}"
+                            class="input w-full"
+                        >
+                    </div>
 
                 </div>
 
@@ -1655,34 +1682,6 @@
                 gap-3
             "
         >
-
-            <button
-                type="submit"
-                name="action"
-                value="draft"
-                class="
-                    inline-flex
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-2xl
-                    border
-                    border-[#082F63]
-                    bg-white
-                    px-6
-                    py-3.5
-                    text-sm
-                    font-semibold
-                    text-[#082F63]
-                    shadow-sm
-                    transition
-                    hover:bg-[#082F63]
-                    hover:text-white
-                "
-            >
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 3h11l3 3v15H5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 3v5h7V3M8 21v-6h8v6"/></svg>
-                Simpan Draft
-            </button>
 
 
             <button

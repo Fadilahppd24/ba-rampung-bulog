@@ -22,7 +22,40 @@
     ])
 
     {{-- Sembunyikan elemen Alpine (modal logout, dropdown notifikasi) sebelum Alpine siap --}}
-    <style>[x-cloak] { display: none !important; }</style>
+    <style>[x-cloak] { display: none !important; }
+        /* Popup konfirmasi logout: aturan khusus agar kontras mode gelap selalu terbaca. */
+        html.dark-theme .logout-confirm-modal {
+            background-color: #0b2949 !important;
+            color: #f3f7fb !important;
+            border: 1px solid rgba(203, 213, 225, 0.24) !important;
+        }
+
+        html.dark-theme .logout-confirm-modal h3 {
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+        }
+
+        html.dark-theme .logout-confirm-modal p {
+            color: #d5e0ec !important;
+            -webkit-text-fill-color: #d5e0ec !important;
+        }
+
+        html.dark-theme .logout-confirm-modal > div:last-child > button {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            color: #ffffff !important;
+            border-color: rgba(203, 213, 225, 0.32) !important;
+        }
+
+        html.dark-theme .logout-confirm-modal > div:last-child > button:hover {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        html.dark-theme .logout-confirm-modal form button {
+            background-color: #F28C28 !important;
+            color: #ffffff !important;
+            border-color: #F28C28 !important;
+        }
+</style>
 
 
     <style>
@@ -83,6 +116,15 @@
                     rgba(3, 17, 33, 0.88) 100%
                 ),
                 url('/images/dashboard-bulog.jpg');
+        }
+
+        /* Avatar inisial navbar: pastikan kontras tetap jelas pada mode gelap. */
+        html.dark-theme .user-avatar-initial {
+            background-color: rgba(255, 255, 255, .14) !important;
+            color: #FFFFFF !important;
+            border-color: rgba(255, 255, 255, .45) !important;
+            opacity: 1 !important;
+            -webkit-text-fill-color: #FFFFFF !important;
         }
 
         /* Card putih */
@@ -257,6 +299,132 @@
             background: rgba(255,255,255,.10);
         }
 
+        /* Dropdown notifikasi: pastikan semua teks terbaca pada mode gelap */
+        html.dark-theme .dark-notification-dropdown {
+            background-color: #0b2949 !important;
+            color: #f3f7fb !important;
+            border-color: rgba(203, 213, 225, 0.22) !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown h3,
+        html.dark-theme .dark-notification-dropdown .text-\\[\\#082f63\\],
+        html.dark-theme .dark-notification-dropdown .text-\\[\\#123F7A\\],
+        html.dark-theme .dark-notification-dropdown .text-slate-700,
+        html.dark-theme .dark-notification-dropdown .text-slate-600 {
+            color: #f3f7fb !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown .text-slate-500,
+        html.dark-theme .dark-notification-dropdown .text-slate-400 {
+            color: #b7c7d9 !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown .border-slate-100,
+        html.dark-theme .dark-notification-dropdown .border-slate-200 {
+            border-color: rgba(203, 213, 225, 0.16) !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown .bg-white,
+        html.dark-theme .dark-notification-dropdown .bg-slate-50,
+        html.dark-theme .dark-notification-dropdown .bg-slate-50\\/70 {
+            background-color: rgba(255, 255, 255, 0.045) !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown .hover\\:bg-slate-50:hover {
+            background-color: rgba(255, 255, 255, 0.09) !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown .bg-orange-50\\/50 {
+            background-color: rgba(242, 140, 40, 0.13) !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown .text-\\[\\#F28C28\\] {
+            color: #ffb45e !important;
+        }
+
+
+
+        /* =========================================================
+         * PERBAIKAN KONTRAS DROPDOWN NOTIFIKASI MODE GELAP
+         * Selector dibuat spesifik agar tidak kalah oleh utility Tailwind.
+         * Mode terang tetap menggunakan style bawaan.
+         * ========================================================= */
+        html.dark-theme .dark-notification-dropdown {
+            background: #0b2949 !important;
+            color: #f3f7fb !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown h3,
+        html.dark-theme .dark-notification-dropdown p,
+        html.dark-theme .dark-notification-dropdown button,
+        html.dark-theme .dark-notification-dropdown span {
+            text-shadow: none;
+        }
+
+        html.dark-theme .dark-notification-dropdown h3,
+        html.dark-theme .dark-notification-dropdown .text-\[\#082f63\],
+        html.dark-theme .dark-notification-dropdown .text-\[\#123F7A\],
+        html.dark-theme .dark-notification-dropdown .text-slate-600,
+        html.dark-theme .dark-notification-dropdown .text-slate-700 {
+            color: #f3f7fb !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown .text-slate-500,
+        html.dark-theme .dark-notification-dropdown .text-slate-400,
+        html.dark-theme .dark-notification-dropdown p {
+            color: #c2d0df !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown form > button {
+            background-color: #0b2949 !important;
+            color: #f3f7fb !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown form > button.bg-orange-50\/50,
+        html.dark-theme .dark-notification-dropdown form > button[class*="bg-orange-50"] {
+            background-color: rgba(242, 140, 40, 0.13) !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown form > button.bg-white,
+        html.dark-theme .dark-notification-dropdown form > button[class*="bg-white"] {
+            background-color: rgba(255, 255, 255, 0.035) !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown form > button:hover {
+            background-color: rgba(148, 163, 184, 0.16) !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown form > button p {
+            color: #d5e0ec !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown form > button p.text-slate-400 {
+            color: #aebfd1 !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown form > button .text-\[\#082f63\] {
+            color: #ffffff !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown > div:first-child button,
+        html.dark-theme .dark-notification-dropdown > div:last-child button {
+            color: #ffffff !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown > div:last-child {
+            background-color: #102f50 !important;
+            border-color: rgba(203, 213, 225, 0.20) !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown .border-slate-100,
+        html.dark-theme .dark-notification-dropdown .border-slate-200 {
+            border-color: rgba(203, 213, 225, 0.18) !important;
+        }
+
+        html.dark-theme .dark-notification-dropdown .bg-slate-100 {
+            background-color: rgba(226, 232, 240, 0.12) !important;
+            color: #d5e0ec !important;
+        }
     </style>
 
 
@@ -551,6 +719,7 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                 border-slate-200
                                 bg-white
                                 shadow-2xl
+                                dark-notification-dropdown
                             "
                         >
                             {{-- HEADER --}}
@@ -958,6 +1127,7 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                 border-white/50
                                 bg-white/80
                                 text-[#082F63]
+                                user-avatar-initial
                                 font-bold
                             "
                         >
@@ -1035,6 +1205,7 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                         bg-white
                                         p-6
                                         shadow-2xl
+                                        logout-confirm-modal
                                     "
                                 >
                                     <div class="flex items-start gap-4">

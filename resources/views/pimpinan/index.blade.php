@@ -1315,4 +1315,43 @@ body.dark .pimpinan-alert-message {
     })();
 </script>
 
+
+{{-- ANIMASI MASUK MASTER DATA PIMPINAN: 2 DETIK, MENGIKUTI POLA GUDANG & MITRA --}}
+<style>
+@keyframes pimpinanPageEntrance2s {
+    0% {
+        opacity: 0;
+        transform: translateY(22px);
+        filter: blur(2px);
+    }
+    65% {
+        opacity: 1;
+        filter: blur(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* Animasi pada bagian isi, bukan wrapper halaman atau modal fixed. */
+.pimpinan-page > section,
+.pimpinan-page > .grid {
+    animation: pimpinanPageEntrance2s 2s cubic-bezier(.22, 1, .36, 1) both;
+    will-change: opacity, transform;
+}
+
+.pimpinan-page > section:nth-of-type(1) { animation-delay: 0s; }
+.pimpinan-page > section:nth-of-type(2) { animation-delay: .08s; }
+.pimpinan-page > .grid { animation-delay: .16s; }
+
+@media (prefers-reduced-motion: reduce) {
+    .pimpinan-page > section,
+    .pimpinan-page > .grid {
+        animation-duration: 2s;
+    }
+}
+</style>
+
 @endsection

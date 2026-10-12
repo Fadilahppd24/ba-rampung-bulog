@@ -1052,6 +1052,49 @@
         transform: translateY(-1px);
     }
 
+
+
+    /* =========================================================
+       ANIMASI MASUK PENGATURAN — DURASI 2 DETIK
+       Mengikuti pola animasi halaman Gudang, Mitra, dan Pimpinan.
+       Hanya bagian konten halaman; modal fixed tidak ikut dianimasikan.
+    ========================================================= */
+    @keyframes userManagementEntrance2s {
+        0% {
+            opacity: 0;
+            transform: translateY(22px);
+            filter: blur(2px);
+        }
+        65% {
+            opacity: 1;
+            filter: blur(0);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+    }
+
+    .user-management-page > .um-header,
+    .user-management-page > .um-filter-card,
+    .user-management-page > .um-table-card {
+        animation: userManagementEntrance2s 2s cubic-bezier(.22, 1, .36, 1) both;
+        will-change: opacity, transform;
+    }
+
+    .user-management-page > .um-header { animation-delay: 0s; }
+    .user-management-page > .um-filter-card { animation-delay: .12s; }
+    .user-management-page > .um-table-card { animation-delay: .24s; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .user-management-page > .um-header,
+        .user-management-page > .um-filter-card,
+        .user-management-page > .um-table-card {
+            animation-duration: 2s;
+        }
+    }
+
 </style>
 
 

@@ -20,6 +20,8 @@ class UpdateBaRampungRequest extends FormRequest
             // Nomor MO dan PO boleh kosong
             'nomor_mo' => ['nullable', 'string', 'max:100'],
             'nomor_po' => ['nullable', 'string', 'max:100'],
+            'tanggal_mo' => ['nullable', 'date'],
+            'tanggal_po' => ['nullable', 'date'],
 
             'gudang_id' => ['required', 'exists:gudangs,id'],
             'mitra_pengolahan_id' => ['required', 'exists:mitra_pengolahans,id'],

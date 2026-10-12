@@ -393,8 +393,14 @@ class BaRampungController extends Controller
                     'nomor_mo' =>
                         $data['nomor_mo'] ?? null,
 
+                    'tanggal_mo' =>
+                        $data['tanggal_mo'] ?? null,
+
                     'nomor_po' =>
                         $data['nomor_po'] ?? null,
+
+                    'tanggal_po' =>
+                        $data['tanggal_po'] ?? null,
 
                     'gudang_id' =>
                         $data['gudang_id'],
@@ -680,8 +686,14 @@ if ($ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI) {
                     'nomor_mo' =>
                         $data['nomor_mo'] ?? null,
 
+                    'tanggal_mo' =>
+                        $data['tanggal_mo'] ?? null,
+
                     'nomor_po' =>
                         $data['nomor_po'] ?? null,
+
+                    'tanggal_po' =>
+                        $data['tanggal_po'] ?? null,
 
                     'gudang_id' =>
                         $data['gudang_id'],
@@ -1257,41 +1269,55 @@ if ($nomorBaBagian === '') {
             ?? '-'
         );
 
+        // Nomor MO: bulan dan tahun mengikuti tanggal BA, bukan tanggal MO.
         $template->setValue(
-    'nomor_mo',
-    $baRampung->nomor_mo
-        ? trim($baRampung->nomor_mo)
-            . '/'
-            . ($baRampung->tanggal_ba
-                ? $baRampung->tanggal_ba->format('m')
-                : '-')
-            . '/'
-            . ($baRampung->tanggal_ba
-                ? $baRampung->tanggal_ba->format('Y')
-                : '-')
-            . '/10040'
-        : '-'
-);
+            'nomor_mo',
+            filled($baRampung->nomor_mo)
+                ? trim($baRampung->nomor_mo)
+                    . '/'
+                    . ($baRampung->tanggal_ba
+                        ? $baRampung->tanggal_ba->format('m')
+                        : '__')
+                    . '/'
+                    . ($baRampung->tanggal_ba
+                        ? $baRampung->tanggal_ba->format('Y')
+                        : '____')
+                    . '/10040'
+                : '____/____/____'
+        );
 
-$template->setValue(
-    'nomor_po',
-    $baRampung->nomor_po
-        ? trim($baRampung->nomor_po)
-            . '/'
-            . ($baRampung->tanggal_ba
-                ? $baRampung->tanggal_ba->format('m')
-                : '-')
-            . '/'
-            . ($baRampung->tanggal_ba
-                ? $baRampung->tanggal_ba->format('Y')
-                : '-')
-            . '/10040'
-        : '-'
-);
+        // Tanggal MO dapat berbeda dari tanggal BA dan dapat dikosongkan.
+        $template->setValue(
+            'tanggal_mo',
+            $baRampung->tanggal_mo
+                ? $baRampung->tanggal_mo->format('d/m/Y')
+                : '____/____/____'
+        );
 
-        // =====================================================
-        // GUDANG
-        // =====================================================
+        // Nomor PO: bulan dan tahun mengikuti tanggal BA, bukan tanggal PO.
+        $template->setValue(
+            'nomor_po',
+            filled($baRampung->nomor_po)
+                ? trim($baRampung->nomor_po)
+                    . '/'
+                    . ($baRampung->tanggal_ba
+                        ? $baRampung->tanggal_ba->format('m')
+                        : '__')
+                    . '/'
+                    . ($baRampung->tanggal_ba
+                        ? $baRampung->tanggal_ba->format('Y')
+                        : '____')
+                    . '/10040'
+                : '____/____/____'
+        );
+
+        // Tanggal PO dapat berbeda dari tanggal BA dan dapat dikosongkan.
+        $template->setValue(
+            'tanggal_po',
+            $baRampung->tanggal_po
+                ? $baRampung->tanggal_po->format('d/m/Y')
+                : '____/____/____'
+        );
 
         $template->setValue(
             'nama_gudang',

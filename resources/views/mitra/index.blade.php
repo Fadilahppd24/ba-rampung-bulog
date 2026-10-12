@@ -1027,11 +1027,30 @@
             </div>
 
 
-            <div
-                class="rounded-full px-4 py-2 text-xs font-semibold"
-                style="background:var(--m-chip-bg); color:var(--m-chip-fg);"
-            >
-                {{ number_format($mitras->total()) }} Mitra
+            <div class="flex flex-wrap items-center gap-3 sm:justify-end">
+                <form method="GET" action="{{ route('mitra.index') }}" class="flex items-center gap-2">
+                    @if(request('search'))
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+                    <label for="mitra-per-page" class="m-muted whitespace-nowrap text-xs font-medium">Baris per halaman:</label>
+                    <select
+                        id="mitra-per-page"
+                        name="per_page"
+                        class="m-input !w-auto !rounded-xl !py-2 !pl-3 !pr-8 text-sm"
+                        onchange="this.form.submit()"
+                        aria-label="Baris per halaman"
+                    >
+                        @foreach([10, 20, 25, 50, 100] as $jumlahBaris)
+                            <option value="{{ $jumlahBaris }}" {{ (int) request('per_page', $mitras->perPage()) === $jumlahBaris ? 'selected' : '' }}>{{ $jumlahBaris }}</option>
+                        @endforeach
+                    </select>
+                </form>
+                <div
+                    class="rounded-full px-4 py-2 text-xs font-semibold"
+                    style="background:var(--m-chip-bg); color:var(--m-chip-fg);"
+                >
+                    {{ number_format($mitras->total()) }} Mitra
+                </div>
             </div>
 
         </div>
@@ -1564,5 +1583,45 @@
         window.addEventListener('pageshow', apply);
     })();
 </script>
+
+
+{{-- ANIMASI MASUK MASTER DATA MITRA: 2 DETIK, MENGIKUTI POLA MASTER DATA GUDANG --}}
+<style>
+@keyframes mitraPageEntrance2s {
+    0% {
+        opacity: 0;
+        transform: translateY(22px);
+        filter: blur(2px);
+    }
+    65% {
+        opacity: 1;
+        filter: blur(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* Meniru pola animasi halaman Gudang: animasi pada section isi, bukan wrapper */
+.mitra-page > section {
+    animation: mitraPageEntrance2s 2s cubic-bezier(.22, 1, .36, 1) both;
+    will-change: opacity, transform;
+}
+
+.mitra-page > section:nth-of-type(1) { animation-delay: 0s; }
+.mitra-page > section:nth-of-type(2) { animation-delay: .08s; }
+.mitra-page > section:nth-of-type(3) { animation-delay: .16s; }
+.mitra-page > section:nth-of-type(4) { animation-delay: .24s; }
+
+/* Samakan dengan halaman Gudang: animasi tetap berjalan meskipun
+   perangkat mengaktifkan preferensi reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+    .mitra-page > section {
+        animation-duration: 2s;
+    }
+}
+</style>
 
 @endsection

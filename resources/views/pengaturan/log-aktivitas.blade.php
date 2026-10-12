@@ -190,6 +190,46 @@
     html.dark-theme .log-aktivitas-page .log-pagination {
         border-top-color: rgba(148,163,184,.13) !important;
     }
+
+    /* =========================================================
+       ANIMASI MASUK LOG AKTIVITAS — 2 DETIK
+       Menyamakan pola animasi halaman Manajemen User / Mitra.
+       Modal atau elemen fixed tidak ikut dianimasikan.
+    ========================================================= */
+    @keyframes logAktivitasEntrance2s {
+        0% {
+            opacity: 0;
+            transform: translateY(22px);
+            filter: blur(2px);
+        }
+        65% {
+            opacity: 1;
+            filter: blur(0);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+    }
+
+    .log-aktivitas-page > .la-header,
+    .log-aktivitas-page > .card {
+        animation: logAktivitasEntrance2s 2s cubic-bezier(.22, 1, .36, 1) both;
+        will-change: opacity, transform;
+    }
+
+    .log-aktivitas-page > .la-header { animation-delay: 0s; }
+    .log-aktivitas-page > .card:nth-of-type(2) { animation-delay: .12s; }
+    .log-aktivitas-page > .card:nth-of-type(3) { animation-delay: .24s; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .log-aktivitas-page > .la-header,
+        .log-aktivitas-page > .card {
+            animation-duration: 2s;
+        }
+    }
+
 </style>
 
 <div class="log-aktivitas-page space-y-4">

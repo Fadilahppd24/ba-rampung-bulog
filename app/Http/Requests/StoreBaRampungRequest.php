@@ -19,6 +19,8 @@ class StoreBaRampungRequest extends FormRequest
             'tahun_ba' => ['required', 'integer', 'min:2000', 'max:2100'],
             'nomor_mo' => ['nullable', 'string', 'max:100'],
             'nomor_po' => ['nullable', 'string', 'max:100'],
+            'tanggal_mo' => ['nullable', 'date'],
+            'tanggal_po' => ['nullable', 'date'],
             'gudang_id' => ['required', 'exists:gudangs,id'],
             'mitra_pengolahan_id' => ['required', 'exists:mitra_pengolahans,id'],
             'nama_penandatangan' => ['required', 'string', 'max:150'],
