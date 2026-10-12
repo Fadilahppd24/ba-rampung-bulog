@@ -68,6 +68,17 @@
         border-color: #0D2F5B !important;
         color: #ffffff !important;
     }
+
+    /* Label form dibuat terang agar terbaca di latar belakang gelap */
+    .gudang-create-form label.label {
+        color: #EAF2FA !important;
+        font-weight: 600;
+    }
+
+    html.dark-theme .gudang-create-form label.label {
+        color: #EAF2FA !important;
+    }
+
 </style>
 
 <div class="space-y-6">
@@ -92,7 +103,7 @@
     <form
         method="POST"
         action="{{ route('gudang.store') }}"
-        class="space-y-6"
+        class="space-y-6 gudang-create-form"
     >
 
         @csrf
