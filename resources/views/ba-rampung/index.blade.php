@@ -867,15 +867,21 @@
                             Semua Status
                         </option>
 
-                        @foreach(\App\Models\BaRampung::STATUSES as $status)
+                        @php
+                            $statusFilterOptions = [
+                                'Menunggu Verifikasi' => 'Menunggu Verifikasi',
+                                'Terverifikasi' => 'Terverifikasi',
+                                'Ditolak' => 'Ditolak',
+                            ];
+                        @endphp
 
+                        @foreach($statusFilterOptions as $statusValue => $statusLabel)
                             <option
-                                value="{{ $status }}"
-                                @selected(request('status') == $status)
+                                value="{{ $statusValue }}"
+                                @selected(request('status') == $statusValue)
                             >
-                                {{ $status }}
+                                {{ $statusLabel }}
                             </option>
-
                         @endforeach
 
                     </select>

@@ -658,6 +658,9 @@ if ($ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI) {
             $data['tanggal_ba']
         );
 
+        // Status sebelum update dipakai untuk mendeteksi BA yang dikirim ulang setelah ditolak.
+        $statusSebelumnya = $baRampung->status;
+
         DB::transaction(
     function () use (
         $data,
@@ -754,6 +757,29 @@ if ($ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI) {
             $baRampung->id,
             "Nomor BA: {$baRampung->nomor_ba}"
         );
+
+        // Notifikasi hanya dibuat jika BA yang sebelumnya ditolak telah diperbaiki dan dikirim ulang.
+        if ($statusSebelumnya === BaRampung::STATUS_DITOLAK) {
+            $baRampung->load('gudang');
+
+            $adminKantors = User::query()
+                ->where('role', 'admin_kantor')
+                ->where('is_active', true)
+                ->get();
+
+            foreach ($adminKantors as $adminKantor) {
+                Notification::create([
+                    'user_id' => $adminKantor->id,
+                    'ba_rampung_id' => $baRampung->id,
+                    'type' => 'ba_diperbaiki_dikirim_ulang',
+                    'title' => 'BA Rampung Diperbaiki',
+                    'message' => 'BA Rampung ' . $baRampung->nomor_ba .
+                        ' dari Gudang ' . ($baRampung->gudang->nama_gudang ?? '-') .
+                        ' telah diperbaiki dan dikirim ulang. Silakan lakukan verifikasi kembali.',
+                    'is_read' => false,
+                ]);
+            }
+        }
 
         return redirect()
             ->route(

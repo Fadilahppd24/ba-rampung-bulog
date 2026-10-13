@@ -841,8 +841,60 @@
                 </p>
             </div>
 
-            <div class="soft-card rounded-3xl p-6">
-              
+            {{-- BA RAMPUNG TERBARU: dipindahkan ke samping Gudang Saya --}}
+            <div class="soft-card rounded-3xl p-6 min-w-0">
+                <div class="flex items-start justify-between gap-3 mb-3">
+                    <div>
+                        <p class="dashboard-kicker text-[#123F7A]">Aktivitas</p>
+                        <h2 class="dashboard-display text-2xl font-semibold text-[#123F7A] mt-1">
+                            BA Rampung Terbaru
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">
+                            {{ $kpi['gudang_saya']->nama_gudang ?? 'Gudang Anda' }}
+                        </p>
+                    </div>
+                    <a href="{{ route('ba-rampung.index') }}"
+                       class="text-xs font-semibold text-[#123F7A] hover:text-orange-500 transition whitespace-nowrap">
+                        Lihat Semua →
+                    </a>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-100 text-[10px] uppercase tracking-wider text-slate-400">
+                                <th class="py-2 text-left">Nomor BA</th>
+                                <th class="py-2 text-left">Tanggal</th>
+                                <th class="py-2 text-left">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($baTerbaru as $ba)
+                                <tr class="activity-row border-b border-slate-50 transition">
+                                    <td class="py-3 pr-2 font-semibold text-[#123F7A]">
+                                        {{ $ba->nomor_ba }}
+                                    </td>
+                                    <td class="py-3 pr-2 text-slate-600 whitespace-nowrap">
+                                        {{ $ba->tanggal_ba ? $ba->tanggal_ba->format('d/m/Y') : '-' }}
+                                    </td>
+                                    <td class="py-3 whitespace-nowrap">
+                                        <x-status-badge
+                                            :color="$ba->statusBadgeColor()"
+                                            :label="$ba->statusLabel()"
+                                        />
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="py-5 text-center text-xs text-slate-400">
+                                        Belum ada BA Rampung.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </section>
 
     @else
@@ -1079,15 +1131,17 @@
             <div class="mt-5 space-y-3">
 
 @php
-    $warnaLegendGudang = [
-        '#123F7A', // Cadangpinggan
-        '#F59E0B', // Kedungwungu
-        '#10B981', // Pekandangan
-        '#8B5CF6', // Leuwigede
-        '#EF4444', // Losarang
-        '#06B6D4', // Singakerta I
-        '#EC4899', // Adi Saputra (Gd Sk2)
-        '#84CC16', // Fil PT Yhara Sukses Sejahtera (Gd Cdp)
+    // Warna ditentukan berdasarkan nama gudang, bukan urutan data.
+    // Warna yang sama dipakai oleh legenda dan grafik donat.
+    $warnaGudangByNama = [
+        'Leuwigede' => '#123F7A', // Navy
+        'Pekandangan' => '#F59E0B', // Oranye
+        'Losarang' => '#10B981', // Hijau
+        'Cadangpinggan' => '#8B5CF6',
+        'Kedungwungu' => '#EF4444',
+        'Singakerta I' => '#06B6D4',
+        'Adi Saputra (Gd Sk2)' => '#EC4899',
+        'Fil PT Yhara Sukses Sejahtera (Gd Cdp)' => '#84CC16',
     ];
 @endphp
 
@@ -1107,7 +1161,7 @@
 
             <span
                 class="w-2 h-2 rounded-full flex-shrink-0"
-                style="background-color: {{ $warnaLegendGudang[$index] ?? '#123F7A' }}"
+                style="background-color: {{ $warnaGudangByNama[$d->nama_gudang] ?? '#64748B' }}"
             ></span>
 
             <span class="text-slate-600">
@@ -1135,61 +1189,7 @@
     {{-- =====================================================
         DATA BAWAH
     ====================================================== --}}
-    @if(auth()->user()->isAdminGudang())
-        <section>
-            <div class="soft-card rounded-3xl p-6">
-                <div class="flex items-center justify-between mb-5">
-                    <div>
-                        <p class="dashboard-kicker text-[#123F7A]">Aktivitas</p>
-                        <h2 class="dashboard-display text-3xl font-semibold text-[#123F7A]">
-                            BA Rampung Terbaru
-                        </h2>
-                        <p class="text-xs text-slate-400 mt-1">
-                            Hanya BA yang sudah disetujui dari {{ $kpi['gudang_saya']->nama_gudang ?? 'gudang Anda' }}.
-                        </p>
-                    </div>
-                    <a href="{{ route('ba-rampung.index') }}"
-                       class="text-sm font-semibold text-[#123F7A] hover:text-orange-500 transition">
-                        Lihat Semua →
-                    </a>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr class="border-b border-slate-100 text-[11px] uppercase tracking-wider text-slate-400">
-                                <th class="py-3 text-left">No</th>
-                                <th class="py-3 text-left">Nomor BA</th>
-                                <th class="py-3 text-left">Tanggal</th>
-                                <th class="py-3 text-left">Mitra</th>
-                                <th class="py-3 text-left">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($baTerbaru as $key => $ba)
-                                <tr class="activity-row border-b border-slate-50 transition">
-                                    <td class="py-4 text-slate-400">{{ $key + 1 }}</td>
-                                    <td class="py-4 font-semibold text-[#123F7A]">{{ $ba->nomor_ba }}</td>
-                                    <td class="py-4 text-slate-600">
-                                        {{ $ba->tanggal_ba ? $ba->tanggal_ba->format('d/m/Y') : '-' }}
-                                    </td>
-                                    <td class="py-4 text-slate-600">
-                                        {{ $ba->mitraPengolahan->nama_mitra ?? '-' }}
-                                    </td>
-                                    <td class="py-4">
-                                        <x-status-badge
-                                            :color="$ba->statusBadgeColor()"
-                                            :label="$ba->statusLabel()"
-                                        />
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-    @else
+    @if(!auth()->user()->isAdminGudang())
         {{-- ADMIN KANTOR: DATA BAWAH LAMA TETAP --}}
     <section
         class="
@@ -1560,18 +1560,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         $distribusiGudang->pluck('jumlah')
                     ),
 
-                    backgroundColor: [
-
-    '#123F7A', // Cadangpinggan
-    '#F59E0B', // Kedungwungu
-    '#10B981', // Pekandangan
-    '#8B5CF6', // Leuwigede
-    '#EF4444', // Losarang
-    '#06B6D4', // Singakerta I
-    '#EC4899', // Adi Saputra (Gd Sk2)
-    '#84CC16'  // Fil PT Yhara Sukses Sejahtera (Gd Cdp)
-
-],
+                    backgroundColor: @json(
+                        $distribusiGudang->map(
+                            fn ($d) => $warnaGudangByNama[$d->nama_gudang] ?? '#64748B'
+                        )->values()
+                    ),
 
 borderWidth: 0
 
@@ -1663,16 +1656,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tick: Chart.defaults.color,
         grid: 'rgba(18,63,122,.08)',
 
-        donut: [
-            '#123F7A', // Cadangpinggan
-            '#F59E0B', // Kedungwungu
-            '#10B981', // Pekandangan
-            '#8B5CF6', // Leuwigede
-            '#EF4444', // Losarang
-            '#06B6D4', // Singakerta I
-            '#EC4899', // Adi Saputra
-            '#84CC16'  // Fil PT Yhara Sukses Sejahtera
-        ]
+        donut: null // Warna ditentukan berdasarkan nama gudang
     },
 
     dark: {
@@ -1680,16 +1664,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tick: '#94A3B8',
         grid: 'rgba(148,163,184,.14)',
 
-        donut: [
-            '#60A5FA', // Cadangpinggan
-            '#FBBF24', // Kedungwungu
-            '#34D399', // Pekandangan
-            '#A78BFA', // Leuwigede
-            '#F87171', // Losarang
-            '#22D3EE', // Singakerta I
-            '#F472B6', // Adi Saputra
-            '#A3E635'  // Fil PT Yhara Sukses Sejahtera
-        ]
+        donut: null // Warna ditentukan berdasarkan nama gudang
     }
 } : null;
 
@@ -1712,7 +1687,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const donut = Chart.getChart('chartGudang');
 
         if (donut) {
-            donut.data.datasets[0].backgroundColor = t.donut;
+            // Warna tiap gudang sudah dipetakan berdasarkan nama dan tetap sama pada kedua tema.
             donut.update('none');
         }
     }
