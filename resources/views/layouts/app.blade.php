@@ -1272,6 +1272,7 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
                                         <form
                                             method="POST"
                                             action="{{ route('logout') }}"
+                                            data-logout-form
                                         >
                                             @csrf
 
@@ -1566,6 +1567,175 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
 @endif
 
 
+{{-- =========================================================
+     AUDIO LOGOUT (satu-satunya definisi, aktif di SEMUA halaman)
+
+     Diletakkan di luar blok if/else di atas, karena dashboard
+     memakai header inline sedangkan halaman lain memakai <x-header>.
+     Form logout mana pun cukup diberi atribut: data-logout-form
+========================================================= --}}
+<audio
+    id="logoutAudio"
+    src="{{ asset('audio/logout.mp3') }}"
+    preload="auto"
+></audio>
+
+<script>
+    (function () {
+        // Cegah inisialisasi ganda (mis. layout ter-include dua kali).
+        if (window.__logoutAudioInit) return;
+        window.__logoutAudioInit = true;
+
+        var START_TIMEOUT_MS = 4000;   // audio harus mulai berbunyi dalam 4 detik
+        var END_EXTRA_MS     = 2000;   // toleransi di atas durasi audio
+        var END_DEFAULT_MS   = 10000;  // batas jika durasi tidak diketahui
+        var ERROR_DELAY_MS   = 1800;   // jeda agar pesan diagnostik terbaca
+        var busy = false;
+
+        var MEDIA_ERRORS = {
+            1: 'pemutaran dibatalkan (MEDIA_ERR_ABORTED)',
+            2: 'gagal mengunduh file (MEDIA_ERR_NETWORK)',
+            3: 'file rusak atau tidak bisa didekode (MEDIA_ERR_DECODE)',
+            4: 'file tidak ditemukan atau format tidak didukung (MEDIA_ERR_SRC_NOT_SUPPORTED) — cek URL ' +
+               'dan pastikan public/audio/logout.mp3 ada'
+        };
+
+        function showDiagnostic(message) {
+            console.error('[Logout Audio] ' + message);
+
+            var old = document.getElementById('logoutAudioNotice');
+            if (old) old.remove();
+
+            var box = document.createElement('div');
+            box.id = 'logoutAudioNotice';
+            box.setAttribute('role', 'alert');
+            box.textContent = 'Suara logout tidak dapat diputar: ' + message + '. Anda tetap akan keluar.';
+            box.style.cssText =
+                'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);' +
+                'z-index:99999;max-width:min(92vw,560px);padding:12px 18px;' +
+                'border-radius:12px;background:#7f1d1d;color:#fff;font-size:13px;' +
+                'line-height:1.4;box-shadow:0 10px 30px rgba(0,0,0,.35);';
+            document.body.appendChild(box);
+        }
+
+        function setBusy(form, state) {
+            busy = state;
+            var buttons = form.querySelectorAll('button[type="submit"], button:not([type])');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].disabled = state;
+            }
+        }
+
+        function handleLogoutSubmit(event) {
+            var form = event.target;
+
+            if (!(form instanceof HTMLFormElement) || !form.hasAttribute('data-logout-form')) {
+                return; // bukan form logout: jangan diganggu
+            }
+
+            event.preventDefault();
+
+            if (busy) return; // klik ganda diabaikan, form.submit() hanya sekali
+
+            setBusy(form, true);
+
+            var audio = document.getElementById('logoutAudio');
+            var finished = false;
+            var startTimer = null;
+            var endTimer = null;
+
+            // Satu-satunya tempat form dikirim. Selalu berjalan paling banyak SEKALI.
+            // Memanggil prototype.submit() melewati event "submit" sehingga tidak
+            // masuk ke handler ini lagi (tidak ada loop) dan tidak terganggu
+            // elemen form yang bernama "submit".
+            function finish(problem) {
+                if (finished) return;
+                finished = true;
+
+                clearTimeout(startTimer);
+                clearTimeout(endTimer);
+
+                var go = function () {
+                    try {
+                        HTMLFormElement.prototype.submit.call(form);
+                    } catch (e) {
+                        console.error('[Logout Audio] submit gagal', e);
+                        setBusy(form, false); // jangan biarkan tombol macet
+                    }
+                };
+
+                if (problem) {
+                    showDiagnostic(problem);
+                    setTimeout(go, ERROR_DELAY_MS);
+                } else {
+                    go();
+                }
+            }
+
+            if (!audio) {
+                finish('elemen #logoutAudio tidak ada di halaman');
+                return;
+            }
+
+            audio.addEventListener('ended', function () { finish(); }, { once: true });
+
+            audio.addEventListener('error', function () {
+                var code = audio.error ? audio.error.code : 0;
+                finish(MEDIA_ERRORS[code] || 'kesalahan audio tidak dikenal');
+            }, { once: true });
+
+            audio.addEventListener('playing', function () {
+                clearTimeout(startTimer);
+                var ms = isFinite(audio.duration) && audio.duration > 0
+                    ? audio.duration * 1000 + END_EXTRA_MS
+                    : END_DEFAULT_MS;
+                endTimer = setTimeout(function () {
+                    finish(); // pengaman: 'ended' tidak datang, tetap logout
+                }, ms);
+            }, { once: true });
+
+            // Pengaman: audio tidak pernah mulai (jaringan macet, dll).
+            startTimer = setTimeout(function () {
+                finish('audio tidak mulai diputar dalam ' + (START_TIMEOUT_MS / 1000) + ' detik');
+            }, START_TIMEOUT_MS);
+
+            try {
+                audio.currentTime = 0;
+                var result = audio.play();
+
+                if (result && typeof result.catch === 'function') {
+                    result.catch(function (err) {
+                        var name = err && err.name ? err.name : 'Error';
+                        var hint = name === 'NotAllowedError'
+                            ? 'browser memblokir autoplay (NotAllowedError)'
+                            : name === 'NotSupportedError'
+                                ? 'file tidak ditemukan atau format tidak didukung (NotSupportedError)'
+                                : name + (err && err.message ? ': ' + err.message : '');
+                        finish(hint);
+                    });
+                }
+            } catch (err) {
+                finish('play() melempar error: ' + (err && err.message ? err.message : err));
+            }
+        }
+
+        // Event delegation pada document: satu listener saja, tetap bekerja untuk
+        // form yang dirender belakangan (mis. di dalam modal Alpine x-show).
+        document.addEventListener('submit', handleLogoutSubmit);
+
+        // Tombol "Back" Chrome bisa memulihkan halaman dari bfcache dengan tombol
+        // masih disabled dan busy=true. Pulihkan agar logout tidak macet.
+        window.addEventListener('pageshow', function (e) {
+            if (!e.persisted) return;
+            busy = false;
+            var forms = document.querySelectorAll('form[data-logout-form]');
+            for (var i = 0; i < forms.length; i++) setBusy(forms[i], false);
+            try { document.getElementById('logoutAudio').pause(); } catch (x) {}
+        });
+    })();
+</script>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const root = document.documentElement;
@@ -1590,6 +1760,42 @@ href="{{ route('pengaturan.users.index') }}"                            class="d
             });
         });
     </script>
+
+
+@if (session('login_success'))
+    <audio id="welcomeAudio"
+           src="{{ asset('audio/welcome.mp3') }}"
+           preload="auto"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const audio = document.getElementById('welcomeAudio');
+
+            if (!audio) return;
+
+            audio.play().catch(function () {
+                const button = document.createElement('button');
+
+                button.textContent = '▶ Putar suara sambutan';
+                button.style.cssText =
+                    'position:fixed;bottom:24px;right:24px;' +
+                    'z-index:9999;padding:12px 18px;' +
+                    'border:0;border-radius:10px;' +
+                    'background:#102a56;color:white;cursor:pointer;';
+
+                button.onclick = function () {
+                    audio.play().then(function () {
+                        button.remove();
+                    });
+                };
+
+                document.body.appendChild(button);
+            });
+        });
+    </script>
+@endif
+
+
 
 </body>
 

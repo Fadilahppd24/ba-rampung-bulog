@@ -603,8 +603,10 @@
                          LOGOUT
                     ================================================== --}}
                     <form
+                        id="logoutForm"
                         method="POST"
                         action="{{ route('logout') }}"
+                        data-logout-form
                     >
                         @csrf
 
@@ -668,3 +670,12 @@
     </div>
 
 </header>
+
+{{--
+    Audio & JavaScript logout TIDAK ditaruh di sini lagi.
+    Komponen ini hanya dipakai di cabang "else" pada layout (halaman selain
+    dashboard/ba-rampung/gudang/mitra/pimpinan/pengaturan), jadi elemen
+    audio di sini tidak pernah ada di halaman dashboard.
+    Logika audio logout sekarang ada SATU kali di layout (app.blade.php),
+    dan bekerja untuk setiap form yang memiliki atribut data-logout-form.
+--}}

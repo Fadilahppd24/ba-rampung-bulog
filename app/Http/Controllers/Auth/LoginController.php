@@ -44,7 +44,9 @@ class LoginController extends Controller
 
         ActivityLogger::log('Login', 'auth', null, "User {$user->email} berhasil login.");
 
-        return redirect()->intended(route('dashboard'));
+
+return redirect()->intended(route('dashboard'))
+    ->with('login_success', true);
     }
 
     public function logout(Request $request): RedirectResponse
