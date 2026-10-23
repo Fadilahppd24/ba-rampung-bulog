@@ -145,11 +145,20 @@ class BaRampungController extends Controller
         // DATA BA
         // =====================================================
 
+        // Jumlah baris per halaman mengikuti dropdown "Baris per halaman".
+        $allowedPerPage = [10, 20, 25, 50, 100];
+
+        $perPage = (int) $request->input('per_page', 20);
+
+        if (! in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 20;
+        }
+
         $baList = $query
-    ->orderByDesc('created_at')
-    ->orderByDesc('id')
-    ->paginate(10)
-    ->withQueryString();
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate($perPage)
+            ->withQueryString();
 
         // =====================================================
         // KPI
@@ -235,7 +244,8 @@ class BaRampungController extends Controller
                 'baList',
                 'kpi',
                 'gudangs',
-                'mitras'
+                'mitras',
+                'perPage'
             )
         );
     }
@@ -292,7 +302,7 @@ class BaRampungController extends Controller
             ->get();
 
         $pengaturan = \App\Models\Pengaturan::first();
-        
+
         // Riwayat penandatangan Pihak Kesatu
         $penandatanganKesatu = BaRampung::query()
             ->whereNotNull('nama_penandatangan')
@@ -364,10 +374,10 @@ class BaRampungController extends Controller
 
         $ba = DB::transaction(
             function () use (
-    $data,
-    $tanggal,
-    $request,
-) {
+                $data,
+                $tanggal,
+                $request,
+            ) {
 
                 // =================================================
                 // SIMPAN BA
@@ -461,33 +471,33 @@ class BaRampungController extends Controller
 
 
         // ========================================
-// NOTIFIKASI KE ADMIN KANTOR
-// ========================================
+        // NOTIFIKASI KE ADMIN KANTOR
+        // ========================================
 
-if ($ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI) {
+        if ($ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI) {
 
-    $ba->load('gudang');
+            $ba->load('gudang');
 
-    $adminKantors = User::query()
-        ->where('role', 'admin_kantor')
-        ->where('is_active', true)
-        ->get();
+            $adminKantors = User::query()
+                ->where('role', 'admin_kantor')
+                ->where('is_active', true)
+                ->get();
 
-    foreach ($adminKantors as $adminKantor) {
+            foreach ($adminKantors as $adminKantor) {
 
-        Notification::create([
-            'user_id' => $adminKantor->id,
-            'ba_rampung_id' => $ba->id,
-            'type' => 'ba_menunggu_verifikasi',
-            'title' => 'BA Rampung Menunggu Verifikasi',
-            'message' => 'BA Rampung ' . $ba->nomor_ba .
-                ' baru dari Gudang ' .
-                ($ba->gudang->nama_gudang ?? '-') .
-                ' dan menunggu verifikasi.',
-            'is_read' => false,
-        ]);
-    }
-}
+                Notification::create([
+                    'user_id' => $adminKantor->id,
+                    'ba_rampung_id' => $ba->id,
+                    'type' => 'ba_menunggu_verifikasi',
+                    'title' => 'BA Rampung Menunggu Verifikasi',
+                    'message' => 'BA Rampung ' . $ba->nomor_ba .
+                        ' baru dari Gudang ' .
+                        ($ba->gudang->nama_gudang ?? '-') .
+                        ' dan menunggu verifikasi.',
+                    'is_read' => false,
+                ]);
+            }
+        }
 
         return redirect()
             ->route(
@@ -662,19 +672,19 @@ if ($ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI) {
         $statusSebelumnya = $baRampung->status;
 
         DB::transaction(
-    function () use (
-        $data,
-        $tanggal,
-        $request,
-        $baRampung
-    ) {
+            function () use (
+                $data,
+                $tanggal,
+                $request,
+                $baRampung
+            ) {
 
                 $baRampung->update([
 
                     'tanggal_ba' =>
                         $tanggal,
 
-                        'nomor_ba' =>
+                    'nomor_ba' =>
                         $this->formatNomorBa($data['nomor_ba'] ?? null, $tanggal),
 
                     'hari' =>
@@ -723,10 +733,7 @@ if ($ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI) {
                         $data['pimpinan_cabang_id'],
 
                     // Status
-'status' => BaRampung::STATUS_MENUNGGU_VERIFIKASI,
-
-'catatan' =>
-    $data['catatan'] ?? null,
+                    'status' => BaRampung::STATUS_MENUNGGU_VERIFIKASI,
 
                     'catatan' =>
                         $data['catatan'] ?? null,
@@ -1210,36 +1217,33 @@ if ($ba->status === BaRampung::STATUS_MENUNGGU_VERIFIKASI) {
         // =====================================================
         // DATA BA
         // =====================================================
-$nomorBa = trim((string) ($baRampung->nomor_ba ?? ''));
+        $nomorBa = trim((string) ($baRampung->nomor_ba ?? ''));
 
-/*
- * Nomor BA di database sekarang disimpan lengkap:
- * BA-900/10/2026/10040/GKP
- *
- * Template Word sudah menyediakan:
- * BA - [nomor] / [bulan] / [tahun] / 10040 / [suffix]
- *
- * Jadi yang dikirim ke nomor_ba_bagian hanya nomor utamanya:
- * 900
- */
+        /*
+         * Nomor BA di database sekarang disimpan lengkap:
+         * BA-900/10/2026/10040/GKP
+         *
+         * Template Word sudah menyediakan:
+         * BA - [nomor] / [bulan] / [tahun] / 10040 / [suffix]
+         *
+         * Jadi yang dikirim ke nomor_ba_bagian hanya nomor utamanya:
+         * 900
+         */
 
-$nomorBaBagian = preg_split('/\//', $nomorBa)[0] ?? '';
+        $nomorBaBagian = preg_split('/\//', $nomorBa)[0] ?? '';
 
-$nomorBaBagian = preg_replace(
-    '/^\s*BA\s*[-:]?\s*/i',
-    '',
-    $nomorBaBagian
-);
+        $nomorBaBagian = preg_replace(
+            '/^\s*BA\s*[-:]?\s*/i',
+            '',
+            $nomorBaBagian
+        );
 
-$nomorBaBagian = trim($nomorBaBagian);
+        $nomorBaBagian = trim($nomorBaBagian);
 
-if ($nomorBaBagian === '') {
-    $nomorBaBagian = str_repeat("\u{00A0}", 12);
-}
+        if ($nomorBaBagian === '') {
+            $nomorBaBagian = str_repeat("\u{00A0}", 12);
+        }
 
-if ($nomorBaBagian === '') {
-    $nomorBaBagian = str_repeat("\u{00A0}", 12);
-}
         $template->setValue(
             'nomor_ba_bagian',
             $nomorBaBagian
@@ -1260,9 +1264,9 @@ if ($nomorBaBagian === '') {
         );
 
         $template->setValue(
-    'suffix_nomor_ba',
-    \App\Models\Pengaturan::first()?->suffix_nomor_ba ?? 'GKP'
-);
+            'suffix_nomor_ba',
+            \App\Models\Pengaturan::first()?->suffix_nomor_ba ?? 'GKP'
+        );
 
         $template->setValue(
             'hari',
