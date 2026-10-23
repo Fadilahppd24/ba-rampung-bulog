@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BaRampungController;
+use App\Http\Controllers\TrashBaRampungController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GudangController;
 use App\Http\Controllers\MitraPengolahanController;
@@ -64,9 +65,21 @@ Route::middleware('role:admin_gudang')->group(function () {
     Route::put('/ba-rampung/{baRampung}', [BaRampungController::class, 'update'])
         ->name('ba-rampung.update');
 
-    Route::delete('/ba-rampung/{baRampung}', [BaRampungController::class, 'destroy'])
-        ->name('ba-rampung.destroy');
 });
+
+    // ---- Sampah BA Rampung: KHUSUS ADMIN KANTOR ----
+    Route::middleware('role:admin_kantor')->group(function () {
+        Route::get('/ba-rampung-sampah', [TrashBaRampungController::class, 'index'])
+            ->name('ba-rampung.trash.index');
+        Route::delete('/ba-rampung/{baRampung}', [BaRampungController::class, 'destroy'])
+            ->name('ba-rampung.destroy');
+        Route::patch('/ba-rampung-sampah/{id}/restore', [TrashBaRampungController::class, 'restore'])
+            ->whereNumber('id')->name('ba-rampung.trash.restore');
+        Route::delete('/ba-rampung-sampah/{id}/permanent', [TrashBaRampungController::class, 'forceDelete'])
+            ->whereNumber('id')->name('ba-rampung.trash.force-delete');
+        Route::post('/ba-rampung-sampah/bulk', [TrashBaRampungController::class, 'bulk'])
+            ->name('ba-rampung.trash.bulk');
+    });
 
     // Admin Kantor melakukan verifikasi BA
     Route::middleware('role:admin_kantor')->group(function () {

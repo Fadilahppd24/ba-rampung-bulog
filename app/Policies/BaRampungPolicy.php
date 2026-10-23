@@ -57,16 +57,17 @@ class BaRampungPolicy
 
     public function delete(User $user, BaRampung $ba): bool
     {
-        // Admin Kantor bisa menghapus semua BA
-        if ($user->isAdminKantor()) {
-            return true;
-        }
+        return $user->isAdminKantor();
+    }
 
-        // Admin Gudang hanya bisa menghapus BA draft
-        // milik gudangnya sendiri
-        return $user->isAdminGudang()
-            && $user->gudang_id === $ba->gudang_id
-            && $ba->status === BaRampung::STATUS_DRAFT;
+    public function restore(User $user, BaRampung $ba): bool
+    {
+        return $user->isAdminKantor();
+    }
+
+    public function forceDelete(User $user, BaRampung $ba): bool
+    {
+        return $user->isAdminKantor();
     }
 
     public function verify(User $user, BaRampung $ba): bool

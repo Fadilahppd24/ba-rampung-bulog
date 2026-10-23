@@ -8,6 +8,10 @@
             'label' => 'Log Aktivitas',
             'icon' => 'clock',
         ],
+        'ba-rampung.trash.index' => [
+            'label' => 'Riwayat Sampah',
+            'icon' => 'trash',
+        ],
     ];
 @endphp
 
@@ -18,7 +22,7 @@
 
     .pengaturan-tabs {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 6px;
 
         padding: 5px;
@@ -360,6 +364,14 @@
                     >
                         <circle cx="12" cy="12" r="9"/>
                         <path d="M12 7v5l3 2"/>
+                    </svg>
+
+                @elseif($tab['icon'] === 'trash')
+
+                    {{-- RIWAYAT SAMPAH --}}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"/>
                     </svg>
 
                 @endif

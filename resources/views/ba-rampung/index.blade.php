@@ -1273,6 +1273,22 @@
                                 <div class="flex justify-end gap-2">
 
 
+                                    {{-- HAPUS KE SAMPAH: ADMIN KANTOR SAJA --}}
+                                    @can('delete', $ba)
+                                        <form method="POST" action="{{ route('ba-rampung.destroy', $ba) }}"
+                                              data-ba-confirm="trash" data-ba-label="{{ $ba->nomor_ba }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" title="Pindahkan ke Sampah"
+                                                class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-rose-300 text-rose-500 hover:bg-rose-100"
+                                                aria-label="Hapus ke sampah">
+                                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M3 6h18M8 6V4h8v2m3 0-1 15H6L5 6m5 4v7m4-7v7"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endcan
+
                                     {{-- LIHAT --}}
                                     @can('view', $ba)
 
@@ -1903,4 +1919,73 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const INTERVAL = 15000; // cek data setiap 15 detik
+    let sedangMemeriksa = false;
+
+    async function perbaruiDaftarBA() {
+        if (document.hidden || sedangMemeriksa) return;
+
+        const tabelSekarang = document.querySelector('.ba-result-card');
+        if (!tabelSekarang) return;
+
+        sedangMemeriksa = true;
+
+        try {
+            // Menggunakan URL yang sama agar filter dan pagination tetap berlaku.
+            const response = await fetch(window.location.href, {
+                method: 'GET',
+                credentials: 'same-origin',
+                cache: 'no-store',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (!response.ok || response.redirected) return;
+
+            const html = await response.text();
+            const dokumenBaru = new DOMParser()
+                .parseFromString(html, 'text/html');
+
+            const tabelTerbaru =
+                dokumenBaru.querySelector('.ba-result-card');
+
+            if (!tabelTerbaru) return;
+
+            // Ganti tabel hanya jika datanya berubah.
+            if (tabelSekarang.innerHTML !== tabelTerbaru.innerHTML) {
+                tabelSekarang.innerHTML = tabelTerbaru.innerHTML;
+
+                // Pasang kembali event pilihan jumlah baris.
+                const selector = tabelSekarang.querySelector('#ba-per-page');
+
+                if (selector) {
+                    selector.addEventListener('change', function () {
+                        const url = new URL(window.location.href);
+                        url.searchParams.set('per_page', this.value);
+                        url.searchParams.delete('page');
+                        window.location.href = url.toString();
+                    });
+                }
+            }
+        } catch (error) {
+            console.warn('Pembaruan BA belum berhasil:', error);
+        } finally {
+            sedangMemeriksa = false;
+        }
+    }
+
+    setInterval(perbaruiDaftarBA, INTERVAL);
+});
+</script>
+
+
+
+@include('components.ba-action-modal')
+
 @endsection
+
+

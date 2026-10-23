@@ -544,7 +544,7 @@
                     {{-- BA RAMPUNG --}}
 <a
     href="{{ route('ba-rampung.index') }}"
-    class="dashboard-nav-link {{ request()->routeIs('ba-rampung.*') ? 'dashboard-nav-active' : '' }}"
+    class="dashboard-nav-link {{ request()->routeIs('ba-rampung.*') && !request()->is('ba-rampung-sampah*') ? 'dashboard-nav-active' : '' }}"
 >
     BA Rampung
 </a>
@@ -573,7 +573,7 @@
 
                     @if(auth()->user()?->isAdminKantor())
                         <a
-href="{{ route('pengaturan.users.index') }}"                            class="dashboard-nav-link {{ request()->routeIs('pengaturan.*') ? 'dashboard-nav-active' : '' }}"
+href="{{ route('pengaturan.users.index') }}"                            class="dashboard-nav-link {{ request()->routeIs('pengaturan.*') || request()->is('ba-rampung-sampah*') ? 'dashboard-nav-active' : '' }}"
                         >
                             Pengaturan
                         </a>
