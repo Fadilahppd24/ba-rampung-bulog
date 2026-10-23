@@ -84,20 +84,21 @@ class DashboardController extends Controller
 
         } elseif ($user->isAdminKantor()) {
 
-            // KPI khusus Admin Kantor
+            // Statistik kartu Admin Kantor berdasarkan status verifikasi.
+            // Query normal SoftDeletes tidak menghitung BA dalam sampah.
             $kpi = [
-                'total_ba' => (clone $baQuery)->count(),
-
-                'gudang_aktif' => Gudang::aktif()->count(),
-
-                'mitra_pengolahan' => MitraPengolahan::aktif()->count(),
-
-                'penyaluran_berjalan' => (clone $baQuery)
-                    ->where(
-                        'status',
-                        BaRampung::STATUS_MENUNGGU_VERIFIKASI
-                    )
+                'total_ba' => (clone $baQuery)
+                    ->where('status', BaRampung::STATUS_TERVERIFIKASI)
                     ->count(),
+
+                'ditolak' => (clone $baQuery)
+                    ->where('status', BaRampung::STATUS_DITOLAK)
+                    ->count(),
+
+                'menunggu_verifikasi' => (clone $baQuery)
+                    ->where('status', BaRampung::STATUS_MENUNGGU_VERIFIKASI)
+                    ->count(),
+
             ];
 
         } else {
@@ -166,7 +167,9 @@ class DashboardController extends Controller
 
         if ($user->isAdminKantor()) {
 
+            // Grafik donat hanya menghitung BA terverifikasi per gudang.
             $distribusiGudang = (clone $baQuery)
+                ->where('ba_rampungs.status', BaRampung::STATUS_TERVERIFIKASI)
                 ->join(
                     'gudangs',
                     'gudangs.id',

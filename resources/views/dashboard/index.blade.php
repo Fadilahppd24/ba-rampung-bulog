@@ -899,74 +899,66 @@
 
     @else
 
-        {{-- ADMIN KANTOR: BLOK KPI LAMA TETAP --}}
+        {{-- ADMIN KANTOR: 3 KPI STATUS VERIFIKASI --}}
         <section class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
+            {{-- TERVERIFIKASI --}}
             <div class="dash-kpi-card">
                 <div class="flex items-start justify-between gap-4">
                     <div>
-                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total BA Rampung</p>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total BA Rampung Terverifikasi</p>
                         <p class="dash-kpi-number mt-3">{{ number_format($kpi['total_ba']) }}</p>
                     </div>
-                    <div class="dash-kpi-icon bg-blue-50 text-[#123F7A]">
+                    <div class="dash-kpi-icon bg-green-50 text-green-600">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>
-                            <path d="M14 3v5h5"/>
-                            <path d="M9 13h6M9 17h4"/>
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="m8 12 3 3 5-6"/>
                         </svg>
                     </div>
                 </div>
-                <div class="mt-5 flex items-end justify-between gap-4">
-                    <div>
-                        <span class="dash-kpi-badge"><i></i> Dokumen terdaftar</span>
-                        <p class="text-[11px] text-slate-400 mt-2">Tren bulanan {{ $tahun }}</p>
-                    </div>
-                    <div class="dash-kpi-bars w-28">
-                        @foreach($miniBars as $v)
-                            <span style="height: {{ max(8, round(((float) $v / $miniMax) * 100)) }}%"></span>
-                        @endforeach
-                    </div>
+                <div class="mt-5">
+                    <span class="dash-kpi-badge"><i></i> Sudah disetujui</span>
+                    <p class="text-[11px] text-slate-400 mt-2">BA berstatus terverifikasi</p>
                 </div>
             </div>
 
+            {{-- DITOLAK --}}
+            <div class="dash-kpi-card">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total BA Rampung Ditolak</p>
+                        <p class="dash-kpi-number mt-3">{{ number_format($kpi['ditolak']) }}</p>
+                    </div>
+                    <div class="dash-kpi-icon bg-red-50 text-red-500">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="m9 9 6 6M15 9l-6 6"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-5">
+                    <span class="dash-kpi-badge"><i></i> Tidak disetujui</span>
+                    <p class="text-[11px] text-slate-400 mt-2">BA berstatus ditolak</p>
+                </div>
+            </div>
+
+            {{-- MENUNGGU VERIFIKASI --}}
             <div class="dash-kpi-card dash-kpi-accent">
                 <div class="flex items-start justify-between gap-4">
                     <div>
-                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Gudang Aktif</p>
-                        <p class="dash-kpi-number mt-3">{{ number_format($kpi['gudang_aktif']) }}</p>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total BA Rampung Menunggu Verifikasi</p>
+                        <p class="dash-kpi-number mt-3">{{ number_format($kpi['menunggu_verifikasi']) }}</p>
                     </div>
                     <div class="dash-kpi-icon bg-orange-50 text-orange-500">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 10l9-6 9 6"/>
-                            <path d="M5 10v10h14V10"/>
-                            <path d="M9 20v-6h6v6"/>
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M12 7v5l3 2"/>
                         </svg>
                     </div>
                 </div>
                 <div class="mt-5">
-                    <span class="dash-kpi-badge dash-kpi-badge-orange"><i></i> Gudang terdaftar</span>
-                    <div class="dash-kpi-track dash-kpi-track-orange mt-4"><span></span></div>
-                </div>
-            </div>
-
-            <div class="dash-kpi-card">
-                <div class="flex items-start justify-between gap-4">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Mitra Pengolahan</p>
-                        <p class="dash-kpi-number mt-3">{{ number_format($kpi['mitra_pengolahan']) }}</p>
-                    </div>
-                    <div class="dash-kpi-icon bg-blue-50 text-[#123F7A]">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="9" cy="8" r="3.2"/>
-                            <path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/>
-                            <circle cx="17" cy="9" r="2.4"/>
-                            <path d="M17 14a4 4 0 0 1 4 4v2"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="mt-5">
-                    <span class="dash-kpi-badge"><i></i> Mitra terdaftar</span>
-                    <div class="dash-kpi-track mt-4"><span></span></div>
+                    <span class="dash-kpi-badge dash-kpi-badge-orange"><i></i> Perlu diverifikasi</span>
+                    <p class="text-[11px] text-slate-400 mt-2">BA yang belum diperiksa Admin Kantor</p>
                 </div>
             </div>
 
@@ -1083,7 +1075,7 @@
                 </h2>
 
                 <p class="text-xs text-slate-400 mt-1">
-                    Distribusi BA berdasarkan gudang
+                    Distribusi BA terverifikasi berdasarkan gudang
                 </p>
 
             </div>
@@ -1114,11 +1106,11 @@
                                 text-[#123F7A]
                             "
                         >
-                            {{ $kpi['total_ba'] }}
+                            {{ number_format($distribusiGudang->sum('jumlah')) }}
                         </p>
 
                         <p class="text-xs text-slate-500">
-                            BA Rampung
+                            BA Terverifikasi
                         </p>
 
                     </div>
